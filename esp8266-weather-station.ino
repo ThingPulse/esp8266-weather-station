@@ -29,9 +29,9 @@ See more at http://blog.squix.ch
 #include "ssd1306_i2c.h"
 #include "Wire.h"
 #include "WundergroundClient.h"
-#include "fonts.h";
+#include "fonts.h"
 #include <Ticker.h>
-#include "TimeClient.h"
+#include "NTPClient.h"
 
 // Initialize the oled display for address 0x3c
 // sda-pin=14 and sdc-pin=12
@@ -42,7 +42,7 @@ SSD1306 display(0x3c, D6, D5);
 WundergroundClient wunderground(true);
 
 int utcOffset = 1;
-TimeClient timeClient(utcOffset);
+NTPClient ntpClient(utcOffset);
 
 // Add your wounderground api key here
 String apiKey = "<wundergroundapikey>";
@@ -79,6 +79,8 @@ void setup() {
     Serial.print(".");
     counter++;
   }
+  
+  ntpClient.begin();
 
   display.setFrameCallbacks(numberOfFrames, frameCallbacks);
   // how many ticks does a slide of frame take?
@@ -88,10 +90,9 @@ void setup() {
   
   Serial.println("");
   
-  timeClient.updateTime();
   wunderground.updateConditions(apiKey, country, city);
   wunderground.updateForecast(apiKey, country, city);
-  lastUpdate = timeClient.getFormattedTime();
+  lastUpdate = ntpClient.getFormattedTime();
   
   ticker.attach(10 * 60, setReadyForWeatherUpdate);
 
@@ -99,13 +100,14 @@ void setup() {
 
 void loop() {
   if (readyForWeatherUpdate && display.getFrameState() == display.FRAME_STATE_FIX) {
-    timeClient.updateTime();
+    ntpClient.update();
     wunderground.updateConditions(apiKey, country, city);
     wunderground.updateForecast(apiKey, country, city);
     readyForWeatherUpdate = false;
-    lastUpdate = timeClient.getFormattedTime();
+    lastUpdate = ntpClient.getFormattedTime();
   }
 
+  Serial.println(lastUpdate);
   
   //display.clear();
 
@@ -124,7 +126,7 @@ void drawFrame1(int x, int y) {
   int textWidth = display.getStringWidth(date);
   display.drawString(64 + x, 10 + y, date);
   display.setFont(ArialMT_Plain_24);
-  String time = timeClient.getFormattedTime();
+  String time = ntpClient.getFormattedTime();
   textWidth = display.getStringWidth(time);
   display.drawString(64 + x, 20 + y, time);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
