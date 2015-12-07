@@ -25,14 +25,13 @@ See more at http://blog.squix.ch
 #pragma once
 
 #include <ESP8266WiFi.h>
-#include <WiFiUdp.h>
 
 #define NTP_PACKET_SIZE 48
 
 class TimeClient {
 
   private:
-    int myUtcOffset = 0;
+    float myUtcOffset = 0;
     long localEpoc = 0;
     long localMillisAtUpdate;
     
@@ -43,7 +42,7 @@ class TimeClient {
 
     
   public:
-    TimeClient(int utcOffset);
+    TimeClient(float utcOffset);
     void updateTime();
 
     String getHours();
@@ -51,6 +50,7 @@ class TimeClient {
     String getSeconds();
     String getFormattedTime();
     long getCurrentEpoch();
+    long getCurrentEpochWithUtcOffset();
 
 };
 
