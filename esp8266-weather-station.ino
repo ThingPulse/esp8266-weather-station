@@ -41,7 +41,7 @@ SSD1306 display(0x3c, D6, D5);
 // Set to false, if you prefere imperial/inches, Fahrenheit
 WundergroundClient wunderground(true);
 
-int utcOffset = 1;
+int utcOffset = 3600; // 60s/min * 60min/h = 3600s/h
 NTPClient ntpClient(utcOffset);
 
 // Add your wounderground api key here
