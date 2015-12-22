@@ -55,7 +55,7 @@ class WundergroundClient: public JsonListener {
     String forecastTitle [MAX_FORECAST_PERIODS];
     String forecastLowTemp [MAX_FORECAST_PERIODS];
     String forecastHighTemp [MAX_FORECAST_PERIODS];
-    
+
   public:
     WundergroundClient(boolean isMetric);
     void updateConditions(String apiKey, String country, String city);
@@ -87,9 +87,9 @@ class WundergroundClient: public JsonListener {
     String getForecastLowTemp(int period);
 
     String getForecastHighTemp(int period);
-    
+
     virtual void whitespace(char c);
-  
+
     virtual void startDocument();
 
     virtual void key(String key);

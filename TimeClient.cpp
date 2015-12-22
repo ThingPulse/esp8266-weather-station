@@ -41,8 +41,11 @@ void TimeClient::updateTime() {
   client.print(String("GET / HTTP/1.1\r\n") +
                String("Host: www.google.com\r\n") + 
                String("Connection: close\r\n\r\n"));
-  while(!client.available()) {
+  int repeatCounter = 0;
+  while(!client.available() && repeatCounter < 10) {
     delay(1000); 
+    Serial.println(".");
+    repeatCounter++;
   }
 
   String line;

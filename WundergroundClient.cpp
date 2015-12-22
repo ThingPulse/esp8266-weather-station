@@ -40,7 +40,7 @@ void WundergroundClient::updateConditions(String apiKey, String country, String 
 
 void WundergroundClient::updateForecast(String apiKey, String country, String city) {
   isForecast = true;
-  doUpdate("/api/" + apiKey + "/forecast10day/q/" + country + "/" + city + ".json");  
+  doUpdate("/api/" + apiKey + "/forecast10day/q/" + country + "/" + city + ".json");
 }
 
 void WundergroundClient::doUpdate(String url) {
@@ -52,18 +52,18 @@ void WundergroundClient::doUpdate(String url) {
     Serial.println("connection failed");
     return;
   }
-  
+
   Serial.print("Requesting URL: ");
   Serial.println(url);
-  
+
   // This will send the request to the server
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-               "Host: api.wunderground.com\r\n" + 
+               "Host: api.wunderground.com\r\n" +
                "Connection: close\r\n\r\n");
   while(!client.available()) {
-    delay(1000); 
+    delay(1000);
   }
-  
+
   int pos = 0;
   boolean isBody = false;
   char c;
@@ -117,9 +117,9 @@ void WundergroundClient::value(String value) {
   }
   if (currentKey == "icon") {
     if (isForecast && !isSimpleForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
-      Serial.println(String(currentForecastPeriod) + ": " + value + ":" + currentParent); 
+      Serial.println(String(currentForecastPeriod) + ": " + value + ":" + currentParent);
       forecastIcon[currentForecastPeriod] = value;
-    } 
+    }
     if (!isForecast) {
       weatherIcon = value;
     }
@@ -146,30 +146,31 @@ void WundergroundClient::value(String value) {
     currentForecastPeriod = value.toInt();
   }
   if (currentKey == "title" && currentForecastPeriod < MAX_FORECAST_PERIODS) {
-      Serial.println(String(currentForecastPeriod) + ": " + value); 
+      Serial.println(String(currentForecastPeriod) + ": " + value);
       forecastTitle[currentForecastPeriod] = value;
   }
-  // The detailed forecast period has only one forecast per day with low/high for both 
+  // The detailed forecast period has only one forecast per day with low/high for both
   // night and day, starting at index 1.
   int dailyForecastPeriod = (currentForecastPeriod - 1) * 2;
-  if (currentKey == "fahrenheit" && !isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
-      
+
+  if (currentKey == "fahrenheit" && !isMetric && dailyForecastPeriod < MAX_FORECAST_PERIODS) {
+
       if (currentParent == "high") {
         forecastHighTemp[dailyForecastPeriod] = value;
       }
       if (currentParent == "low") {
         forecastLowTemp[dailyForecastPeriod] = value;
-      }      
+      }
   }
-  if (currentKey == "celsius" && isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
-     
+  if (currentKey == "celsius" && isMetric && dailyForecastPeriod < MAX_FORECAST_PERIODS) {
+
       if (currentParent == "high") {
         Serial.println(String(currentForecastPeriod)+ ": " + value);
         forecastHighTemp[dailyForecastPeriod] = value;
       }
       if (currentParent == "low") {
         forecastLowTemp[dailyForecastPeriod] = value;
-      }  
+      }
   }
 }
 
@@ -260,7 +261,7 @@ String WundergroundClient::getTodayIcon() {
 }
 
 String WundergroundClient::getForecastIcon(int period) {
-  return getMeteoconIcon(forecastIcon[period]);  
+  return getMeteoconIcon(forecastIcon[period]);
 }
 
 String WundergroundClient::getForecastTitle(int period) {
@@ -276,48 +277,45 @@ String WundergroundClient::getForecastHighTemp(int period) {
 }
 
 String WundergroundClient::getMeteoconIcon(String iconText) {
-  if (iconText == "chanceflurries") return "F"; 
-  if (iconText == "chancerain") return "Q"; 
-  if (iconText == "chancesleet") return "W"; 
-  if (iconText == "chancesnow") return "V"; 
-  if (iconText == "chancetstorms") return "S"; 
-  if (iconText == "clear") return "B"; 
-  if (iconText == "cloudy") return "Y"; 
-  if (iconText == "flurries") return "F"; 
-  if (iconText == "fog") return "M"; 
-  if (iconText == "hazy") return "E"; 
-  if (iconText == "mostlycloudy") return "Y"; 
-  if (iconText == "mostlysunny") return "H"; 
-  if (iconText == "partlycloudy") return "H"; 
-  if (iconText == "partlysunny") return "J"; 
-  if (iconText == "sleet") return "W"; 
-  if (iconText == "rain") return "R"; 
-  if (iconText == "snow") return "W"; 
-  if (iconText == "sunny") return "B"; 
-  if (iconText == "tstorms") return "0"; 
+  if (iconText == "chanceflurries") return "F";
+  if (iconText == "chancerain") return "Q";
+  if (iconText == "chancesleet") return "W";
+  if (iconText == "chancesnow") return "V";
+  if (iconText == "chancetstorms") return "S";
+  if (iconText == "clear") return "B";
+  if (iconText == "cloudy") return "Y";
+  if (iconText == "flurries") return "F";
+  if (iconText == "fog") return "M";
+  if (iconText == "hazy") return "E";
+  if (iconText == "mostlycloudy") return "Y";
+  if (iconText == "mostlysunny") return "H";
+  if (iconText == "partlycloudy") return "H";
+  if (iconText == "partlysunny") return "J";
+  if (iconText == "sleet") return "W";
+  if (iconText == "rain") return "R";
+  if (iconText == "snow") return "W";
+  if (iconText == "sunny") return "B";
+  if (iconText == "tstorms") return "0";
 
-  if (iconText == "nt_chanceflurries") return "F"; 
-  if (iconText == "nt_chancerain") return "7"; 
-  if (iconText == "nt_chancesleet") return "#"; 
-  if (iconText == "nt_chancesnow") return "#"; 
-  if (iconText == "nt_chancetstorms") return "&"; 
-  if (iconText == "nt_clear") return "2"; 
-  if (iconText == "nt_cloudy") return "Y"; 
-  if (iconText == "nt_flurries") return "9"; 
-  if (iconText == "nt_fog") return "M"; 
-  if (iconText == "nt_hazy") return "E"; 
-  if (iconText == "nt_mostlycloudy") return "5"; 
-  if (iconText == "nt_mostlysunny") return "3"; 
-  if (iconText == "nt_partlycloudy") return "4"; 
-  if (iconText == "nt_partlysunny") return "4"; 
-  if (iconText == "nt_sleet") return "9"; 
-  if (iconText == "nt_rain") return "7"; 
-  if (iconText == "nt_snow") return "#"; 
-  if (iconText == "nt_sunny") return "4"; 
-  if (iconText == "nt_tstorms") return "&"; 
-  
+  if (iconText == "nt_chanceflurries") return "F";
+  if (iconText == "nt_chancerain") return "7";
+  if (iconText == "nt_chancesleet") return "#";
+  if (iconText == "nt_chancesnow") return "#";
+  if (iconText == "nt_chancetstorms") return "&";
+  if (iconText == "nt_clear") return "2";
+  if (iconText == "nt_cloudy") return "Y";
+  if (iconText == "nt_flurries") return "9";
+  if (iconText == "nt_fog") return "M";
+  if (iconText == "nt_hazy") return "E";
+  if (iconText == "nt_mostlycloudy") return "5";
+  if (iconText == "nt_mostlysunny") return "3";
+  if (iconText == "nt_partlycloudy") return "4";
+  if (iconText == "nt_partlysunny") return "4";
+  if (iconText == "nt_sleet") return "9";
+  if (iconText == "nt_rain") return "7";
+  if (iconText == "nt_snow") return "#";
+  if (iconText == "nt_sunny") return "4";
+  if (iconText == "nt_tstorms") return "&";
+
   return ")";
 }
-
-
-
