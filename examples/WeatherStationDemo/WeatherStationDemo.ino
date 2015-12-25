@@ -23,40 +23,62 @@ SOFTWARE.
 See more at http://blog.squix.ch
 */
 
-
-#include <JsonListener.h>
 #include <ESP8266WiFi.h>
+#include <Ticker.h>
+#include <JsonListener.h>
 #include "SSD1306.h"
 #include "SSD1306Ui.h"
 #include "Wire.h"
 #include "WundergroundClient.h"
 #include "WeatherStationFonts.h";
-#include <Ticker.h>
+#include "WeatherStationImages.h";
 #include "TimeClient.h"
 #include "ThingspeakClient.h"
 
+/***************************
+ * Begin Settings
+ **************************/
+// WIFI
+const char* WIFI_SSID = "yourssid"; 
+const char* WIFI_PWD = "yourpassw0rd";
+
+// Display Settings
+const int I2C_DISPLAY_ADDRESS = 0x3c;
+const int SDA_PIN = D3;
+const int SDC_PIN = D4;
+
+// TimeClient settings
+const float UTC_OFFSET = 1;
+
+// Wunderground Settings
+const boolean IS_METRIC = true;
+const String WUNDERGRROUND_API_KEY = "WUNDERGROUND_API_KEY";
+const String WUNDERGROUND_COUNTRY = "CH";
+const String WUNDERGROUND_CITY = "Zurich";
+
+//Thingspeak Settings
+const String THINGSPEAK_CHANNEL_ID = "67284";
+const String THINGSPEAK_API_READ_KEY = "L2VIW20QVNZJBLAK";
+
 // Initialize the oled display for address 0x3c
 // sda-pin=14 and sdc-pin=12
-SSD1306 display(0x3c, D6, D5);
-//SSD1306 display(0x3c, 0, 2);
+SSD1306   display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+SSD1306Ui ui     ( &display );
+
+/***************************
+ * End Settings
+ **************************/
+
+TimeClient timeClient(UTC_OFFSET);
 
 // Set to false, if you prefere imperial/inches, Fahrenheit
-WundergroundClient wunderground(true);
-
-float utcOffset = 1;
-TimeClient timeClient(utcOffset);
-
-// Add your wounderground api key here
-String apiKey = "0c99d927fea78b32";
-String country = "CH";
-String city = "Zurich";
+WundergroundClient wunderground(IS_METRIC);
 
 ThingspeakClient thingspeak;
 
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
-void (*frameCallbacks[])(int x, int y) = {drawFrame1, drawFrame2, drawFrame3, drawFrame4, drawFrame5};
-
+bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = { drawFrame1, drawFrame2, drawFrame3, drawFrame4, drawFrame5 };
 int numberOfFrames = 5;
 
 // flag changed in the ticker function every 10 minutes
@@ -75,166 +97,176 @@ void setup() {
   display.init();
   display.clear();
   display.display();
-  WiFi.begin("yourssid", "yourpassw0rd");
 
+  //display.flipScreenVertically();
+  display.setFont(ArialMT_Plain_10);
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.setContrast(255);
+
+  WiFi.begin(WIFI_SSID, WIFI_PWD);
+  
   int counter = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    drawProgress(counter * 10 % 100, "Connecting Wifi...", true);
+    display.clear();
+    display.drawString(64, 10, "Connecting to WiFi");
+    display.drawXbm(46, 30, 8, 8, counter % 3 == 0 ? activeSymbole : inactiveSymbole);
+    display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbole : inactiveSymbole);
+    display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbole : inactiveSymbole);
+    display.display();
+    
     counter++;
   }
 
-  display.setFrameCallbacks(numberOfFrames, frameCallbacks);
-  // how many ticks does a slide of frame take?
-  display.setFrameTransitionTicks(10);
-  // how many ticks should we wait until the next transition begins?
-  display.setFrameWaitTicks(150);
+  ui.setTargetFPS(30);
+
+  ui.setActiveSymbole(activeSymbole);
+  ui.setInactiveSymbole(inactiveSymbole);
+
+  // You can change this to
+  // TOP, LEFT, BOTTOM, RIGHT
+  ui.setIndicatorPosition(BOTTOM);
+
+  // Defines where the first frame is located in the bar.
+  ui.setIndicatorDirection(LEFT_RIGHT);
+
+  // You can change the transition that is used
+  // SLIDE_LEFT, SLIDE_RIGHT, SLIDE_TOP, SLIDE_DOWN
+  ui.setFrameAnimation(SLIDE_LEFT);
+
+  // Add frames
+  ui.setFrames(frames, numberOfFrames);
+
+  // Inital UI takes care of initalising the display too.
+  ui.init();
 
   Serial.println("");
 
-  updateData();
+  updateData(&display);
 
-  ticker.attach(10 * 60, setReadyForWeatherUpdate);
+  ticker.attach(10 * 60 * 10, setReadyForWeatherUpdate);
 
 }
 
 void loop() {
-  if (readyForWeatherUpdate && display.getFrameState() == display.FRAME_STATE_FIX) {
-    updateData();
+
+  if (readyForWeatherUpdate && ui.getUiState().frameState == FIXED) {
+    updateData(&display);
   }
 
-  //display.clear();
+  int remainingTimeBudget = ui.update();
 
-  display.clear();
-  display.nextFrameTick();
-  display.display();
-
-  //delay(1000);
+  if (remainingTimeBudget > 0) {
+    // You can do some work here
+    // Don't do stuff if you are below your
+    // time budget.
+    delay(remainingTimeBudget);
+  }
 
 }
 
-void updateData() {
-  drawProgress(10, "Updating time...", false);
+void updateData(SSD1306 *display) {
+  drawProgress(display, 10, "Updating time...");
   timeClient.updateTime();
-  drawProgress(30, "Updating conditions...", false);
-  wunderground.updateConditions(apiKey, country, city);
-  drawProgress(50, "Updating forecasts...", false);
-  wunderground.updateForecast(apiKey, country, city);
-  drawProgress(70, "Updating Thingspeak...", false);
-  thingspeak.getLastChannelItem("67284", "L2VIW20QVNZJBLAK");
+  drawProgress(display, 30, "Updating conditions...");
+  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  drawProgress(display, 50, "Updating forecasts...");
+  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  drawProgress(display, 80, "Updating thingspeak...");
+  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
   lastUpdate = timeClient.getFormattedTime();
   readyForWeatherUpdate = false;
+  drawProgress(display, 100, "Done...");
+  delay(1000);
 }
 
-void drawProgress(int percentage, String label, boolean isSpinner) {
-  display.clear();
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(64, 32, label);
-  display.drawRect(10, 50, 108, 12);
-
-
-  if (isSpinner) {
-    int blockWidth = 20;
-    int startX = (104 - blockWidth) * percentage / 100;
-    display.fillRect(startX, 52, startX + blockWidth , 8);
-  } else {
-    display.fillRect(12, 52, 104 * percentage / 100 , 8);
-  }
-  display.display();
+void drawProgress(SSD1306 *display, int percentage, String label) {
+  display->clear();
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64, 10, label);
+  display->drawRect(10, 28, 108, 12);
+  display->fillRect(12, 30, 104 * percentage / 100 , 9);
+  display->display();
 }
 
-void drawFrame0(int x, int y) {
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.setFont(ArialMT_Plain_16);
-  display.drawStringMaxWidth(x,0,128, "äöü ÄÖÜ éàè °§€@ $£");
-}
 
-void drawFrame1(int x, int y) {
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.setFont(ArialMT_Plain_10);
+bool drawFrame1(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
   String date = wunderground.getDate();
-  int textWidth = display.getStringWidth(date);
-  display.drawString(64 + x, 10 + y, date);
-  display.setFont(ArialMT_Plain_24);
+  int textWidth = display->getStringWidth(date);
+  display->drawString(64 + x, 10 + y, date);
+  display->setFont(ArialMT_Plain_24);
   String time = timeClient.getFormattedTime();
-  textWidth = display.getStringWidth(time);
-  display.drawString(64 + x, 20 + y, time);
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  textWidth = display->getStringWidth(time);
+  display->drawString(64 + x, 20 + y, time);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
-void drawFrame2(int x, int y) {
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(60 + x, 10 + y, wunderground.getWeatherText());
+bool drawFrame2(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(60 + x, 10 + y, wunderground.getWeatherText());
 
-  display.setFont(ArialMT_Plain_24);
+  display->setFont(ArialMT_Plain_24);
   String temp = wunderground.getCurrentTemp() + "°C";
-  display.drawString(60 + x, 20 + y, temp);
-  int tempWidth = display.getStringWidth(temp);
+  display->drawString(60 + x, 20 + y, temp);
+  int tempWidth = display->getStringWidth(temp);
 
-  display.setFont(Meteocons_0_42);
+  display->setFont(Meteocons_0_42);
   String weatherIcon = wunderground.getTodayIcon();
-  int weatherIconWidth = display.getStringWidth(weatherIcon);
-  display.drawString(32 + x - weatherIconWidth / 2, 10 + y, weatherIcon);
+  int weatherIconWidth = display->getStringWidth(weatherIcon);
+  display->drawString(32 + x - weatherIconWidth / 2, 10 + y, weatherIcon);
 }
 
-void drawFrame3(int x, int y) {
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(32 + x, 0 + y, "Humidity");
-  display.drawString(96 + x, 0 + y, "Pressure");
-  display.drawString(32 + x, 28 + y, "Precipit.");
+bool drawFrame3(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(32 + x, 0 + y, "Humidity");
+  display->drawString(96 + x, 0 + y, "Pressure");
+  display->drawString(32 + x, 28 + y, "Precipit.");
 
-  display.setFont(ArialMT_Plain_16);
-  display.drawString(32 + x, 10 + y, wunderground.getHumidity());
-  display.drawString(96 + x, 10 + y, wunderground.getPressure());
-  display.drawString(32 + x, 38 + y, wunderground.getPrecipitationToday());
+  display->setFont(ArialMT_Plain_16);
+  display->drawString(32 + x, 10 + y, wunderground.getHumidity());
+  display->drawString(96 + x, 10 + y, wunderground.getPressure());
+  display->drawString(32 + x, 38 + y, wunderground.getPrecipitationToday());
 }
 
-void drawFrame4(int x, int y) {
-  drawForecast(x, y, 0);
-  drawForecast(x + 44, y, 2);
-  drawForecast(x + 88, y, 4);
+bool drawFrame4(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  drawForecast(display, x, y, 0);
+  drawForecast(display, x + 44, y, 2);
+  drawForecast(display, x + 88, y, 4);
 }
 
-void drawFrame5(int x, int y) {
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(64 + x, 0 + y, "Outdooräöüàé");
-  display.setFont(ArialMT_Plain_24);
-  display.drawString(64 + x, 10 + y, thingspeak.getFieldValue(0) + "°C");
-  display.drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
+bool drawFrame5(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64 + x, 0 + y, "Outdoor");
+  display->setFont(ArialMT_Plain_24);
+  display->drawString(64 + x, 10 + y, thingspeak.getFieldValue(0) + "°C");
+  display->drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
 }
 
-void drawFrame6(int x, int y) {
-  drawForecast(x, y, 4);
-}
-
-void drawForecast(int x, int y, int dayIndex) {
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.setFont(ArialMT_Plain_10);
+void drawForecast(SSD1306 *display, int x, int y, int dayIndex) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
   String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
   day.toUpperCase();
-  display.drawString(x + 20, y, day);
+  display->drawString(x + 20, y, day);
+  
+  display->setFont(Meteocons_0_21);
+  display->drawString(x + 20, y + 15, wunderground.getForecastIcon(dayIndex));
 
-  display.setFont(Meteocons_0_21);
-  display.drawString(x + 20, y + 15, wunderground.getForecastIcon(dayIndex));
-
-  display.setFont(ArialMT_Plain_16);
-  display.drawString(x + 20, y + 37, wunderground.getForecastLowTemp(dayIndex) + "/" + wunderground.getForecastHighTemp(dayIndex) + String((char)176));
+  display->setFont(ArialMT_Plain_16);
+  display->drawString(x + 20, y + 37, wunderground.getForecastLowTemp(dayIndex) + "/" + wunderground.getForecastHighTemp(dayIndex));
   //display.drawString(x + 20, y + 51, );
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-}
-
-void drawFrame7(int x, int y) {
-
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
 void setReadyForWeatherUpdate() {
   Serial.println("Setting readyForUpdate to true");
   readyForWeatherUpdate = true;
 }
-
 
 
