@@ -42,6 +42,9 @@ See more at http://blog.squix.ch
 const char* WIFI_SSID = "yourssid"; 
 const char* WIFI_PWD = "yourpassw0rd";
 
+// Setup
+const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
+
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
 const int SDA_PIN = D3;
@@ -145,7 +148,7 @@ void setup() {
 
   updateData(&display);
 
-  ticker.attach(10 * 60 * 10, setReadyForWeatherUpdate);
+  ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
 
 }
 
