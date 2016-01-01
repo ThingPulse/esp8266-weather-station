@@ -1,3 +1,5 @@
+// Icons by Adam Whitcroft: http://adamwhitcroft.com/offscreen/
+
 #define amsterdam_width 60
 #define amsterdam_height 60
 const char amsterdam_bits[] PROGMEM= {
