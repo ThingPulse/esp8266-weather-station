@@ -1,0 +1,16 @@
+{
+  "name": "ESP8266 Weather Station",
+  "keywords": "json, streaming",
+  "description": "A very memory efficient library to parse (large) JSON objects on embedded devices",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/squix78/esp8266-weather-station.git"
+  },
+  "authors": {
+    "name": "Daniel Eichhorn",
+    "url": "http://blog.squix.ch"
+  },
+  "frameworks": "arduino",
+  "platforms": "espressif",
+  "version": "1.0.4"
+}
