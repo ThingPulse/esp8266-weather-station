@@ -1,5 +1,5 @@
 {
-  "name": "ESP8266 Weather Station",
+  "name": "WeatherStation",
   "keywords": "json, streaming",
   "description": "A very memory efficient library to parse (large) JSON objects on embedded devices",
   "repository": {
