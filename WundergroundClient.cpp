@@ -136,6 +136,12 @@ void WundergroundClient::value(String value) {
   if (currentKey == "pressure_in" && !isMetric) {
     pressure = value + "in";
   }
+  if (currentKey == "dewpoint_f" && !isMetric) {
+    dewPoint = value;
+  }
+  if (currentKey == "dewpoint_c" && isMetric) {
+    dewPoint = value;
+  }
   if (currentKey == "precip_today_metric" && isMetric) {
     precipitationToday = value + "mm";
   }
@@ -250,6 +256,10 @@ String WundergroundClient::getHumidity() {
 
 String WundergroundClient::getPressure() {
   return pressure;
+}
+
+String WundergroundClient::getDewPoint() {
+  return dewPoint;
 }
 
 String WundergroundClient::getPrecipitationToday() {
