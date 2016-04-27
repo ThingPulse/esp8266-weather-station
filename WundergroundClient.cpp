@@ -25,9 +25,10 @@ See more at http://blog.squix.ch
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-
-
 #include "WundergroundClient.h"
+
+//Set language definitino code here, see https://www.wunderground.com/weather/api/d/docs?d=language-support&MR=1
+#define LANG DL
 
 WundergroundClient::WundergroundClient(boolean _isMetric) {
   isMetric = _isMetric;
@@ -35,12 +36,12 @@ WundergroundClient::WundergroundClient(boolean _isMetric) {
 
 void WundergroundClient::updateConditions(String apiKey, String country, String city) {
   isForecast = false;
-  doUpdate("/api/" + apiKey + "/conditions/q/" + country + "/" + city + ".json");
+  doUpdate("/api/" + apiKey + "/conditions/lang:" + LANG + "/q/" + country + "/" + city + ".json");
 }
 
 void WundergroundClient::updateForecast(String apiKey, String country, String city) {
   isForecast = true;
-  doUpdate("/api/" + apiKey + "/forecast10day/q/" + country + "/" + city + ".json");
+  doUpdate("/api/" + apiKey + "/forecast10day/lang:" + LANG + "/q/" + country + "/" + city + ".json");
 }
 
 void WundergroundClient::doUpdate(String url) {
