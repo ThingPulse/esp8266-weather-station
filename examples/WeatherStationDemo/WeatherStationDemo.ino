@@ -56,6 +56,7 @@ const float UTC_OFFSET = 1;
 // Wunderground Settings
 const boolean IS_METRIC = true;
 const String WUNDERGRROUND_API_KEY = "WUNDERGROUND_API_KEY";
+const String WUNDERGRROUND_LANGUAGE = "DL";
 const String WUNDERGROUND_COUNTRY = "CH";
 const String WUNDERGROUND_CITY = "Zurich";
 
