@@ -30,8 +30,8 @@ See more at http://blog.squix.ch
 #include "SSD1306Ui.h"
 #include "Wire.h"
 #include "WundergroundClient.h"
-#include "WeatherStationFonts.h";
-#include "WeatherStationImages.h";
+#include "WeatherStationFonts.h"
+#include "WeatherStationImages.h"
 #include "TimeClient.h"
 #include "ThingspeakClient.h"
 
@@ -39,7 +39,7 @@ See more at http://blog.squix.ch
  * Begin Settings
  **************************/
 // WIFI
-const char* WIFI_SSID = "yourssid"; 
+const char* WIFI_SSID = "yourssid";
 const char* WIFI_PWD = "yourpassw0rd";
 
 // Setup
@@ -80,6 +80,14 @@ WundergroundClient wunderground(IS_METRIC);
 
 ThingspeakClient thingspeak;
 
+// declaring prototypes
+void drawFrame1(int x, int y);
+void drawFrame2(int x, int y);
+void drawFrame3(int x, int y);
+void drawFrame4(int x, int y);
+void setReadyForWeatherUpdate();
+void drawForecast(int x, int y, int dayIndex);
+
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
 bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = { drawFrame1, drawFrame2, drawFrame3, drawFrame4, drawFrame5 };
@@ -108,7 +116,7 @@ void setup() {
   display.setContrast(255);
 
   WiFi.begin(WIFI_SSID, WIFI_PWD);
-  
+
   int counter = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -119,7 +127,7 @@ void setup() {
     display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbole : inactiveSymbole);
     display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbole : inactiveSymbole);
     display.display();
-    
+
     counter++;
   }
 
@@ -174,9 +182,9 @@ void updateData(SSD1306 *display) {
   drawProgress(display, 10, "Updating time...");
   timeClient.updateTime();
   drawProgress(display, 30, "Updating conditions...");
-  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
   drawProgress(display, 50, "Updating forecasts...");
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
   drawProgress(display, 80, "Updating thingspeak...");
   thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
   lastUpdate = timeClient.getFormattedTime();
@@ -258,7 +266,7 @@ void drawForecast(SSD1306 *display, int x, int y, int dayIndex) {
   String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
   day.toUpperCase();
   display->drawString(x + 20, y, day);
-  
+
   display->setFont(Meteocons_0_21);
   display->drawString(x + 20, y + 15, wunderground.getForecastIcon(dayIndex));
 
@@ -272,5 +280,3 @@ void setReadyForWeatherUpdate() {
   Serial.println("Setting readyForUpdate to true");
   readyForWeatherUpdate = true;
 }
-
-
