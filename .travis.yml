@@ -15,8 +15,7 @@ env:
 
 install:
     - pip install -U platformio
-
-    - platformio lib install 561 563
+    - platformio lib install 563 561 
 
 script:
     - platformio ci --lib="." --board=nodemcuv2
