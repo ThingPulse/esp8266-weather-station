@@ -9,13 +9,11 @@ New version of the ESP8266 Weather Station
 
 ## Arduino IDE
 
-Make sure you use a version of the Arduino IDE which is supported by the ESP8266 platform, e.g. 1.6.5. You can find it here: https://www.arduino.cc/en/Main/OldSoftwareReleases#previous
-
-At the time of this writing **1.6.6 and 1.6.7 are not supported**!
+Make sure you use a version of the Arduino IDE which is supported by the ESP8266 platform. You can find it here: https://www.arduino.cc/en/Main/OldSoftwareReleases#previous
 
 ## Setup
 
-* Install the following librarys with your Arduino Library Manager in Sketch > Include Library > Manage Libraries...
+* Install the following libraries with your Arduino Library Manager in Sketch > Include Library > Manage Libraries...
  * ESP8266 Weather Station
  * Json Streaming Parser (by Daniel Eichhorn)
  * ESP8266 Oled Driver for SSD1306 display (by me as well). **Make sure that you use Version 2.0.0 or bigger!**
