@@ -81,13 +81,13 @@ WundergroundClient wunderground(IS_METRIC);
 ThingspeakClient thingspeak;
 
 // declaring prototypes
-void drawFrame1(int x, int y);
-void drawFrame2(int x, int y);
-void drawFrame3(int x, int y);
-void drawFrame4(int x, int y);
-void drawFrame5(int x, int y);
+bool drawFrame1(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool drawFrame2(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool drawFrame3(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool drawFrame4(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool drawFrame5(SSD1306 *display, SSD1306UiState* state, int x, int y);
 void setReadyForWeatherUpdate();
-void drawForecast(int x, int y, int dayIndex);
+void drawForecast(SSD1306 *display, int x, int y, int dayIndex);
 
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
