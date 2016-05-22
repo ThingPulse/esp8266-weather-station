@@ -60,8 +60,13 @@ void WundergroundClient::doUpdate(String url) {
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: api.wunderground.com\r\n" +
                "Connection: close\r\n\r\n");
+  int retryCounter = 0;
   while(!client.available()) {
     delay(1000);
+    retryCounter++;
+    if (retryCounter > 10) {
+      return;
+    }
   }
 
   int pos = 0;

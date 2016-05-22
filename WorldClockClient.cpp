@@ -78,9 +78,14 @@ void WorldClockClient::updateTime() {
 
   client.println(request);
 
+  int retryCounter = 0;
   while(!client.available()) {
     Serial.println(".");
     delay(1000);
+    retryCounter++;
+    if (retryCounter > 10) {
+      return;
+    }
   }
 
   int pos = 0;

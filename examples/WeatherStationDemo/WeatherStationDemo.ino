@@ -1,6 +1,6 @@
 /**The MIT License (MIT)
 
-Copyright (c) 2015 by Daniel Eichhorn
+Copyright (c) 2016 by Daniel Eichhorn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,9 +38,13 @@ See more at http://blog.squix.ch
 /***************************
  * Begin Settings
  **************************/
+// Please read http://blog.squix.org/weatherstation-getting-code-adapting-it
+// for setup instructions
+
 // WIFI
 const char* WIFI_SSID = "yourssid"; 
 const char* WIFI_PWD = "yourpassw0rd";
+
 
 // Setup
 const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
@@ -51,7 +55,7 @@ const int SDA_PIN = D3;
 const int SDC_PIN = D4;
 
 // TimeClient settings
-const float UTC_OFFSET = 1;
+const float UTC_OFFSET = 2;
 
 // Wunderground Settings
 const boolean IS_METRIC = true;
@@ -79,10 +83,6 @@ WundergroundClient wunderground(IS_METRIC);
 
 ThingspeakClient thingspeak;
 
-// this array keeps function pointers to all frames
-// frames are the single views that slide from right to left
-bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = { drawFrame1, drawFrame2, drawFrame3, drawFrame4, drawFrame5 };
-int numberOfFrames = 5;
 
 // flag changed in the ticker function every 10 minutes
 bool readyForWeatherUpdate = false;
@@ -90,6 +90,119 @@ bool readyForWeatherUpdate = false;
 String lastUpdate = "--";
 
 Ticker ticker;
+
+
+void updateData(SSD1306 *display) {
+  drawProgress(display, 10, "Updating time...");
+  timeClient.updateTime();
+  drawProgress(display, 30, "Updating conditions...");
+  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  drawProgress(display, 50, "Updating forecasts...");
+  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  drawProgress(display, 80, "Updating thingspeak...");
+  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
+  lastUpdate = timeClient.getFormattedTime();
+  readyForWeatherUpdate = false;
+  drawProgress(display, 100, "Done...");
+  delay(1000);
+}
+
+void drawProgress(SSD1306 *display, int percentage, String label) {
+  display->clear();
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64, 10, label);
+  display->drawProgressBar(2, 28, 124, 10, percentage);
+  display->display();
+}
+
+
+void drawDateTime(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  String date = wunderground.getDate();
+  int textWidth = display->getStringWidth(date);
+  display->drawString(64 + x, 5 + y, date);
+  display->setFont(ArialMT_Plain_24);
+  String time = timeClient.getFormattedTime();
+  textWidth = display->getStringWidth(time);
+  display->drawString(64 + x, 15 + y, time);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+}
+
+void drawCurrentWeather(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  display->setFont(ArialMT_Plain_10);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->drawString(60 + x, 5 + y, wunderground.getWeatherText());
+
+  display->setFont(ArialMT_Plain_24);
+  String temp = wunderground.getCurrentTemp() + "°C";
+  display->drawString(60 + x, 15 + y, temp);
+  int tempWidth = display->getStringWidth(temp);
+
+  display->setFont(Meteocons_Plain_42);
+  String weatherIcon = wunderground.getTodayIcon();
+  int weatherIconWidth = display->getStringWidth(weatherIcon);
+  display->drawString(32 + x - weatherIconWidth / 2, 05 + y, weatherIcon);
+}
+
+
+void drawForecast(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  drawForecast(display, x, y, 0);
+  drawForecast(display, x + 44, y, 2);
+  drawForecast(display, x + 88, y, 4);
+}
+
+void drawThingspeak(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64 + x, 0 + y, "Outdoor");
+  display->setFont(ArialMT_Plain_16);
+  display->drawString(64 + x, 10 + y, thingspeak.getFieldValue(0) + "°C");
+  display->drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
+}
+
+void drawForecast(SSD1306 *display, int x, int y, int dayIndex) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
+  day.toUpperCase();
+  display->drawString(x + 20, y, day);
+  
+  display->setFont(Meteocons_Plain_21);
+  display->drawString(x + 20, y + 12, wunderground.getForecastIcon(dayIndex));
+
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(x + 20, y + 34, wunderground.getForecastLowTemp(dayIndex) + "|" + wunderground.getForecastHighTemp(dayIndex));
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+}
+
+void drawHeaderOverlay(SSD1306 *display, SSD1306UiState* state) {
+  display->setColor(WHITE);
+  display->setFont(ArialMT_Plain_10);
+  String time = timeClient.getFormattedTime().substring(0, 5);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->drawString(0, 54, time);
+  display->setTextAlignment(TEXT_ALIGN_RIGHT);
+  String temp = wunderground.getCurrentTemp() + "°C";
+  display->drawString(128, 54, temp);
+  display->drawHorizontalLine(0, 52, 128);
+}
+
+void setReadyForWeatherUpdate() {
+  Serial.println("Setting readyForUpdate to true");
+  readyForWeatherUpdate = true;
+}
+
+
+// Add frames
+// this array keeps function pointers to all frames
+// frames are the single views that slide from right to left
+FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast, drawThingspeak };
+int numberOfFrames = 4;
+
+OverlayCallback overlays[] = { drawHeaderOverlay };
+int numberOfOverlays = 1;
 
 void setup() {
   Serial.begin(115200);
@@ -124,8 +237,8 @@ void setup() {
 
   ui.setTargetFPS(30);
 
-  ui.setActiveSymbole(activeSymbole);
-  ui.setInactiveSymbole(inactiveSymbole);
+  ui.setActiveSymbol(activeSymbole);
+  ui.setInactiveSymbol(inactiveSymbole);
 
   // You can change this to
   // TOP, LEFT, BOTTOM, RIGHT
@@ -138,8 +251,9 @@ void setup() {
   // SLIDE_LEFT, SLIDE_RIGHT, SLIDE_TOP, SLIDE_DOWN
   ui.setFrameAnimation(SLIDE_LEFT);
 
-  // Add frames
   ui.setFrames(frames, numberOfFrames);
+
+  ui.setOverlays(overlays, numberOfOverlays);
 
   // Inital UI takes care of initalising the display too.
   ui.init();
@@ -154,7 +268,7 @@ void setup() {
 
 void loop() {
 
-  if (readyForWeatherUpdate && ui.getUiState().frameState == FIXED) {
+  if (readyForWeatherUpdate && ui.getUiState()->frameState == FIXED) {
     updateData(&display);
   }
 
@@ -167,109 +281,7 @@ void loop() {
     delay(remainingTimeBudget);
   }
 
+
+
 }
-
-void updateData(SSD1306 *display) {
-  drawProgress(display, 10, "Updating time...");
-  timeClient.updateTime();
-  drawProgress(display, 30, "Updating conditions...");
-  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
-  drawProgress(display, 50, "Updating forecasts...");
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
-  drawProgress(display, 80, "Updating thingspeak...");
-  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
-  lastUpdate = timeClient.getFormattedTime();
-  readyForWeatherUpdate = false;
-  drawProgress(display, 100, "Done...");
-  delay(1000);
-}
-
-void drawProgress(SSD1306 *display, int percentage, String label) {
-  display->clear();
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64, 10, label);
-  display->drawRect(10, 28, 108, 12);
-  display->fillRect(12, 30, 104 * percentage / 100 , 9);
-  display->display();
-}
-
-
-bool drawFrame1(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  String date = wunderground.getDate();
-  int textWidth = display->getStringWidth(date);
-  display->drawString(64 + x, 10 + y, date);
-  display->setFont(ArialMT_Plain_24);
-  String time = timeClient.getFormattedTime();
-  textWidth = display->getStringWidth(time);
-  display->drawString(64 + x, 20 + y, time);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-}
-
-bool drawFrame2(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(60 + x, 10 + y, wunderground.getWeatherText());
-
-  display->setFont(ArialMT_Plain_24);
-  String temp = wunderground.getCurrentTemp() + "°C";
-  display->drawString(60 + x, 20 + y, temp);
-  int tempWidth = display->getStringWidth(temp);
-
-  display->setFont(Meteocons_0_42);
-  String weatherIcon = wunderground.getTodayIcon();
-  int weatherIconWidth = display->getStringWidth(weatherIcon);
-  display->drawString(32 + x - weatherIconWidth / 2, 10 + y, weatherIcon);
-}
-
-bool drawFrame3(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(32 + x, 0 + y, "Humidity");
-  display->drawString(96 + x, 0 + y, "Pressure");
-  display->drawString(32 + x, 28 + y, "Precipit.");
-
-  display->setFont(ArialMT_Plain_16);
-  display->drawString(32 + x, 10 + y, wunderground.getHumidity());
-  display->drawString(96 + x, 10 + y, wunderground.getPressure());
-  display->drawString(32 + x, 38 + y, wunderground.getPrecipitationToday());
-}
-
-bool drawFrame4(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  drawForecast(display, x, y, 0);
-  drawForecast(display, x + 44, y, 2);
-  drawForecast(display, x + 88, y, 4);
-}
-
-bool drawFrame5(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64 + x, 0 + y, "Outdoor");
-  display->setFont(ArialMT_Plain_24);
-  display->drawString(64 + x, 10 + y, thingspeak.getFieldValue(0) + "°C");
-  display->drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
-}
-
-void drawForecast(SSD1306 *display, int x, int y, int dayIndex) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
-  day.toUpperCase();
-  display->drawString(x + 20, y, day);
-  
-  display->setFont(Meteocons_0_21);
-  display->drawString(x + 20, y + 15, wunderground.getForecastIcon(dayIndex));
-
-  display->setFont(ArialMT_Plain_16);
-  display->drawString(x + 20, y + 37, wunderground.getForecastLowTemp(dayIndex) + "/" + wunderground.getForecastHighTemp(dayIndex));
-  //display.drawString(x + 20, y + 51, );
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-}
-
-void setReadyForWeatherUpdate() {
-  Serial.println("Setting readyForUpdate to true");
-  readyForWeatherUpdate = true;
-}
-
 

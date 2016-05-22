@@ -1,6 +1,6 @@
 /**The MIT License (MIT)
 
-Copyright (c) 2015 by Daniel Eichhorn
+Copyright (c) 2016 by Daniel Eichhorn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -65,10 +65,7 @@ String timeZoneIds [] = {"America/New_York", "Europe/London", "Europe/Paris", "A
 WorldClockClient worldClockClient("de", "CH", "E, dd. MMMMM yyyy", 4, timeZoneIds);
 
 
-// this array keeps function pointers to all frames
-// frames are the single views that slide from right to left
-bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = { drawFrame1, drawFrame2, drawFrame3, drawFrame4};
-int numberOfFrames = 4;
+
 
 // flag changed in the ticker function every 10 minutes
 bool readyForUpdate = false;
@@ -76,6 +73,61 @@ bool readyForUpdate = false;
 String lastUpdate = "--";
 
 Ticker ticker;
+
+
+void updateData(SSD1306 *display) {
+  drawProgress(display, 50, "Updating Time...");
+  worldClockClient.updateTime();
+  drawProgress(display, 100, "Done...");
+  readyForUpdate = false;
+  delay(1000);
+}
+
+void drawProgress(SSD1306 *display, int percentage, String label) {
+  display->clear();
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64, 10, label);
+  display->drawProgressBar(10, 28, 108, 12, percentage);
+  display->display();
+}
+
+void drawClock(SSD1306 *display, int x, int y, int timeZoneIndex, String city, const char* icon) {
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(x + 60, y + 5, city);
+  display->setFont(Crushed_Plain_36);
+  display->drawXbm(x, y, 60, 60, icon); 
+  display->drawString(x + 60, y + 15, worldClockClient.getHours(timeZoneIndex) + ":" + worldClockClient.getMinutes(timeZoneIndex));
+
+}
+
+void drawFrame1(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  drawClock(display, x, y, 0, "New York",  new_york_bits);
+}
+
+void drawFrame2(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  drawClock(display, x, y, 1, "London",  london_bits);
+}
+
+void drawFrame3(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  drawClock(display, x, y, 2, "Paris",  paris_bits);
+}
+
+void drawFrame4(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+  drawClock(display, x, y, 3, "Sydney",  sydney_bits);
+}
+
+
+void setReadyForWeatherUpdate() {
+  Serial.println("Setting readyForUpdate to true");
+  readyForUpdate = true;
+}
+
+// this array keeps function pointers to all frames
+// frames are the single views that slide from right to left
+FrameCallback frames[] = { drawFrame1, drawFrame2, drawFrame3, drawFrame4};
+int numberOfFrames = 4;
 
 void setup() {
   Serial.begin(115200);
@@ -100,18 +152,15 @@ void setup() {
     Serial.print(".");
     display.clear();
     display.drawString(64, 10, "Connecting to WiFi");
-    display.drawXbm(46, 30, 8, 8, counter % 3 == 0 ? ANIMATION_activeSymbole : ANIMATION_inactiveSymbole);
-    display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? ANIMATION_activeSymbole : ANIMATION_inactiveSymbole);
-    display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? ANIMATION_activeSymbole : ANIMATION_inactiveSymbole);
+    display.drawXbm(46, 30, 8, 8, counter % 3 == 0 ? activeSymbol : inactiveSymbol);
+    display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbol : inactiveSymbol);
+    display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbol : inactiveSymbol);
     display.display();
     
     counter++;
   }
 
   ui.setTargetFPS(30);
-
-  ui.setActiveSymbole(ANIMATION_activeSymbole);
-  ui.setInactiveSymbole(ANIMATION_inactiveSymbole);
 
   // You can change this to
   // TOP, LEFT, BOTTOM, RIGHT
@@ -140,7 +189,7 @@ void setup() {
 
 void loop() {
 
-  if (readyForUpdate && ui.getUiState().frameState == FIXED) {
+  if (readyForUpdate && ui.getUiState()->frameState == FIXED) {
     updateData(&display);
   }
 
@@ -154,55 +203,4 @@ void loop() {
   }
 
 }
-
-void updateData(SSD1306 *display) {
-  drawProgress(display, 50, "Updating Time...");
-  worldClockClient.updateTime();
-  drawProgress(display, 100, "Done...");
-  readyForUpdate = false;
-  delay(1000);
-}
-
-void drawProgress(SSD1306 *display, int percentage, String label) {
-  display->clear();
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64, 10, label);
-  display->drawRect(10, 28, 108, 12);
-  display->fillRect(12, 30, 104 * percentage / 100 , 9);
-  display->display();
-}
-
-void drawClock(SSD1306 *display, int x, int y, int timeZoneIndex, String city, const char* icon) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(x + 60, y + 5, city);
-  display->setFont(Crushed_Plain_36);
-  display->drawXbm(x, y, 60, 60, icon); 
-  display->drawString(x + 60, y + 15, worldClockClient.getHours(timeZoneIndex) + ":" + worldClockClient.getMinutes(timeZoneIndex));
-
-}
-
-bool drawFrame1(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  drawClock(display, x, y, 0, "New York",  new_york_bits);
-}
-
-bool drawFrame2(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  drawClock(display, x, y, 1, "London",  london_bits);
-}
-
-bool drawFrame3(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  drawClock(display, x, y, 2, "Paris",  paris_bits);
-}
-
-bool drawFrame4(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  drawClock(display, x, y, 3, "Sydney",  sydney_bits);
-}
-
-
-void setReadyForWeatherUpdate() {
-  Serial.println("Setting readyForUpdate to true");
-  readyForUpdate = true;
-}
-
 
