@@ -1,3 +1,7 @@
+# Build Status
+
+Dev-Branch: [![Build Status](https://travis-ci.org/squix78/esp8266-weather-station.svg?branch=development)](https://travis-ci.org/squix78/esp8266-weather-station)
+
 # esp8266-weather-station
 
 New version of the ESP8266 Weather Station
