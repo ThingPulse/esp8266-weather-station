@@ -39,7 +39,7 @@ See more at http://blog.squix.ch
  * Begin Settings
  **************************/
 // WIFI
-const char* WIFI_SSID = "yourssid"; 
+const char* WIFI_SSID = "yourssid";
 const char* WIFI_PWD = "yourpassw0rd";
 
 // Setup
@@ -64,6 +64,12 @@ SSD1306Ui ui     ( &display );
 String timeZoneIds [] = {"America/New_York", "Europe/London", "Europe/Paris", "Australia/Sydney"};
 WorldClockClient worldClockClient("de", "CH", "E, dd. MMMMM yyyy", 4, timeZoneIds);
 
+
+// declaring prototypes
+bool drawFrame1(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool drawFrame2(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool drawFrame3(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool drawFrame4(SSD1306 *display, SSD1306UiState* state, int x, int y);
 
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
@@ -93,7 +99,7 @@ void setup() {
   display.setContrast(255);
 
   WiFi.begin(WIFI_SSID, WIFI_PWD);
-  
+
   int counter = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -104,7 +110,7 @@ void setup() {
     display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? ANIMATION_activeSymbole : ANIMATION_inactiveSymbole);
     display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? ANIMATION_activeSymbole : ANIMATION_inactiveSymbole);
     display.display();
-    
+
     counter++;
   }
 
@@ -178,7 +184,7 @@ void drawClock(SSD1306 *display, int x, int y, int timeZoneIndex, String city, c
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 60, y + 5, city);
   display->setFont(Crushed_Plain_36);
-  display->drawXbm(x, y, 60, 60, icon); 
+  display->drawXbm(x, y, 60, 60, icon);
   display->drawString(x + 60, y + 15, worldClockClient.getHours(timeZoneIndex) + ":" + worldClockClient.getMinutes(timeZoneIndex));
 
 }
@@ -204,5 +210,3 @@ void setReadyForWeatherUpdate() {
   Serial.println("Setting readyForUpdate to true");
   readyForUpdate = true;
 }
-
-
