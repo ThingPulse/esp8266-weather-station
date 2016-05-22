@@ -30,8 +30,8 @@ See more at http://blog.squix.ch
 #include "SSD1306Ui.h"
 #include "Wire.h"
 #include "WundergroundClient.h"
-#include "WeatherStationFonts.h";
-#include "WeatherStationImages.h";
+#include "WeatherStationFonts.h"
+#include "WeatherStationImages.h"
 #include "TimeClient.h"
 #include "ThingspeakClient.h"
 
@@ -42,7 +42,7 @@ See more at http://blog.squix.ch
 // for setup instructions
 
 // WIFI
-const char* WIFI_SSID = "yourssid"; 
+const char* WIFI_SSID = "yourssid";
 const char* WIFI_PWD = "yourpassw0rd";
 
 
@@ -168,7 +168,7 @@ void drawForecast(SSD1306 *display, int x, int y, int dayIndex) {
   String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
   day.toUpperCase();
   display->drawString(x + 20, y, day);
-  
+
   display->setFont(Meteocons_Plain_21);
   display->drawString(x + 20, y + 12, wunderground.getForecastIcon(dayIndex));
 
@@ -220,7 +220,7 @@ void setup() {
   display.setContrast(255);
 
   WiFi.begin(WIFI_SSID, WIFI_PWD);
-  
+
   int counter = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -231,7 +231,7 @@ void setup() {
     display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbole : inactiveSymbole);
     display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbole : inactiveSymbole);
     display.display();
-    
+
     counter++;
   }
 
@@ -284,4 +284,3 @@ void loop() {
 
 
 }
-
