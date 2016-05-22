@@ -15,7 +15,16 @@ env:
 
 install:
     - pip install -U platformio
-    - platformio lib install 561 562 
+    - platformio lib install 561 562
 
 script:
     - platformio ci --lib="." --board=nodemcuv2
+
+deploy:
+  provider: releases
+  api_key: "zbL7vJQoM9WdNxSdm3he"
+  file: ".pioenvs/nodemcuv2/firmware.elf"
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
