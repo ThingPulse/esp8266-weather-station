@@ -85,6 +85,7 @@ void drawFrame1(int x, int y);
 void drawFrame2(int x, int y);
 void drawFrame3(int x, int y);
 void drawFrame4(int x, int y);
+void drawFrame4(int x, int y);
 void setReadyForWeatherUpdate();
 void drawForecast(int x, int y, int dayIndex);
 
