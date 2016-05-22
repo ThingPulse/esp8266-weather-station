@@ -17,7 +17,7 @@ install:
     - pip install -U platformio
 
     - wget https://github.com/squix78/esp8266-oled-ssd1306/archive/dev-branch-3.0.0.zip -O /tmp/oled.zip
-    - unzip /tmp/oled.zip -d /tmp 
+    - unzip /tmp/oled.zip -d /tmp/oled
 
 script:
     - platformio ci --lib="." --lib="/tmp/oled" --board=nodemcuv2
