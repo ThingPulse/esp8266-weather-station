@@ -13,6 +13,9 @@ install:
 - platformio lib install 561 562
 script:
 - platformio ci --lib="." --board=nodemcuv2
+- find . -name firmware.elf
+- ls -altr
+- ls -altr .pioenvs/nodemcuv2/firmware.elf
 deploy:
   provider: releases
   overwrite: true
