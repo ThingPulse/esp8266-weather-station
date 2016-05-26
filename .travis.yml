@@ -12,6 +12,7 @@ install:
 - pip install -U platformio
 - platformio lib install 561 562
 script:
+- mkdir ~/.platformio
 - platformio ci --build-dir="~/.platformio" --keep-build-dir --lib="." --board=nodemcuv2
 - ls -altr
 - find ~/.platformio -name firmware.elf
