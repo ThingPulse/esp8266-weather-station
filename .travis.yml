@@ -13,6 +13,7 @@ install:
 - platformio lib install 561 562
 script:
 - platformio ci --lib="." --board=nodemcuv2 --keep-build-dir
+- ls -altr
 - find . -name firmware.elf
 
 deploy:
