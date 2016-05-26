@@ -13,7 +13,7 @@ install:
 - platformio lib install 561 562
 script:
 - platformio ci --lib="." --board=nodemcuv2
-- find .
+- find . ~/.platformio
 
 deploy:
   provider: releases
