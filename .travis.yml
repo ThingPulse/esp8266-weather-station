@@ -18,6 +18,6 @@ deploy:
   overwrite: true
   api_key:
     secure: W72OSGx+s+ky9s4nS6L2wOQ8bgvyapLfF5bgWW8qHpLZvNVz5moW5h4TwIrkvIrxitmeIiqqyLPjCKr/XhUHEOoLMq9/IhCjLwI0H4nGAEzAFxNh0s7BEDd7OlkDwwuCamcCXb6gmdJcsOtBSxvmB8/kjq7jPvJi3kfb7iPPVfcS8g+QA0XvPGD4cp5HPhsdbo819RELwfnxtIq6192vDgUo49W2MuD+LClONbvWuxm8ZPXV37kc5RO2l91WHohonKXPXdbQWp6OyoXIiYs3TQD+vzAfIZCk96sGiH6NOnybRTQ2gwIjX03brPVh4VXtAUjufXWO0YEh2F8kMVSrILYiNQ04C5asFpouins3x+GDQbujewPINBU6mN36inwyot0Awnyys6ehuG/Nc4bLTPgzkZR0OX97TKgsfHuZuHingI22+Rwjp4iQwmAkk+ecdr1/IT2GjxpV9PA2b0eYSfQjg3m8cxd5NS7XEfSP3OfxX/eIJtJ579o6McqnifnSq9SE4AeWkiFem2ODCWN71oIfuWdX0jDgpdqwGezohzvXbszukjtAreSJ2DTTYwOCdhD54GLrRubw4279/XhM71BbUyacCrc14odVIGj6NKwjjHOG4XVBbRGq36gIBam1T2YWrtBN13p16L1KRPGDmuLNGp/vwu/rB7c6U+lr5H8=
-  file: .pioenvs/nodemcuv2/firmware.bin
+  file: ".pioenvs/nodemcuv2/firmware.elf"
   on:
     repo: squix78/esp8266-weather-station
