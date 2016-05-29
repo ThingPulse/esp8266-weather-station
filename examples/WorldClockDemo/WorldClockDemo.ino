@@ -26,8 +26,8 @@ See more at http://blog.squix.ch
 #include <ESP8266WiFi.h>
 #include <Ticker.h>
 #include <JsonListener.h>
-#include "SSD1306.h"
-#include "SSD1306Ui.h"
+#include "SSD1306Wire.h"
+#include "OLEDDisplayUi.h"
 #include "Wire.h"
 #include "WorldClockClient.h"
 #include "icons.h"
@@ -55,8 +55,9 @@ const int SDC_PIN = D4;
 
 // Initialize the oled display for address 0x3c
 // sda-pin=14 and sdc-pin=12
-SSD1306   display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
-SSD1306Ui ui     ( &display );
+
+SSD1306Wire  display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+OLEDDisplayUi ui     ( &display );
 
 /***************************
  * End Settings
@@ -75,7 +76,7 @@ String lastUpdate = "--";
 Ticker ticker;
 
 
-void updateData(SSD1306 *display) {
+void updateData(OLEDDisplay *display) {
   drawProgress(display, 50, "Updating Time...");
   worldClockClient.updateTime();
   drawProgress(display, 100, "Done...");
@@ -83,7 +84,7 @@ void updateData(SSD1306 *display) {
   delay(1000);
 }
 
-void drawProgress(SSD1306 *display, int percentage, String label) {
+void drawProgress(OLEDDisplay *display, int percentage, String label) {
   display->clear();
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
@@ -92,7 +93,7 @@ void drawProgress(SSD1306 *display, int percentage, String label) {
   display->display();
 }
 
-void drawClock(SSD1306 *display, int x, int y, int timeZoneIndex, String city, const char* icon) {
+void drawClock(OLEDDisplay *display, int x, int y, int timeZoneIndex, String city, const char* icon) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 60, y + 5, city);
@@ -102,19 +103,19 @@ void drawClock(SSD1306 *display, int x, int y, int timeZoneIndex, String city, c
 
 }
 
-void drawFrame1(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawFrame1(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   drawClock(display, x, y, 0, "New York",  new_york_bits);
 }
 
-void drawFrame2(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawFrame2(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   drawClock(display, x, y, 1, "London",  london_bits);
 }
 
-void drawFrame3(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawFrame3(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   drawClock(display, x, y, 2, "Paris",  paris_bits);
 }
 
-void drawFrame4(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawFrame4(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   drawClock(display, x, y, 3, "Sydney",  sydney_bits);
 }
 

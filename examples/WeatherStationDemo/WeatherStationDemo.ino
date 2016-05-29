@@ -26,8 +26,8 @@ See more at http://blog.squix.ch
 #include <ESP8266WiFi.h>
 #include <Ticker.h>
 #include <JsonListener.h>
-#include "SSD1306.h"
-#include "SSD1306Ui.h"
+#include "SSD1306Wire.h"
+#include "OLEDDisplayUi.h"
 #include "Wire.h"
 #include "WundergroundClient.h"
 #include "WeatherStationFonts.h"
@@ -69,8 +69,8 @@ const String THINGSPEAK_API_READ_KEY = "L2VIW20QVNZJBLAK";
 
 // Initialize the oled display for address 0x3c
 // sda-pin=14 and sdc-pin=12
-SSD1306   display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
-SSD1306Ui ui     ( &display );
+SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+OLEDDisplayUi   ui( &display );
 
 /***************************
  * End Settings
@@ -92,7 +92,7 @@ String lastUpdate = "--";
 Ticker ticker;
 
 
-void updateData(SSD1306 *display) {
+void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
   timeClient.updateTime();
   drawProgress(display, 30, "Updating conditions...");
@@ -107,7 +107,7 @@ void updateData(SSD1306 *display) {
   delay(1000);
 }
 
-void drawProgress(SSD1306 *display, int percentage, String label) {
+void drawProgress(OLEDDisplay *display, int percentage, String label) {
   display->clear();
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
@@ -117,7 +117,7 @@ void drawProgress(SSD1306 *display, int percentage, String label) {
 }
 
 
-void drawDateTime(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
   String date = wunderground.getDate();
@@ -130,7 +130,7 @@ void drawDateTime(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y)
   display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
-void drawCurrentWeather(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setFont(ArialMT_Plain_10);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->drawString(60 + x, 5 + y, wunderground.getWeatherText());
@@ -147,13 +147,13 @@ void drawCurrentWeather(SSD1306 *display, SSD1306UiState* state, int16_t x, int1
 }
 
 
-void drawForecast(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   drawForecast(display, x, y, 0);
   drawForecast(display, x + 44, y, 2);
   drawForecast(display, x + 88, y, 4);
 }
 
-void drawThingspeak(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t y) {
+void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
   display->drawString(64 + x, 0 + y, "Outdoor");
@@ -162,7 +162,7 @@ void drawThingspeak(SSD1306 *display, SSD1306UiState* state, int16_t x, int16_t 
   display->drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
 }
 
-void drawForecast(SSD1306 *display, int x, int y, int dayIndex) {
+void drawForecast(OLEDDisplay *display, int x, int y, int dayIndex) {
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
   String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
@@ -177,7 +177,7 @@ void drawForecast(SSD1306 *display, int x, int y, int dayIndex) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
-void drawHeaderOverlay(SSD1306 *display, SSD1306UiState* state) {
+void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
   display->setColor(WHITE);
   display->setFont(ArialMT_Plain_10);
   String time = timeClient.getFormattedTime().substring(0, 5);
