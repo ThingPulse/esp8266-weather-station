@@ -205,9 +205,9 @@ void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
   timeClient.updateTime();
   drawProgress(display, 30, "Updating conditions...");
-  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
   drawProgress(display, 50, "Updating forecasts...");
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
   drawProgress(display, 80, "Updating thingspeak...");
   thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
   lastUpdate = timeClient.getFormattedTime();
