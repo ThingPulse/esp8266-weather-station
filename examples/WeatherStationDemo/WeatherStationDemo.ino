@@ -92,6 +92,15 @@ String lastUpdate = "--";
 Ticker ticker;
 
 
+void drawProgress(OLEDDisplay *display, int percentage, String label) {
+  display->clear();
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64, 10, label);
+  display->drawProgressBar(2, 28, 124, 10, percentage);
+  display->display();
+}
+
 void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
   timeClient.updateTime();
@@ -107,14 +116,6 @@ void updateData(OLEDDisplay *display) {
   delay(1000);
 }
 
-void drawProgress(OLEDDisplay *display, int percentage, String label) {
-  display->clear();
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64, 10, label);
-  display->drawProgressBar(2, 28, 124, 10, percentage);
-  display->display();
-}
 
 
 void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
