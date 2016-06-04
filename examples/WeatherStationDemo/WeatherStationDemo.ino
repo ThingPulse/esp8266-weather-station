@@ -91,109 +91,16 @@ String lastUpdate = "--";
 
 Ticker ticker;
 
-
-void drawProgress(OLEDDisplay *display, int percentage, String label) {
-  display->clear();
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64, 10, label);
-  display->drawProgressBar(2, 28, 124, 10, percentage);
-  display->display();
-}
-
-void updateData(OLEDDisplay *display) {
-  drawProgress(display, 10, "Updating time...");
-  timeClient.updateTime();
-  drawProgress(display, 30, "Updating conditions...");
-  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
-  drawProgress(display, 50, "Updating forecasts...");
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
-  drawProgress(display, 80, "Updating thingspeak...");
-  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
-  lastUpdate = timeClient.getFormattedTime();
-  readyForWeatherUpdate = false;
-  drawProgress(display, 100, "Done...");
-  delay(1000);
-}
-
-
-
-void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  String date = wunderground.getDate();
-  int textWidth = display->getStringWidth(date);
-  display->drawString(64 + x, 5 + y, date);
-  display->setFont(ArialMT_Plain_24);
-  String time = timeClient.getFormattedTime();
-  textWidth = display->getStringWidth(time);
-  display->drawString(64 + x, 15 + y, time);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-}
-
-void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  display->setFont(ArialMT_Plain_10);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->drawString(60 + x, 5 + y, wunderground.getWeatherText());
-
-  display->setFont(ArialMT_Plain_24);
-  String temp = wunderground.getCurrentTemp() + "°C";
-  display->drawString(60 + x, 15 + y, temp);
-  int tempWidth = display->getStringWidth(temp);
-
-  display->setFont(Meteocons_Plain_42);
-  String weatherIcon = wunderground.getTodayIcon();
-  int weatherIconWidth = display->getStringWidth(weatherIcon);
-  display->drawString(32 + x - weatherIconWidth / 2, 05 + y, weatherIcon);
-}
-
-
-void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  drawForecast(display, x, y, 0);
-  drawForecast(display, x + 44, y, 2);
-  drawForecast(display, x + 88, y, 4);
-}
-
-void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64 + x, 0 + y, "Outdoor");
-  display->setFont(ArialMT_Plain_16);
-  display->drawString(64 + x, 10 + y, thingspeak.getFieldValue(0) + "°C");
-  display->drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
-}
-
-void drawForecast(OLEDDisplay *display, int x, int y, int dayIndex) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
-  day.toUpperCase();
-  display->drawString(x + 20, y, day);
-
-  display->setFont(Meteocons_Plain_21);
-  display->drawString(x + 20, y + 12, wunderground.getForecastIcon(dayIndex));
-
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(x + 20, y + 34, wunderground.getForecastLowTemp(dayIndex) + "|" + wunderground.getForecastHighTemp(dayIndex));
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-}
-
-void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
-  display->setColor(WHITE);
-  display->setFont(ArialMT_Plain_10);
-  String time = timeClient.getFormattedTime().substring(0, 5);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->drawString(0, 54, time);
-  display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  String temp = wunderground.getCurrentTemp() + "°C";
-  display->drawString(128, 54, temp);
-  display->drawHorizontalLine(0, 52, 128);
-}
-
-void setReadyForWeatherUpdate() {
-  Serial.println("Setting readyForUpdate to true");
-  readyForWeatherUpdate = true;
-}
+//declaring prototypes
+void drawProgress(OLEDDisplay *display, int percentage, String label);
+void updateData(OLEDDisplay *display);
+void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex);
+void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
+void setReadyForWeatherUpdate();
 
 
 // Add frames
@@ -283,4 +190,107 @@ void loop() {
   }
 
 
+}
+
+void drawProgress(OLEDDisplay *display, int percentage, String label) {
+  display->clear();
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64, 10, label);
+  display->drawProgressBar(2, 28, 124, 10, percentage);
+  display->display();
+}
+
+void updateData(OLEDDisplay *display) {
+  drawProgress(display, 10, "Updating time...");
+  timeClient.updateTime();
+  drawProgress(display, 30, "Updating conditions...");
+  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  drawProgress(display, 50, "Updating forecasts...");
+  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  drawProgress(display, 80, "Updating thingspeak...");
+  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
+  lastUpdate = timeClient.getFormattedTime();
+  readyForWeatherUpdate = false;
+  drawProgress(display, 100, "Done...");
+  delay(1000);
+}
+
+
+
+void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  String date = wunderground.getDate();
+  int textWidth = display->getStringWidth(date);
+  display->drawString(64 + x, 5 + y, date);
+  display->setFont(ArialMT_Plain_24);
+  String time = timeClient.getFormattedTime();
+  textWidth = display->getStringWidth(time);
+  display->drawString(64 + x, 15 + y, time);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+}
+
+void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  display->setFont(ArialMT_Plain_10);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->drawString(60 + x, 5 + y, wunderground.getWeatherText());
+
+  display->setFont(ArialMT_Plain_24);
+  String temp = wunderground.getCurrentTemp() + "°C";
+  display->drawString(60 + x, 15 + y, temp);
+  int tempWidth = display->getStringWidth(temp);
+
+  display->setFont(Meteocons_Plain_42);
+  String weatherIcon = wunderground.getTodayIcon();
+  int weatherIconWidth = display->getStringWidth(weatherIcon);
+  display->drawString(32 + x - weatherIconWidth / 2, 05 + y, weatherIcon);
+}
+
+
+void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  drawForecastDetails(display, x, y, 0);
+  drawForecastDetails(display, x + 44, y, 2);
+  drawForecastDetails(display, x + 88, y, 4);
+}
+
+void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64 + x, 0 + y, "Outdoor");
+  display->setFont(ArialMT_Plain_16);
+  display->drawString(64 + x, 10 + y, thingspeak.getFieldValue(0) + "°C");
+  display->drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
+}
+
+void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
+  day.toUpperCase();
+  display->drawString(x + 20, y, day);
+
+  display->setFont(Meteocons_Plain_21);
+  display->drawString(x + 20, y + 12, wunderground.getForecastIcon(dayIndex));
+
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(x + 20, y + 34, wunderground.getForecastLowTemp(dayIndex) + "|" + wunderground.getForecastHighTemp(dayIndex));
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+}
+
+void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
+  display->setColor(WHITE);
+  display->setFont(ArialMT_Plain_10);
+  String time = timeClient.getFormattedTime().substring(0, 5);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->drawString(0, 54, time);
+  display->setTextAlignment(TEXT_ALIGN_RIGHT);
+  String temp = wunderground.getCurrentTemp() + "°C";
+  display->drawString(128, 54, temp);
+  display->drawHorizontalLine(0, 52, 128);
+}
+
+void setReadyForWeatherUpdate() {
+  Serial.println("Setting readyForUpdate to true");
+  readyForWeatherUpdate = true;
 }
