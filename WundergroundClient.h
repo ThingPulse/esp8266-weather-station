@@ -58,8 +58,8 @@ class WundergroundClient: public JsonListener {
 
   public:
     WundergroundClient(boolean isMetric);
-    void updateConditions(String apiKey, String country, String city);
-    void updateForecast(String apiKey, String country, String city);
+    void updateConditions(String apiKey, String language, String country, String city);
+    void updateForecast(String apiKey, String language, String country, String city);
     String getHours();
     String getMinutes();
     String getSeconds();

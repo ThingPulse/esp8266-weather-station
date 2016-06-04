@@ -39,7 +39,7 @@ See more at http://blog.squix.ch
  * Begin Settings
  **************************/
 // WIFI
-const char* WIFI_SSID = "yourssid"; 
+const char* WIFI_SSID = "yourssid";
 const char* WIFI_PWD = "yourpassw0rd";
 
 // Setup
@@ -64,8 +64,6 @@ OLEDDisplayUi ui     ( &display );
  **************************/
 String timeZoneIds [] = {"America/New_York", "Europe/London", "Europe/Paris", "Australia/Sydney"};
 WorldClockClient worldClockClient("de", "CH", "E, dd. MMMMM yyyy", 4, timeZoneIds);
-
-
 
 
 // flag changed in the ticker function every 10 minutes
@@ -98,7 +96,7 @@ void drawClock(OLEDDisplay *display, int x, int y, int timeZoneIndex, String cit
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 60, y + 5, city);
   display->setFont(Crushed_Plain_36);
-  display->drawXbm(x, y, 60, 60, icon); 
+  display->drawXbm(x, y, 60, 60, icon);
   display->drawString(x + 60, y + 15, worldClockClient.getHours(timeZoneIndex) + ":" + worldClockClient.getMinutes(timeZoneIndex));
 
 }
@@ -146,7 +144,7 @@ void setup() {
   display.setContrast(255);
 
   WiFi.begin(WIFI_SSID, WIFI_PWD);
-  
+
   int counter = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -157,7 +155,7 @@ void setup() {
     display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbol : inactiveSymbol);
     display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbol : inactiveSymbol);
     display.display();
-    
+
     counter++;
   }
 
@@ -204,4 +202,3 @@ void loop() {
   }
 
 }
-

@@ -1,7 +1,7 @@
 {
-  "name": "ESP8266 Weather Station",
-  "keywords": "json, streaming",
-  "description": "A very memory efficient library to parse (large) JSON objects on embedded devices",
+  "name": "WeatherStation",
+  "keywords": "embedded, display, oled",
+  "description": "A wifi connected information display",
   "repository": {
     "type": "git",
     "url": "https://github.com/squix78/esp8266-weather-station.git"

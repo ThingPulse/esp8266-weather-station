@@ -25,22 +25,20 @@ See more at http://blog.squix.ch
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-
-
 #include "WundergroundClient.h"
 
 WundergroundClient::WundergroundClient(boolean _isMetric) {
   isMetric = _isMetric;
 }
 
-void WundergroundClient::updateConditions(String apiKey, String country, String city) {
+void WundergroundClient::updateConditions(String apiKey, String language, String country, String city) {
   isForecast = false;
-  doUpdate("/api/" + apiKey + "/conditions/q/" + country + "/" + city + ".json");
+  doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
-void WundergroundClient::updateForecast(String apiKey, String country, String city) {
+void WundergroundClient::updateForecast(String apiKey, String language, String country, String city) {
   isForecast = true;
-  doUpdate("/api/" + apiKey + "/forecast10day/q/" + country + "/" + city + ".json");
+  doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
 void WundergroundClient::doUpdate(String url) {

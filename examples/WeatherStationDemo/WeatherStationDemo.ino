@@ -60,6 +60,7 @@ const float UTC_OFFSET = 2;
 // Wunderground Settings
 const boolean IS_METRIC = true;
 const String WUNDERGRROUND_API_KEY = "WUNDERGROUND_API_KEY";
+const String WUNDERGRROUND_LANGUAGE = "DL";
 const String WUNDERGROUND_COUNTRY = "CH";
 const String WUNDERGROUND_CITY = "Zurich";
 
@@ -82,7 +83,6 @@ TimeClient timeClient(UTC_OFFSET);
 WundergroundClient wunderground(IS_METRIC);
 
 ThingspeakClient thingspeak;
-
 
 // flag changed in the ticker function every 10 minutes
 bool readyForWeatherUpdate = false;
@@ -280,7 +280,6 @@ void loop() {
     // time budget.
     delay(remainingTimeBudget);
   }
-
 
 
 }
