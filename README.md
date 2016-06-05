@@ -9,9 +9,9 @@ New version of the ESP8266 Weather Station
 
 ## Arduino IDE
 
-Make sure you use a version of the Arduino IDE which is supported by the ESP8266 platform. You can find it here: https://www.arduino.cc/en/Main/OldSoftwareReleases#previous
+Make sure you use a version of the Arduino IDE which is supported by the ESP8266 platform. You can find it here: https://www.arduino.cc/en/Main/OldSoftwareReleases
 
-## Setup
+## Setup Arduino IDE
 
 * Install the following libraries with your Arduino Library Manager in Sketch > Include Library > Manage Libraries...
 
@@ -24,6 +24,18 @@ Make sure you use a version of the Arduino IDE which is supported by the ESP8266
  * Enter your Wifi credentials
  * Adjust the location according to Wunderground API, e.g. Zurich, CH
  * Adjust UTC offset
+
+## Setup for PlatformIO
+
+If you are using the PlatformIO environment for building
+ * choose one of the available IDE integration or the Atom based IDE
+ * install libraries 561, 562 and 563 with "platformio lib install"
+ * adapt the WeatherStationDemo.ino file to your needs (see details above)
+
+
+## Upgrade
+
+The ESP8266 Oled Library changed a lot with the latest release of version 3.0.0. We fixed many bugs and improved performance and changed the API a little bit. This means that you might have to adapt your Weather Station Code if you created it using the older 2.x.x version of the library. Either compare your code to the updated WeatherStationDemo or read through the Upgrade Guide here: [Upgrade Guide](https://github.com/squix78/esp8266-oled-ssd1306/blob/master/UPGRADE-3.0.md)
 
 ## Available Modules
 * **TimeClient**: simple class which uses the header date and time to set the clock
