@@ -40,10 +40,22 @@ class WundergroundClient: public JsonListener {
     String date = "-";
     boolean isMetric = true;
     String currentTemp;
+	// JJG added ... ////////////////////////////////// define returns /////////////////////////////////
+	String moonPctIlum;  // not used
+	String moonAge;      // make this a long?
+	String moonPhase;
+	String sunriseTime;
+	String sunsetTime;	
+	String moonriseTime;
+	String moonsetTime;	
+	String windSpeed;
+	String windDir;
+	// end JJG add ////////////////////////////////////////////////////////////////////////////////////	
     String weatherIcon;
     String weatherText;
     String humidity;
     String pressure;
+    String dewPoint;
     String precipitationToday;
     void doUpdate(String url);
 
@@ -60,10 +72,22 @@ class WundergroundClient: public JsonListener {
     WundergroundClient(boolean isMetric);
     void updateConditions(String apiKey, String language, String country, String city);
     void updateForecast(String apiKey, String language, String country, String city);
+	void updateAstronomy(String apiKey, String language, String country, String city); // JJG added
     String getHours();
     String getMinutes();
     String getSeconds();
     String getDate();
+	// JJG added ... ///////////////////function name to string ////////////////////////////
+	String getMoonPctIlum();
+	String getMoonAge();
+	String getMoonPhase();
+	String getSunriseTime();
+	String getSunsetTime();
+	String getMoonriseTime();
+	String getMoonsetTime();
+	String getWindSpeed();
+	String getWindDir();
+	// end JJG add ///////////////////////////////////////////////////////////////////////	
     long getCurrentEpoch();
 
     String getCurrentTemp();
@@ -77,6 +101,8 @@ class WundergroundClient: public JsonListener {
     String getHumidity();
 
     String getPressure();
+
+    String getDewPoint();
 
     String getPrecipitationToday();
 

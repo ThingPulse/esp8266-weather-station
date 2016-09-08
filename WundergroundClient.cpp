@@ -26,6 +26,8 @@ See more at http://blog.squix.ch
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include "WundergroundClient.h"
+bool usePM = false; // Set to true if you want to use AM/PM time disaply
+bool isPM = false; // JJG added ///////////
 
 WundergroundClient::WundergroundClient(boolean _isMetric) {
   isMetric = _isMetric;
@@ -40,6 +42,13 @@ void WundergroundClient::updateForecast(String apiKey, String language, String c
   isForecast = true;
   doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
+
+// JJG added ////////////////////////////////
+void WundergroundClient::updateAstronomy(String apiKey, String language, String country, String city) {
+  isForecast = true;
+  doUpdate("/api/" + apiKey + "/astronomy/lang:" + language + "/q/" + country + "/" + city + ".json");
+}
+// end JJG add  ////////////////////////////////////////////////////////////////////
 
 void WundergroundClient::doUpdate(String url) {
   JsonStreamingParser parser;
@@ -109,7 +118,97 @@ void WundergroundClient::value(String value) {
     localEpoc = value.toInt();
     localMillisAtUpdate = millis();
   }
-  if (currentKey == "observation_time_rfc822") {
+
+  // JJG added ... //////////////////////// search for keys /////////////////////////
+  if (currentKey == "percentIlluminated") {
+    moonPctIlum = value;
+  }
+
+  if (currentKey == "ageOfMoon") {
+    moonAge = value;
+  }
+
+  if (currentKey == "phaseofMoon") {
+    moonPhase = value;
+  }
+
+
+  if (currentParent == "sunrise") {      // Has a Parent key and 2 sub-keys
+	if (currentKey == "hour") {
+		int tempHour = value.toInt();    // do this to concert to 12 hour time (make it a function!)
+		if (usePM && tempHour > 12){
+			tempHour -= 12;
+			isPM = true;
+		}
+		else isPM = false;
+		sunriseTime = String(tempHour);
+        //sunriseTime = value;
+      }
+	if (currentKey == "minute") {
+    sunriseTime += ":" + value;
+	if (isPM) sunriseTime += "pm";
+	else if (usePM) sunriseTime += "am";
+   }
+  }
+
+
+  if (currentParent == "sunset") {      // Has a Parent key and 2 sub-keys
+	if (currentKey == "hour") {
+		int tempHour = value.toInt();   // do this to concert to 12 hour time (make it a function!)
+		if (usePM && tempHour > 12){
+			tempHour -= 12;
+			isPM = true;
+		}
+		else isPM = false;
+		sunsetTime = String(tempHour);
+       // sunsetTime = value;
+      }
+	if (currentKey == "minute") {
+    sunsetTime += ":" + value;
+	if (isPM) sunsetTime += "pm";
+	else if(usePM) sunsetTime += "am";
+   }
+  }
+
+  if (currentParent == "moonrise") {      // Has a Parent key and 2 sub-keys
+	if (currentKey == "hour") {
+		int tempHour = value.toInt();   // do this to concert to 12 hour time (make it a function!)
+		if (usePM && tempHour > 12){
+			tempHour -= 12;
+			isPM = true;
+		}
+		else isPM = false;
+		moonriseTime = String(tempHour);
+       // moonriseTime = value;
+      }
+	if (currentKey == "minute") {
+    moonriseTime += ":" + value;
+	if (isPM) moonriseTime += "pm";
+	else if (usePM) moonriseTime += "am";
+
+   }
+  }
+
+  if (currentParent == "moonset") {      // Not used - has a Parent key and 2 sub-keys
+	if (currentKey == "hour") {
+        moonsetTime = value;
+      }
+	if (currentKey == "minute") {
+    moonsetTime += ":" + value;
+   }
+  }
+
+  if (currentKey == "wind_mph") {
+    windSpeed = value;
+  }
+
+   if (currentKey == "wind_dir") {
+    windDir = value;
+  }
+
+// end JJG add  ////////////////////////////////////////////////////////////////////
+
+   if (currentKey == "observation_time_rfc822") {
     date = value.substring(0, 16);
   }
   if (currentKey == "temp_f" && !isMetric) {
@@ -138,6 +237,12 @@ void WundergroundClient::value(String value) {
   }
   if (currentKey == "pressure_in" && !isMetric) {
     pressure = value + "in";
+  }
+  if (currentKey == "dewpoint_f" && !isMetric) {
+    dewPoint = value;
+  }
+  if (currentKey == "dewpoint_c" && isMetric) {
+    dewPoint = value;
   }
   if (currentKey == "precip_today_metric" && isMetric) {
     precipitationToday = value + "mm";
@@ -239,6 +344,46 @@ long WundergroundClient::getCurrentEpoch() {
   return localEpoc + ((millis() - localMillisAtUpdate) / 1000);
 }
 
+// JJG added ... /////////////////////////////////////////////////////////////////////////////////////////
+String WundergroundClient::getMoonPctIlum() {
+  return moonPctIlum;
+}
+
+String WundergroundClient::getMoonAge() {
+  return moonAge;
+}
+
+String WundergroundClient::getMoonPhase() {
+  return moonPhase;
+}
+
+String WundergroundClient::getSunriseTime() {
+  return sunriseTime;
+ }
+
+String WundergroundClient::getSunsetTime() {
+  return sunsetTime;
+ }
+
+String WundergroundClient::getMoonriseTime() {
+  return moonriseTime;
+ }
+
+String WundergroundClient::getMoonsetTime() {
+  return moonsetTime;
+ }
+
+String WundergroundClient::getWindSpeed() {
+  return windSpeed;
+ }
+
+String WundergroundClient::getWindDir() {
+  return windDir;
+ }
+
+ // end JJG add ////////////////////////////////////////////////////////////////////////////////////////////
+
+
 String WundergroundClient::getCurrentTemp() {
   return currentTemp;
 }
@@ -253,6 +398,10 @@ String WundergroundClient::getHumidity() {
 
 String WundergroundClient::getPressure() {
   return pressure;
+}
+
+String WundergroundClient::getDewPoint() {
+  return dewPoint;
 }
 
 String WundergroundClient::getPrecipitationToday() {
