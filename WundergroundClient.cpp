@@ -412,6 +412,10 @@ String WundergroundClient::getTodayIcon() {
   return getMeteoconIcon(weatherIcon);
 }
 
+String WundergroundClient::getTodayIconText() {
+  return weatherIcon;
+}
+
 String WundergroundClient::getForecastIcon(int period) {
   return getMeteoconIcon(forecastIcon[period]);
 }
