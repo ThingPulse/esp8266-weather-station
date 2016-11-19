@@ -71,7 +71,7 @@ class WundergroundClient: public JsonListener {
   public:
     WundergroundClient(boolean isMetric);
     void updateConditions(String apiKey, String language, String country, String city);
-    void updateConditions(String apiKey, String language, String link);
+    void updateConditions(String apiKey, String language, String zmwCode);
     void updateForecast(String apiKey, String language, String country, String city);
     void updateAstronomy(String apiKey, String language, String country, String city);
     // JJG added

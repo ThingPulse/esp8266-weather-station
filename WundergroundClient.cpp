@@ -40,9 +40,9 @@ void WundergroundClient::updateConditions(String apiKey, String language, String
 
 // wunderground change the API URL scheme:
 // http://api.wunderground.com/api/<API-KEY>/conditions/lang:de/q/zmw:00000.215.10348.json
-void WundergroundClient::updateConditions(String apiKey, String language, String link) {
+void WundergroundClient::updateConditions(String apiKey, String language, String zmwCode) {
   isForecast = false;
-  doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/" + link + ".json");
+  doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/zmw:" + zmwCode + ".json");
 }
 
 void WundergroundClient::updateForecast(String apiKey, String language, String country, String city) {
