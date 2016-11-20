@@ -94,8 +94,8 @@ void loop() {
   if ((millis() % (60 * 1000)) == 0) { // just call once a minute @see: https://www.wunderground.com/weather/api/d/pricing.html
     Serial.println();
     Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
-    wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_ZMW_CODE);
 
+    wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_ZMW_CODE);
 
     Serial.println("wundergroundHours: " + wunderground.getHours());
     Serial.println("wundergroundMinutes: " + wunderground.getMinutes());
