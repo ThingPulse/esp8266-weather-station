@@ -31,7 +31,7 @@ SOFTWARE.
 /**
  * Wunderground Settings
  */
-const String  WUNDERGRROUND_API_KEY = "e5ad56464a0ca81c"; // "<YOUR-WUNDERGROUND-API-KEY>";
+const String  WUNDERGRROUND_API_KEY = "<YOUR-WUNDERGROUND-API-KEY>";
 const boolean IS_METRIC = true;
 // to retrieve the ZMW-Code use
 // 		http://api.wunderground.com/api/<API-KEY>/conditions/q/<COUNTRY-CODE>/<CITY-NAME>.json
@@ -47,8 +47,8 @@ WundergroundClient wunderground(IS_METRIC);
  * WiFi Settings
  */
 const char* ESP_HOST_NAME = "esp-" + ESP.getFlashChipId();
-const char* WIFI_SSID     = "rigaer61HH-3"; // "<YOUR-WIFI-SSID>";
-const char* WIFI_PASSWORD = "alexisalleinzuhaus"; // "<YOUR-WIFI-PASSWORD>";
+const char* WIFI_SSID     = "<YOUR-WIFI-SSID>";
+const char* WIFI_PASSWORD = "<YOUR-WIFI-PASSWORD>";
 
 // initiate the WifiClient
 WiFiClient wifiClient;
