@@ -27,11 +27,14 @@ Uses SSD1306 128x64 OLED display with with either SPI or I2C interface
  * DST rules and timezone settings customizable for each locale
   * See https://www.timeanddate.com/time/change/ for DST rules
  * Added AM/PM or 24-hour option for each locale
+ * Added metric settings for each locale
 *  Changed Clock screen to 7-segment font from http://www.keshikan.net/fonts-e.html
 *  Added Forecast screen for days 4-6 (requires 1.1.3 or later version of esp8266_Weather_Station library)
 *  Added support for DHT22, DHT21 and DHT11 Indoor Temperature and Humidity Sensors
 *  Fixed bug preventing display.flipScreenVertically() from working
-*  Slight adjustment to overlay
+*  Slight adjustments to overlay
+*  Moved user settings into settings.h
+*  Added #defines in settings.h to make it easier to select SPI or I2C interface for OLED in settings.h
 
 
 ## Hardware Requirements
