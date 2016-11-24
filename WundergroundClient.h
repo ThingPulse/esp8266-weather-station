@@ -28,7 +28,7 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
-#define MAX_FORECAST_PERIODS 7
+#define MAX_FORECAST_PERIODS 12  // Changed from 7 to 12 to support 6 day / 2 screen forecast (Neptune)
 
 class WundergroundClient: public JsonListener {
   private:
