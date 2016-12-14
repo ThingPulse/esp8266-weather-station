@@ -100,7 +100,7 @@ int8_t getWifiQuality();
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
 FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawIndoor, drawThingspeak, drawForecast, drawForecast2  };
-int numberOfFrames = 6;
+int numberOfFrames = 6; //A frame will be added when the master is up and running, to pull more data from thingspeak
 
 OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
