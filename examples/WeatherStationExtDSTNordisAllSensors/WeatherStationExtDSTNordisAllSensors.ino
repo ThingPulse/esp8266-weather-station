@@ -41,6 +41,7 @@ See more at http://blog.squix.ch
  *  Fixed bug preventing display.flipScreenVertically() from working
  *  Slight adjustment to overlay
  *  Added support for 1-Wire DS18B20 sensors by nordis77 on GitHub, just have to figure out how to power them from ESP8266 NodeMcu
+ *  Added support for uploding sensor data to Thingspeak.
  */
 
 #include <ESP8266WiFi.h>
@@ -69,7 +70,7 @@ WundergroundClient wunderground(IS_METRIC);
 //DS18B20 instead of DHT
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
-//DS18B20 device Address
+//DS18B20 device Address, your addresses will be different
 DeviceAddress indoorSensor = { 0x10, 0x47, 0xF5, 0x81, 0x1, 0x8, 0x0, 0xF4 };
 DeviceAddress outdoorSensor = { 0x10, 0xF, 0x40, 0x37, 0x1, 0x8, 0x0, 0x25 };
 DeviceAddress atticSensor = { 0x10, 0x8B, 0x44, 0x37, 0x1, 0x8, 0x0, 0xC };
@@ -118,7 +119,7 @@ char basementString[6];
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
 FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawIndoor, drawAtticBasement, drawThingspeak, drawForecast, drawForecast2  }; //add drawAtticBasement when ready
-int numberOfFrames = 7; //number of Frames
+int numberOfFrames = 7; //number of Frames. Added a new frame for the added sensors
 
 OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
@@ -286,7 +287,7 @@ void updateData(OLEDDisplay *display) {
 
   drawProgress(display, 65, "Updating Sensors...");
   DS18B20.requestTemperatures();
-  delay(1000);
+  delay(1000); //These delays may or may not be needed
   do {
     indoor = DS18B20.getTempC(indoorSensor);
     delay(1000);
@@ -322,7 +323,7 @@ void updateData(OLEDDisplay *display) {
 //Call every 1 minute
 void updateTemp() {    
   DS18B20.requestTemperatures();
-  delay(1000);
+  delay(1000); //These delays may or may not be needed
   do {
     indoor = DS18B20.getTempC(indoorSensor); //indoor
     delay(1000);
