@@ -40,6 +40,7 @@ See more at http://blog.squix.ch
  *  Added support for DHT22, DHT21 and DHT11 Indoor Temperature and Humidity Sensors
  *  Fixed bug preventing display.flipScreenVertically() from working
  *  Slight adjustment to overlay
+ *  Added OneWire and DallasTemperature librarys
  */
  
 #include <simpleDSTadjust.h>
@@ -100,6 +101,8 @@ const int SDC_PIN = D6;
 //#elif DHTTYPE == DHT11
 //#define DHTTEXT "DHT11"
 //#endif
+//
+// Define the 1-Wire sensors
 #define ONE_WIRE_BUS D2
 char FormattedIndoor[10];
 char FormattedAttic[10];
@@ -123,11 +126,11 @@ struct dstRule EndRule = {"CET", Last, Sun, Oct, 2, 0};       // Central Europea
 // Uncomment for 24 Hour style clock
 #define STYLE_24HR
 
-#define NTP_SERVERS "0.se.pool.ntp.org", "1.se.pool.ntp.org", "2.se.pool.ntp.org"
+#define NTP_SERVERS "0.se.pool.ntp.org", "1.se.pool.ntp.org", "2.se.pool.ntp.org" //changed pool to Swedish
 
 // Wunderground Settings
 const boolean IS_METRIC = true;
-const String WUNDERGRROUND_API_KEY = "4d958ce2ffa9f42f";
+const String WUNDERGRROUND_API_KEY = "WU_KEY";
 const String WUNDERGRROUND_LANGUAGE = "EN";
 const String WUNDERGROUND_COUNTRY = "SE";
 const String WUNDERGROUND_CITY = "Backa";
@@ -172,9 +175,9 @@ const String WUNDERGROUND_CITY = "Sydney";
 #endif
 
 //Thingspeak Settings
-const String THINGSPEAK_CHANNEL_ID = "199649";
-const String THINGSPEAK_API_READ_KEY = "1O7IWZMTZBJWWFL6";
-const String THINGSPEAK_API_WRITE_KEY = "S06VZUDSKZTL3O43";
+const String THINGSPEAK_CHANNEL_ID = "THINGSPEAK_CHANNEL_ID";
+const String THINGSPEAK_API_READ_KEY = "THINGSPEAK_API_READ_KEY";
+const String THINGSPEAK_API_WRITE_KEY = "THINGSPEAK_API_WRITE_KEY";
 const char* host = "api.thingspeak.com";
 const String path = "/update?key=" +THINGSPEAK_API_WRITE_KEY;
 
