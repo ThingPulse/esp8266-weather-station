@@ -121,7 +121,7 @@ struct dstRule EndRule = {"CET", Last, Sun, Oct, 2, 0};       // Central Europea
 
 // Wunderground Settings
 const boolean IS_METRIC = true;
-const String WUNDERGRROUND_API_KEY = "4d958ce2ffa9f42f";
+const String WUNDERGRROUND_API_KEY = "WUNDERGRROUND_API_KEY";
 const String WUNDERGRROUND_LANGUAGE = "EN";
 const String WUNDERGROUND_COUNTRY = "SE";
 const String WUNDERGROUND_CITY = "Backa";
@@ -166,8 +166,8 @@ const String WUNDERGROUND_CITY = "Sydney";
 #endif
 
 //Thingspeak Settings
-const String THINGSPEAK_CHANNEL_ID = "199649";
-const String THINGSPEAK_API_READ_KEY = "1O7IWZMTZBJWWFL6";
+const String THINGSPEAK_CHANNEL_ID = "THINGSPEAK_CHANNEL_ID";
+const String THINGSPEAK_API_READ_KEY = "THINGSPEAK_API_READ_KEY";
 
 #ifdef spiOLED
 SSD1306Spi display(OLED_RESET, OLED_DC, OLED_CS);  // SPI OLED
