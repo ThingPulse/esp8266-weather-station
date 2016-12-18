@@ -57,6 +57,13 @@ void WundergroundClient::updateAstronomy(String apiKey, String language, String 
 }
 // end JJG add  ////////////////////////////////////////////////////////////////////
 
+// fowlerk added
+void WundergroundClient::updateAlerts(String apiKey, String language, String country, String city) {
+  isForecast = true;
+  doUpdate("/api/" + apiKey + "/alerts/lang:" + language + "/q/" + country + "/" + city + ".json");
+}
+// end fowlerk add
+
 void WundergroundClient::doUpdate(String url) {
   JsonStreamingParser parser;
   parser.setListener(this);
@@ -112,12 +119,39 @@ void WundergroundClient::startDocument() {
 
 void WundergroundClient::key(String key) {
   currentKey = String(key);
+//	Restructured following logic to accomodate the multiple types of JSON returns based on the API.  This was necessary since several
+//	keys are reused between various types of API calls, resulting in confusing returns in the original function.  Various booleans
+//	now indicate whether the JSON stream being processed is part of the text forecast (txt_forecast), the first section of the 10-day
+//	forecast API that contains detailed text for the forecast period; the simple forecast (simpleforecast), the second section of the
+//	10-day forecast API that contains such data as forecast highs/lows, conditions, precipitation / probabilities; the current
+//	observations (current_observation), from the observations API call; or alerts (alerts), for the future) weather alerts API call.
+//		Added by fowlerk...18-Dec-2016
   if (currentKey == "txt_forecast") {
-    isSimpleForecast = false;
+	isForecast = true;
+	isCurrentObservation = false;	// fowlerk
+    isSimpleForecast = false;		// fowlerk
+	isAlerts = false;				// fowlerk
   }
   if (currentKey == "simpleforecast") {
     isSimpleForecast = true;
+	isCurrentObservation = false;	// fowlerk
+	isForecast = false;				// fowlerk
+	isAlerts = false;				// fowlerk
   }
+//  Added by fowlerk...
+  if (currentKey == "current_observation") {
+    isCurrentObservation = true;
+	isSimpleForecast = false;
+	isForecast = false;
+	isAlerts = false;
+  }
+  if (currentKey == "alerts") {
+    isCurrentObservation = false;
+	isSimpleForecast = false;
+	isForecast = false;
+	isAlerts = true;
+  }
+// end fowlerk add 
 }
 
 void WundergroundClient::value(String value) {
@@ -218,6 +252,12 @@ void WundergroundClient::value(String value) {
    if (currentKey == "observation_time_rfc822") {
     date = value.substring(0, 16);
   }
+// Begin add, fowlerk...04-Dec-2016  
+   if (currentKey == "observation_time") {
+    observationTime = value;
+  }
+// end add, fowlerk  
+  
   if (currentKey == "temp_f" && !isMetric) {
     currentTemp = value;
   }
@@ -229,7 +269,8 @@ void WundergroundClient::value(String value) {
       Serial.println(String(currentForecastPeriod) + ": " + value + ":" + currentParent);
       forecastIcon[currentForecastPeriod] = value;
     }
-    if (!isForecast) {
+    // if (!isForecast) {													// Removed by fowlerk
+    if (isCurrentObservation && !(isForecast || isSimpleForecast)) {		// Added by fowlerk
       weatherIcon = value;
     }
   }
@@ -245,6 +286,21 @@ void WundergroundClient::value(String value) {
   if (currentKey == "pressure_in" && !isMetric) {
     pressure = value + "in";
   }
+  // fowlerk added...
+  if (currentKey == "feelslike_f" && !isMetric) {
+    feelslike = value;
+  }
+  
+  if (currentKey == "feelslike_c" && isMetric) {
+    feelslike = value;
+  }
+  
+  if (currentKey == "UV") {
+    UV = value;
+  }
+  
+  // end fowlerk add
+  
   if (currentKey == "dewpoint_f" && !isMetric) {
     dewPoint = value;
   }
@@ -260,10 +316,22 @@ void WundergroundClient::value(String value) {
   if (currentKey == "period") {
     currentForecastPeriod = value.toInt();
   }
-  if (currentKey == "title" && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+// Modified below line to add check to ensure we are processing the 10-day forecast
+// before setting the forecastTitle (day of week of the current forecast day).
+// (The keyword title is used in both the current observation and the 10-day forecast.)
+//		Modified by fowlerk  
+  // if (currentKey == "title" && currentForecastPeriod < MAX_FORECAST_PERIODS) {				// Removed, fowlerk
+  if (currentKey == "title" && isForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
       Serial.println(String(currentForecastPeriod) + ": " + value);
       forecastTitle[currentForecastPeriod] = value;
   }
+
+  // Added forecastText key following...fowlerk, 12/3/16
+  if (currentKey == "fcttext" && isForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+      forecastText[currentForecastPeriod] = value;
+  }
+  // end fowlerk add, 12/3/16
+  
   // The detailed forecast period has only one forecast per day with low/high for both
   // night and day, starting at index 1.
   int dailyForecastPeriod = (currentForecastPeriod - 1) * 2;
@@ -287,6 +355,28 @@ void WundergroundClient::value(String value) {
         forecastLowTemp[dailyForecastPeriod] = value;
       }
   }
+  // fowlerk added...to pull month/day from the forecast period
+  if (currentKey == "month" && isSimpleForecast && currentForecastPeriod < MAX_FORECAST_PERIODS)  {
+	//	Added by fowlerk to handle transition from txtforecast to simpleforecast, as
+	//	the key "period" doesn't appear until after some of the key values needed and is
+	//	used as an array index.
+	if (isSimpleForecast && currentForecastPeriod == 19) {
+		currentForecastPeriod = 0;
+	}
+	forecastMonth[currentForecastPeriod] = value;
+  }	
+
+  if (currentKey == "day" && isSimpleForecast && currentForecastPeriod < MAX_FORECAST_PERIODS)  {
+	//	Added by fowlerk to handle transition from txtforecast to simpleforecast, as
+	//	the key "period" doesn't appear until after some of the key values needed and is
+	//	used as an array index.
+	if (isSimpleForecast && currentForecastPeriod == 19) {
+		currentForecastPeriod = 0;
+	}	
+	forecastDay[currentForecastPeriod] = value;
+  }
+  // end fowlerk add
+  
 }
 
 void WundergroundClient::endArray() {
@@ -410,6 +500,21 @@ String WundergroundClient::getPressure() {
 String WundergroundClient::getDewPoint() {
   return dewPoint;
 }
+// fowlerk added...
+String WundergroundClient::getFeelsLike() {
+  return feelslike;
+}
+
+String WundergroundClient::getUV() {
+  return UV;
+}
+
+// Added by fowlerk, 04-Dec-2016
+String WundergroundClient::getObservationTime() {
+  return observationTime;
+}
+// end fowlerk add
+
 
 String WundergroundClient::getPrecipitationToday() {
   return precipitationToday;
@@ -438,6 +543,23 @@ String WundergroundClient::getForecastLowTemp(int period) {
 String WundergroundClient::getForecastHighTemp(int period) {
   return forecastHighTemp[period];
 }
+// fowlerk added...
+String WundergroundClient::getForecastDay(int period) {
+//  Serial.print("Day period:  "); Serial.println(period);	
+  return forecastDay[period];
+}
+
+String WundergroundClient::getForecastMonth(int period) {
+//  Serial.print("Month period:  "); Serial.println(period);	
+  return forecastMonth[period];
+}
+
+String WundergroundClient::getForecastText(int period) {
+  Serial.print("Forecast period:  "); Serial.println(period);	
+  return forecastText[period];
+}
+// end fowlerk add
+
 
 String WundergroundClient::getMeteoconIcon(String iconText) {
   if (iconText == "chanceflurries") return "F";
