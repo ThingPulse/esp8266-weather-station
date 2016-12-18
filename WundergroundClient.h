@@ -28,7 +28,8 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
-#define MAX_FORECAST_PERIODS 12  // Changed from 7 to 12 to support 6 day / 2 screen forecast (Neptune)
+#define MAX_FORECAST_PERIODS 20  // Changed from 7 to 12 to support 6 day / 2 screen forecast (Neptune)
+								 // Changed to 20 to support max 10-day forecast returned from 'forecast10day' API (fowlerk)
 
 class WundergroundClient: public JsonListener {
   private:
@@ -57,16 +58,29 @@ class WundergroundClient: public JsonListener {
     String pressure;
     String dewPoint;
     String precipitationToday;
+	// fowlerk added...
+	String feelslike;
+	String UV;
+	String observationTime;					// fowlerk add, 04-Dec-2016
+	// end fowlerk add
+	
     void doUpdate(String url);
 
     // forecast
     boolean isForecast = false;
-    boolean isSimpleForecast = true;
+    boolean isSimpleForecast = false;		// true;  fowlerk
+	boolean isCurrentObservation = false;	// Added by fowlerk
+	boolean isAlerts = false;				// Added by fowlerk
     int currentForecastPeriod;
     String forecastIcon [MAX_FORECAST_PERIODS];
     String forecastTitle [MAX_FORECAST_PERIODS];
     String forecastLowTemp [MAX_FORECAST_PERIODS];
     String forecastHighTemp [MAX_FORECAST_PERIODS];
+	// fowlerk added...
+	String forecastDay [MAX_FORECAST_PERIODS/2];
+	String forecastMonth [MAX_FORECAST_PERIODS/2];
+	String forecastText [MAX_FORECAST_PERIODS];
+	// end fowlerk add
 
   public:
     WundergroundClient(boolean isMetric);
@@ -74,6 +88,7 @@ class WundergroundClient: public JsonListener {
     void updateConditions(String apiKey, String language, String zmwCode);
     void updateForecast(String apiKey, String language, String country, String city);
     void updateAstronomy(String apiKey, String language, String country, String city);
+	void updateAlerts(String apiKey, String language, String country, String city);		// Added by fowlerk, 18-Dec-2016
     // JJG added
     String getHours();
     String getMinutes();
@@ -109,6 +124,13 @@ class WundergroundClient: public JsonListener {
     String getDewPoint();
 
     String getPrecipitationToday();
+	// fowlerk added...
+	String getFeelsLike();
+	
+	String getUV();
+	
+	String getObservationTime();			// fowlerk add, 04-Dec-2016
+	// end fowlerk add
 
     String getForecastIcon(int period);
 
@@ -117,6 +139,13 @@ class WundergroundClient: public JsonListener {
     String getForecastLowTemp(int period);
 
     String getForecastHighTemp(int period);
+	// fowlerk added...
+	String getForecastDay(int period);
+	
+	String getForecastMonth(int period);
+	
+	String getForecastText(int period);
+	// end fowlerk add
 
     virtual void whitespace(char c);
 
