@@ -37,7 +37,8 @@ See more at http://blog.squix.ch
   *  Added AM/PM or 24-hour option for each locale
  *  Changed to 7-segment Clock font from http://www.keshikan.net/fonts-e.html
  *  Added Forecast screen for days 4-6 (requires 1.1.3 or later version of esp8266_Weather_Station library)
- *  Added support for DHT22, DHT21 and DHT11 Indoor Temperature and Humidity Sensors, !! Not used in this version DS18B20 used instead
+ *  Added support for DHT22, DHT21 and DHT11 Indoor Temperature and Humidity Sensors
+ *  ^^ Not used in this version, DS18B20 used instead
  *  Fixed bug preventing display.flipScreenVertically() from working
  *  Slight adjustment to overlay
  *  Added support for 1-Wire DS18B20 sensors by nordis77 on GitHub
@@ -72,11 +73,11 @@ WundergroundClient wunderground(IS_METRIC);
 //DS18B20 instead of DHT
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
-//DS18B20 device Address
-DeviceAddress indoorSensor = {0x28, 0xD7, 0x9A, 0xE4, 0x03, 0x00, 0x00, 0xF6}; //old sensor { 0x10, 0x47, 0xF5, 0x81, 0x1, 0x8, 0x0, 0xF4 };
-DeviceAddress outdoorSensor = {0x28, 0x64, 0xA4, 0xE4, 0x03, 0x00, 0x00, 0x8E}; //old sensor { 0x10, 0xF, 0x40, 0x37, 0x1, 0x8, 0x0, 0x25 };
-DeviceAddress atticSensor = {0x28, 0x1C, 0x82, 0xE4, 0x03, 0x00, 0x00, 0xD3}; //old sensor { 0x10, 0x8B, 0x44, 0x37, 0x1, 0x8, 0x0, 0xC };
-//DeviceAddress basementSensor = {0x28, 0xF2, 0xA9, 0xE4, 0x03, 0x00, 0x00, 0x61}; //old sensor { 0x10, 0x6C, 0x4E, 0x37, 0x1, 0x8, 0x0, 0x1D };
+//DS18B20 device Address, your addresses will be different
+DeviceAddress indoorSensor = {0x28, 0xD7, 0x9A, 0xE4, 0x03, 0x00, 0x00, 0xF6};
+DeviceAddress outdoorSensor = {0x28, 0x64, 0xA4, 0xE4, 0x03, 0x00, 0x00, 0x8E};
+DeviceAddress atticSensor = {0x28, 0x1C, 0x82, 0xE4, 0x03, 0x00, 0x00, 0xD3};
+//DeviceAddress basementSensor = {0x28, 0xF2, 0xA9, 0xE4, 0x03, 0x00, 0x00, 0x61};
 //float humidity = 0.0; // For DHT
 float indoor = 0.0;
 float attic = 0.0;
@@ -87,7 +88,7 @@ ThingspeakClient thingspeak;
 
 // flag changed in the ticker function every 10 minutes
 bool readyForWeatherUpdate = false;
-// flag changed in the ticker function every 1 minute
+// flag changed in the ticker function every 2 sec
 //bool readyForDHTUpdate = false;
 bool readyForDS18B20Update = false;
 // flag changed in the ticker function every ~10 minute
@@ -179,7 +180,8 @@ void setup() {
     display.display();
 
     counter++;
-
+    
+// Start the sensors and set resolution to 9bit
     DS18B20.begin();
     DS18B20.setResolution(indoorSensor, 9);
     DS18B20.setResolution(outdoorSensor, 9);
