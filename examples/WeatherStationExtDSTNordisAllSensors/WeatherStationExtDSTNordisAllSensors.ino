@@ -41,7 +41,7 @@ See more at http://blog.squix.ch
  *  Fixed bug preventing display.flipScreenVertically() from working
  *  Slight adjustment to overlay
  *  Added support for 1-Wire DS18B20 sensors by nordis77 on GitHub, just have to figure out how to power them from ESP8266 NodeMcu
- *  Added support for uploding sensor data to Thingspeak.
+ *  Added support for uploading sensor data to Thingspeak.
  */
 
 #include <ESP8266WiFi.h>
