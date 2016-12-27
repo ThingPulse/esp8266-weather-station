@@ -25,7 +25,7 @@ See more at http://blog.squix.ch
 
 /* Customizations by Neptune (NeptuneEng on Twitter, Neptune2 on Github)
  *  
- *  Added Wifi Splash screen and credit to Squix78
+ *  Added Wifi Splash screen and credit to Squix78 or [nordis] in this case :)
  *  Modified progress bar to a thicker and symmetrical shape
  *  Replaced TimeClient with built-in lwip sntp client (no need for external ntp client library)
  *  Added Daylight Saving Time Auto adjuster with DST rules using simpleDSTadjust library
@@ -37,11 +37,13 @@ See more at http://blog.squix.ch
   *  Added AM/PM or 24-hour option for each locale
  *  Changed to 7-segment Clock font from http://www.keshikan.net/fonts-e.html
  *  Added Forecast screen for days 4-6 (requires 1.1.3 or later version of esp8266_Weather_Station library)
- *  Added support for DHT22, DHT21 and DHT11 Indoor Temperature and Humidity Sensors
+ *  Added support for DHT22, DHT21 and DHT11 Indoor Temperature and Humidity Sensors, !! Not used in this version DS18B20 used instead
  *  Fixed bug preventing display.flipScreenVertically() from working
  *  Slight adjustment to overlay
- *  Added support for 1-Wire DS18B20 sensors by nordis77 on GitHub, just have to figure out how to power them from ESP8266 NodeMcu
- *  Added support for uploading sensor data to Thingspeak.
+ *  Added support for 1-Wire DS18B20 sensors by nordis77 on GitHub
+ *  Fixed String Convertion for Thingspeak values
+ *  Added a frame for the additional two sensors
+ *  Fixed the Ticker issue of not updating data, the same name was used for all updates. Now fixed with separate names.
  */
 
 #include <ESP8266WiFi.h>
@@ -70,16 +72,16 @@ WundergroundClient wunderground(IS_METRIC);
 //DS18B20 instead of DHT
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
-//DS18B20 device Address, your addresses will be different
-DeviceAddress indoorSensor = { 0x10, 0x47, 0xF5, 0x81, 0x1, 0x8, 0x0, 0xF4 };
-DeviceAddress outdoorSensor = { 0x10, 0xF, 0x40, 0x37, 0x1, 0x8, 0x0, 0x25 };
-DeviceAddress atticSensor = { 0x10, 0x8B, 0x44, 0x37, 0x1, 0x8, 0x0, 0xC };
-DeviceAddress basementSensor = { 0x10, 0x6C, 0x4E, 0x37, 0x1, 0x8, 0x0, 0x1D };
+//DS18B20 device Address
+DeviceAddress indoorSensor = {0x28, 0xD7, 0x9A, 0xE4, 0x03, 0x00, 0x00, 0xF6}; //old sensor { 0x10, 0x47, 0xF5, 0x81, 0x1, 0x8, 0x0, 0xF4 };
+DeviceAddress outdoorSensor = {0x28, 0x64, 0xA4, 0xE4, 0x03, 0x00, 0x00, 0x8E}; //old sensor { 0x10, 0xF, 0x40, 0x37, 0x1, 0x8, 0x0, 0x25 };
+DeviceAddress atticSensor = {0x28, 0x1C, 0x82, 0xE4, 0x03, 0x00, 0x00, 0xD3}; //old sensor { 0x10, 0x8B, 0x44, 0x37, 0x1, 0x8, 0x0, 0xC };
+//DeviceAddress basementSensor = {0x28, 0xF2, 0xA9, 0xE4, 0x03, 0x00, 0x00, 0x61}; //old sensor { 0x10, 0x6C, 0x4E, 0x37, 0x1, 0x8, 0x0, 0x1D };
 //float humidity = 0.0; // For DHT
 float indoor = 0.0;
 float attic = 0.0;
 float outdoor = 0.0;
-float basement = 0.0;
+//float basement = 0.0;
 
 ThingspeakClient thingspeak;
 
@@ -92,7 +94,9 @@ bool readyForDS18B20Update = false;
 bool readyForThingSpeakUpdate = false;
 String lastUpdate = "--";
 
-Ticker ticker;
+Ticker weatherUpdate;
+Ticker sensorsUpdate;
+Ticker thingspeakUpdate;
 
 //declaring prototypes
 void configModeCallback (WiFiManager *myWiFiManager);
@@ -113,13 +117,13 @@ int8_t getWifiQuality();
 char indoorString[6];
 char atticString[6];
 char outdoorString[6];
-char basementString[6];
+//char basementString[6];
 
 // Add frames
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
 FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawIndoor, drawAtticBasement, drawThingspeak, drawForecast, drawForecast2  }; //add drawAtticBasement when ready
-int numberOfFrames = 7; //number of Frames. Added a new frame for the added sensors
+int numberOfFrames = 7; //number of Frames
 
 OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
@@ -138,7 +142,7 @@ void setup() {
   //display.flipScreenVertically();  // Comment out to flip display 180deg
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.setContrast(255);
+  display.setContrast(50);
 
   // Credit where credit is due
   display.drawXbm(-6, 5, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
@@ -180,7 +184,7 @@ void setup() {
     DS18B20.setResolution(indoorSensor, 9);
     DS18B20.setResolution(outdoorSensor, 9);
     DS18B20.setResolution(atticSensor, 9);
-    DS18B20.setResolution(basementSensor, 9);
+//    DS18B20.setResolution(basementSensor, 9);
   }
 
   ui.setTargetFPS(30);
@@ -209,9 +213,9 @@ void setup() {
 
   updateData(&display);
 
-  ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
-  ticker.attach(60, setReadyForDS18B20Update);
-  ticker.attach(UPDATE_INTERVAL_SECS + 5, setReadyForThingSpeakUpdate); //UPDATE_INTEVAL_SECS = 10min
+  weatherUpdate.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
+  sensorsUpdate.attach(2, setReadyForDS18B20Update);
+  thingspeakUpdate.attach(UPDATE_INTERVAL_SECS + 5, setReadyForThingSpeakUpdate); //UPDATE_INTEVAL_SECS = 10min
 }
 
 void loop() {
@@ -287,24 +291,19 @@ void updateData(OLEDDisplay *display) {
 
   drawProgress(display, 65, "Updating Sensors...");
   DS18B20.requestTemperatures();
-  delay(1000); //These delays may or may not be needed
   do {
     indoor = DS18B20.getTempC(indoorSensor);
-    delay(1000);
   }while (indoor == 85.00 || indoor == (-127.00));
     do {
     attic = DS18B20.getTempC(atticSensor); //attic
-    delay(1000);
   } while (attic == 85.00 || attic == (-127.00));
   do {
     outdoor = DS18B20.getTempC(outdoorSensor); //outdoor
-    delay(1000);
   } while (outdoor == 85.00 || outdoor == (-127.00));
-  do {
-    basement = DS18B20.getTempC(basementSensor);
-    delay(1000);
-  } while (basement == 85.00 || basement == (-127.00));
-  delay(200); //sensors need 750mS to read
+//  do {
+//    basement = DS18B20.getTempC(basementSensor);
+//  } while (basement == 85.00 || basement == (-127.00));
+
   
   drawProgress(display, 90, "Updating thingspeak...");
   thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
@@ -320,26 +319,21 @@ void updateData(OLEDDisplay *display) {
 //  readyForDHTUpdate = false;
 //}
 
-//Call every 1 minute
+//Call every 2sec
 void updateTemp() {    
   DS18B20.requestTemperatures();
-  delay(1000); //These delays may or may not be needed
   do {
     indoor = DS18B20.getTempC(indoorSensor); //indoor
-    delay(1000);
   } while (indoor == 85.00 || indoor == (-127.00));
   do {
     attic = DS18B20.getTempC(atticSensor); //attic
-    delay(1000);
   } while (attic == 85.00 || attic == (-127.00));
   do {;
     outdoor = DS18B20.getTempC(outdoorSensor); //outdoor
-    delay(1000);
   } while (outdoor == 85.00 || outdoor == (-127.00));
-  do {
-    basement = DS18B20.getTempC(atticSensor);
-    delay(1000);
-  } while (basement == 85.00 || basement == (-127.00));
+//  do {
+//    basement = DS18B20.getTempC(basementSensor);
+//  } while (basement == 85.00 || basement == (-127.00));
   delay(200);
   readyForDS18B20Update = false;
 }
@@ -348,7 +342,7 @@ void updateThingSpeak() {
   dtostrf(indoor, 2, 2, indoorString);
   dtostrf(outdoor, 2, 2, outdoorString);
   dtostrf(attic, 2, 2, atticString);
-  dtostrf(basement, 2, 2, basementString);
+//  dtostrf(basement, 2, 2, basementString);
 
   WiFiClient client;
   //Serial.println("Connecting to ThingSpeak");
@@ -360,7 +354,7 @@ void updateThingSpeak() {
   client.print(String("GET ") + path + "&field1=" + indoorString +
               "&field2=" + atticString +
               "&field3=" + outdoorString +
-              "&field4=" + basementString +
+//              "&field4=" + basementString +
               " HTTP/1.1\r\n" +
               "Host: " + host + "\r\n" +
               "Connection: keep-alive\r\n\r\n");
@@ -452,8 +446,8 @@ void drawAtticBasement(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t 
   display->setFont(ArialMT_Plain_16);
   dtostrf(attic,4, 1, FormattedAttic);
   display->drawString(64+x, 12, "Attic: " + String(FormattedAttic) + (IS_METRIC ? "°C": "°F"));
-  dtostrf(outdoor,4, 1, FormattedBasement);
-  display->drawString(64+x, 30, "Basement: " + String(FormattedBasement) + (IS_METRIC ? "°C": "°F"));
+//  dtostrf(outdoor,4, 1, FormattedBasement);
+//  display->drawString(64+x, 30, "Basement: " + String(FormattedBasement) + (IS_METRIC ? "°C": "°F"));
 }
 
 void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
@@ -461,9 +455,11 @@ void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, 
   display->setFont(ArialMT_Plain_10);
   display->drawString(64 + x, 0 + y, "Thingspeak Sensors");
   display->setFont(ArialMT_Plain_16);
-  display->drawString(64 + x, 12 + y, "In: " + thingspeak.getFieldValue(0) + "°C");
-  // display->drawString(64 + x, 12 + y, thingspeak.getFieldValue(0) + (IS_METRIC ? "°C": "°F"));  // Needs code to convert Thingspeak temperature string
-  display->drawString(64 + x, 30 + y, "Out: " + thingspeak.getFieldValue(2) + "°C");
+  // Thingspeak field values: 0 = Indoor, 1 = Attic, 2 = Outdoor, 3 = Basement
+  // display->drawString(64 + x, 12 + y, "In: " + thingspeak.getFieldValue(0) + "°C");
+  display->drawString(64 + x, 12 + y, "In:" + String(thingspeak.getFieldValue(0)) + (IS_METRIC ? "°C": "°F"));
+  // display->drawString(64 + x, 30 + y, "Out: " + thingspeak.getFieldValue(2) + "°C");
+  display->drawString(64 + x, 12 + y, "Out:" + String(thingspeak.getFieldValue(3)) + (IS_METRIC ? "°C": "°F")); 
 }
 
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
@@ -551,4 +547,3 @@ void setReadyForThingSpeakUpdate() {
   Serial.println("Setting setReadyForThingSpeakUpdate to true");
   readyForThingSpeakUpdate = true;
 }
-
