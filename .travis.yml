@@ -19,7 +19,7 @@ env:
 
 install:
     - pip install -U platformio
-    - platformio lib install "JsonStreamingParser" "ESP8266_SSD1306" "WifiManager"
+    - platformio lib install "JsonStreamingParser" "ESP8266_SSD1306" "WifiManager" "simpleDSTadjust"
     - platformio lib update
 
 script:
