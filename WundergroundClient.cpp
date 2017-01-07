@@ -33,6 +33,12 @@ WundergroundClient::WundergroundClient(boolean _isMetric) {
   isMetric = _isMetric;
 }
 
+// Added by fowlerk, 12/22/16, as an option to change metric setting other than at instantiation
+void WundergroundClient::initMetric(boolean _isMetric) {
+	isMetric = _isMetric;
+}
+// end add fowlerk, 12/22/16
+
 void WundergroundClient::updateConditions(String apiKey, String language, String country, String city) {
   isForecast = false;
   doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/" + country + "/" + city + ".json");
@@ -59,7 +65,19 @@ void WundergroundClient::updateAstronomy(String apiKey, String language, String 
 
 // fowlerk added
 void WundergroundClient::updateAlerts(String apiKey, String language, String country, String city) {
-  isForecast = true;
+  currentAlert = 0;
+  activeAlertsCnt = 0;
+  isForecast = false;
+  isSimpleForecast = false;
+  isCurrentObservation = false;
+  isAlerts = true;
+  if (country == "US") {
+	isAlertUS = true;
+	isAlertEU = false;
+  } else {
+	isAlertUS = false;
+	isAlertEU = true;
+  }
   doUpdate("/api/" + apiKey + "/alerts/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 // end fowlerk add
@@ -182,14 +200,18 @@ void WundergroundClient::value(String value) {
 			isPM = true;
 		}
 		else isPM = false;
-		sunriseTime = String(tempHour);
+		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
+		sunriseTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
         //sunriseTime = value;
       }
 	if (currentKey == "minute") {
-    sunriseTime += ":" + value;
-	if (isPM) sunriseTime += "pm";
-	else if (usePM) sunriseTime += "am";
-   }
+		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
+		sunriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+		if (isPM) sunriseTime += "pm";
+		else if (usePM) sunriseTime += "am";
+	}
   }
 
 
@@ -201,14 +223,18 @@ void WundergroundClient::value(String value) {
 			isPM = true;
 		}
 		else isPM = false;
-		sunsetTime = String(tempHour);
+		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
+		sunsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
        // sunsetTime = value;
       }
 	if (currentKey == "minute") {
-    sunsetTime += ":" + value;
-	if (isPM) sunsetTime += "pm";
-	else if(usePM) sunsetTime += "am";
-   }
+		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
+		sunsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+		if (isPM) sunsetTime += "pm";
+		else if(usePM) sunsetTime += "am";
+    }
   }
 
   if (currentParent == "moonrise") {      // Has a Parent key and 2 sub-keys
@@ -219,24 +245,31 @@ void WundergroundClient::value(String value) {
 			isPM = true;
 		}
 		else isPM = false;
-		moonriseTime = String(tempHour);
+		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
+		moonriseTime = String(tempHourBuff);			// fowlerk add for formatting, 12/22/16	
        // moonriseTime = value;
       }
 	if (currentKey == "minute") {
-    moonriseTime += ":" + value;
-	if (isPM) moonriseTime += "pm";
-	else if (usePM) moonriseTime += "am";
-
-   }
+		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
+		moonriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+		if (isPM) moonriseTime += "pm";
+		else if (usePM) moonriseTime += "am";
+    }
   }
 
   if (currentParent == "moonset") {      // Not used - has a Parent key and 2 sub-keys
 	if (currentKey == "hour") {
-        moonsetTime = value;
-      }
+		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempHourBuff, "%2d", value.toInt());	// fowlerk add for formatting, 12/22/16
+		moonsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16	
+    }
 	if (currentKey == "minute") {
-    moonsetTime += ":" + value;
-   }
+		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
+		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
+		moonsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+    }
   }
 
   if (currentKey == "wind_mph") {
@@ -299,6 +332,70 @@ void WundergroundClient::value(String value) {
     UV = value;
   }
   
+  // Active alerts...added 18-Dec-2016
+  if (currentKey == "type" && isAlerts) {
+	activeAlertsCnt++;
+	currentAlert++;
+	activeAlerts[currentAlert-1] = value;
+	Serial.print("Alert type processed, value:  "); Serial.println(activeAlerts[currentAlert-1]);
+  }
+  if (currentKey == "description" && isAlerts && isAlertUS) {
+    activeAlertsText[currentAlert-1] = value;
+	Serial.print("Alert description processed, value:  "); Serial.println(activeAlertsText[currentAlert-1]);
+  }
+  if (currentKey == "wtype_meteoalarm_name" && isAlerts && isAlertEU) {
+    activeAlertsText[currentAlert-1] = value;
+	Serial.print("Alert description processed, value:  "); Serial.println(activeAlertsText[currentAlert-1]);
+  }
+  if (currentKey == "message" && isAlerts) {
+    activeAlertsMessage[currentAlert-1] = value;
+	Serial.print("Alert msg length:  "); Serial.println(activeAlertsMessage[currentAlert-1].length());
+	if(activeAlertsMessage[currentAlert-1].length() >= 511) {
+		activeAlertsMessageTrunc[currentAlert-1] = true;
+	} else {
+		activeAlertsMessageTrunc[currentAlert-1] = false;
+	}
+	Serial.print("Alert message processed, value:  "); Serial.println(activeAlertsMessage[currentAlert-1]);
+  }
+  if (currentKey == "date" && isAlerts) {
+	activeAlertsStart[currentAlert-1] = value;
+	// Check last char for a "/"; the returned value sometimes includes this; if so, strip it (47 is a "/" char)
+	if (activeAlertsStart[currentAlert-1].charAt(activeAlertsStart[currentAlert-1].length()-1) == 47) {
+		Serial.println("...last char is a slash...");
+		activeAlertsStart[currentAlert-1] = activeAlertsStart[currentAlert-1].substring(0,(activeAlertsStart[currentAlert-1].length()-1));
+	}
+	// For meteoalarms, the start field is returned with the UTC=0 by default (not used?)
+	if (isAlertEU && activeAlertsStart[currentAlert-1] == "1970-01-01 00:00:00 GMT") {
+		activeAlertsStart[currentAlert-1] = "<Not specified>";
+	}
+	Serial.print("Alert start processed, value:  "); Serial.println(activeAlertsStart[currentAlert-1]);
+  }
+  if (currentKey == "expires" && isAlerts) {
+    activeAlertsEnd[currentAlert-1] = value;
+	Serial.print("Alert expiration processed, value:  "); Serial.println(activeAlertsEnd[currentAlert-1]);
+  }
+  if (currentKey == "phenomena" && isAlerts) {
+    activeAlertsPhenomena[currentAlert-1] = value;
+	Serial.print("Alert phenomena processed, value:  "); Serial.println(activeAlertsPhenomena[currentAlert-1]);
+  }
+  if (currentKey == "significance" && isAlerts && isAlertUS) {
+    activeAlertsSignificance[currentAlert-1] = value;
+	Serial.print("Alert significance processed, value:  "); Serial.println(activeAlertsSignificance[currentAlert-1]);
+  }
+  // Map meteoalarm level to the field for significance for consistency (used for European alerts)
+  if (currentKey == "level_meteoalarm" && isAlerts && isAlertEU) {
+    activeAlertsSignificance[currentAlert-1] = value;
+	Serial.print("Meteo alert significance processed, value:  "); Serial.println(activeAlertsSignificance[currentAlert-1]);
+  }
+  // For meteoalarms only (European alerts); attribution must be displayed according to the T&C's of use
+  if (currentKey == "attribution" && isAlerts) {
+	activeAlertsAttribution[currentAlert-1] = value;
+	// Remove some of the markup in the attribution
+	activeAlertsAttribution[currentAlert-1].replace(" <a href='"," ");
+	activeAlertsAttribution[currentAlert-1].replace("</a>","");
+	activeAlertsAttribution[currentAlert-1].replace("/'>"," ");
+  }
+  
   // end fowlerk add
   
   if (currentKey == "dewpoint_f" && !isMetric) {
@@ -327,10 +424,20 @@ void WundergroundClient::value(String value) {
   }
 
   // Added forecastText key following...fowlerk, 12/3/16
-  if (currentKey == "fcttext" && isForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+  if (currentKey == "fcttext" && isForecast && !isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+      forecastText[currentForecastPeriod] = value;
+  }
+  // Added option for metric forecast following...fowlerk, 12/22/16
+  if (currentKey == "fcttext_metric" && isForecast && isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
       forecastText[currentForecastPeriod] = value;
   }
   // end fowlerk add, 12/3/16
+  
+  // Added PoP (probability of precipitation) key following...fowlerk, 12/22/16
+  if (currentKey == "pop" && isForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+      PoP[currentForecastPeriod] = value;
+  }
+  // end fowlerk add, 12/22/16
   
   // The detailed forecast period has only one forecast per day with low/high for both
   // night and day, starting at index 1.
@@ -513,6 +620,48 @@ String WundergroundClient::getUV() {
 String WundergroundClient::getObservationTime() {
   return observationTime;
 }
+
+// Active alerts...added 18-Dec-2016
+String WundergroundClient::getActiveAlerts(int alertIndex) {
+  return activeAlerts[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsText(int alertIndex) {
+  return activeAlertsText[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsMessage(int alertIndex) {
+  return activeAlertsMessage[alertIndex];
+}
+
+bool WundergroundClient::getActiveAlertsMessageTrunc(int alertIndex) {
+  return activeAlertsMessageTrunc[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsStart(int alertIndex) {
+  return activeAlertsStart[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsEnd(int alertIndex) {
+  return activeAlertsEnd[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsPhenomena(int alertIndex) {
+  return activeAlertsPhenomena[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsSignificance(int alertIndex) {
+  return activeAlertsSignificance[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsAttribution(int alertIndex) {
+  return activeAlertsAttribution[alertIndex];
+}
+
+int WundergroundClient::getActiveAlertsCnt() {
+  return activeAlertsCnt;
+}
+
 // end fowlerk add
 
 
@@ -555,8 +704,13 @@ String WundergroundClient::getForecastMonth(int period) {
 }
 
 String WundergroundClient::getForecastText(int period) {
-  Serial.print("Forecast period:  "); Serial.println(period);	
+//  Serial.print("Forecast period:  "); Serial.println(period);	
   return forecastText[period];
+}
+
+// Added PoP...12/22/16
+String WundergroundClient::getPoP(int period) {
+  return PoP[period];
 }
 // end fowlerk add
 
