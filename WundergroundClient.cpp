@@ -151,7 +151,7 @@ void WundergroundClient::key(String key) {
 	isForecast = false;
 	isAlerts = true;
   }
-// end fowlerk add 
+// end fowlerk add
 }
 
 void WundergroundClient::value(String value) {
@@ -252,12 +252,12 @@ void WundergroundClient::value(String value) {
    if (currentKey == "observation_time_rfc822") {
     date = value.substring(0, 16);
   }
-// Begin add, fowlerk...04-Dec-2016  
+// Begin add, fowlerk...04-Dec-2016
    if (currentKey == "observation_time") {
     observationTime = value;
   }
-// end add, fowlerk  
-  
+// end add, fowlerk
+
   if (currentKey == "temp_f" && !isMetric) {
     currentTemp = value;
   }
@@ -290,17 +290,17 @@ void WundergroundClient::value(String value) {
   if (currentKey == "feelslike_f" && !isMetric) {
     feelslike = value;
   }
-  
+
   if (currentKey == "feelslike_c" && isMetric) {
     feelslike = value;
   }
-  
+
   if (currentKey == "UV") {
     UV = value;
   }
-  
+
   // end fowlerk add
-  
+
   if (currentKey == "dewpoint_f" && !isMetric) {
     dewPoint = value;
   }
@@ -316,10 +316,14 @@ void WundergroundClient::value(String value) {
   if (currentKey == "period") {
     currentForecastPeriod = value.toInt();
   }
+  if (currentKey == "pop" && isForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+    Serial.println("Pop" + String(currentForecastPeriod) + ": " + value);
+    forecastPop[currentForecastPeriod] = value;
+  }
 // Modified below line to add check to ensure we are processing the 10-day forecast
 // before setting the forecastTitle (day of week of the current forecast day).
 // (The keyword title is used in both the current observation and the 10-day forecast.)
-//		Modified by fowlerk  
+//		Modified by fowlerk
   // if (currentKey == "title" && currentForecastPeriod < MAX_FORECAST_PERIODS) {				// Removed, fowlerk
   if (currentKey == "title" && isForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
       Serial.println(String(currentForecastPeriod) + ": " + value);
@@ -331,7 +335,7 @@ void WundergroundClient::value(String value) {
       forecastText[currentForecastPeriod] = value;
   }
   // end fowlerk add, 12/3/16
-  
+
   // The detailed forecast period has only one forecast per day with low/high for both
   // night and day, starting at index 1.
   int dailyForecastPeriod = (currentForecastPeriod - 1) * 2;
@@ -364,7 +368,7 @@ void WundergroundClient::value(String value) {
 		currentForecastPeriod = 0;
 	}
 	forecastMonth[currentForecastPeriod] = value;
-  }	
+  }
 
   if (currentKey == "day" && isSimpleForecast && currentForecastPeriod < MAX_FORECAST_PERIODS)  {
 	//	Added by fowlerk to handle transition from txtforecast to simpleforecast, as
@@ -372,11 +376,11 @@ void WundergroundClient::value(String value) {
 	//	used as an array index.
 	if (isSimpleForecast && currentForecastPeriod == 19) {
 		currentForecastPeriod = 0;
-	}	
+	}
 	forecastDay[currentForecastPeriod] = value;
   }
   // end fowlerk add
-  
+
 }
 
 void WundergroundClient::endArray() {
@@ -543,19 +547,24 @@ String WundergroundClient::getForecastLowTemp(int period) {
 String WundergroundClient::getForecastHighTemp(int period) {
   return forecastHighTemp[period];
 }
+
+String WundergroundClient::getForecastPrecipitationPercentage(int period) {
+  return forecastPop[period];
+}
+
 // fowlerk added...
 String WundergroundClient::getForecastDay(int period) {
-//  Serial.print("Day period:  "); Serial.println(period);	
+//  Serial.print("Day period:  "); Serial.println(period);
   return forecastDay[period];
 }
 
 String WundergroundClient::getForecastMonth(int period) {
-//  Serial.print("Month period:  "); Serial.println(period);	
+//  Serial.print("Month period:  "); Serial.println(period);
   return forecastMonth[period];
 }
 
 String WundergroundClient::getForecastText(int period) {
-  Serial.print("Forecast period:  "); Serial.println(period);	
+  Serial.print("Forecast period:  "); Serial.println(period);
   return forecastText[period];
 }
 // end fowlerk add
