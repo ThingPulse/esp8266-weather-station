@@ -104,6 +104,7 @@ class WundergroundClient: public JsonListener {
     void updateConditions(String apiKey, String language, String country, String city);
     void updateConditions(String apiKey, String language, String zmwCode);
     void updateForecast(String apiKey, String language, String country, String city);
+    void updateForecast(String apiKey, String language, String zmwCode);
     void updateAstronomy(String apiKey, String language, String country, String city);
 	void updateAlerts(String apiKey, String language, String country, String city);		// Added by fowlerk, 18-Dec-2016
 	void initMetric(boolean isMetric);			// Added by fowlerk, 12/22/16, as an option to change metric setting other than at instantiation
