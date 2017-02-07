@@ -272,8 +272,12 @@ void WundergroundClient::value(String value) {
     }
   }
 
-  if (currentKey == "wind_mph") {
-    windSpeed = value;
+  if (currentKey == "wind_mph" && !isMetric) {
+    windSpeed = value + "mph";
+  }
+  
+  if (currentKey == "wind_kph" && isMetric) {
+    windSpeed = value + "km/h";
   }
 
    if (currentKey == "wind_dir") {
