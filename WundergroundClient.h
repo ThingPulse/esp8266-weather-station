@@ -103,10 +103,14 @@ class WundergroundClient: public JsonListener {
     WundergroundClient(boolean isMetric);
     void updateConditions(String apiKey, String language, String country, String city);
     void updateConditions(String apiKey, String language, String zmwCode);
+    void updateConditionsPWS(String apiKey, String language, String pws);
     void updateForecast(String apiKey, String language, String country, String city);
+    void updateForecastPWS(String apiKey, String language, String pws);
     void updateAstronomy(String apiKey, String language, String country, String city);
+    void updateAstronomyPWS(String apiKey, String language, String pws);
 	void updateAlerts(String apiKey, String language, String country, String city);		// Added by fowlerk, 18-Dec-2016
-	void initMetric(boolean isMetric);			// Added by fowlerk, 12/22/16, as an option to change metric setting other than at instantiation
+	void updateAlertsPWS(String apiKey, String language, String country, String pws);
+    void initMetric(boolean isMetric);			// Added by fowlerk, 12/22/16, as an option to change metric setting other than at instantiation
 	
     // JJG added
     String getHours();
