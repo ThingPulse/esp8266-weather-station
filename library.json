@@ -11,6 +11,9 @@
     "url": "http://blog.squix.ch"
   },
   "frameworks": "arduino",
-  "platforms": "espressif",
-  "version": "1.2.1"
+  "platforms": [
+    "espressif8266",
+    "espressif32"
+  ],
+  "version": "1.2.2"
 }
