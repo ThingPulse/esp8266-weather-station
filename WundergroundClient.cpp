@@ -51,12 +51,23 @@ void WundergroundClient::updateConditions(String apiKey, String language, String
   doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/zmw:" + zmwCode + ".json");
 }
 
+void WundergroundClient::updateConditionsPWS(String apiKey, String language, String pws) {
+  isForecast = false;
+  doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/pws:" + pws + ".json");
+}
+
 void WundergroundClient::updateForecast(String apiKey, String language, String country, String city) {
   isForecast = true;
   doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
-void WundergroundClient::updateForecast(String apiKey, String language, String zmwCode) {
+
+void WundergroundClient::updateForecastPWS(String apiKey, String language, String pws) {
+  isForecast = true;
+  doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/pws:" + pws + ".json");
+}
+
+void WundergroundClient::updateForecastZMW(String apiKey, String language, String zmwCode) {
   isForecast = true;
   doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/zmw:" + zmwCode + ".json");
 }
@@ -68,6 +79,10 @@ void WundergroundClient::updateAstronomy(String apiKey, String language, String 
 }
 // end JJG add  ////////////////////////////////////////////////////////////////////
 
+void WundergroundClient::updateAstronomyPWS(String apiKey, String language, String pws) {
+  isForecast = true;
+  doUpdate("/api/" + apiKey + "/astronomy/lang:" + language + "/q/pws:" + pws + ".json");
+}
 // fowlerk added
 void WundergroundClient::updateAlerts(String apiKey, String language, String country, String city) {
   currentAlert = 0;
@@ -86,6 +101,23 @@ void WundergroundClient::updateAlerts(String apiKey, String language, String cou
   doUpdate("/api/" + apiKey + "/alerts/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 // end fowlerk add
+
+void WundergroundClient::updateAlertsPWS(String apiKey, String language, String country, String pws) {
+  currentAlert = 0;
+  activeAlertsCnt = 0;
+  isForecast = false;
+  isSimpleForecast = false;
+  isCurrentObservation = false;
+  isAlerts = true;
+  if (country == "US") {
+  isAlertUS = true;
+  isAlertEU = false;
+  } else {
+  isAlertUS = false;
+  isAlertEU = true;
+  }
+  doUpdate("/api/" + apiKey + "/alerts/lang:" + language + "/q/pws:" + pws + ".json");
+}
 
 void WundergroundClient::doUpdate(String url) {
   JsonStreamingParser parser;

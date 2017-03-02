@@ -104,12 +104,15 @@ class WundergroundClient: public JsonListener {
     WundergroundClient(boolean isMetric);
     void updateConditions(String apiKey, String language, String country, String city);
     void updateConditions(String apiKey, String language, String zmwCode);
+    void updateConditionsPWS(String apiKey, String language, String pws);
     void updateForecast(String apiKey, String language, String country, String city);
-    void updateForecast(String apiKey, String language, String zmwCode);
+    void updateForecastPWS(String apiKey, String language, String pws);
+    void updateForecastZMW(String apiKey, String language, String zmwCode);
     void updateAstronomy(String apiKey, String language, String country, String city);
-	void updateAlerts(String apiKey, String language, String country, String city);		// Added by fowlerk, 18-Dec-2016
-	void initMetric(boolean isMetric);			// Added by fowlerk, 12/22/16, as an option to change metric setting other than at instantiation
-
+    void updateAstronomyPWS(String apiKey, String language, String pws);
+	  void updateAlerts(String apiKey, String language, String country, String city);		// Added by fowlerk, 18-Dec-2016
+	  void updateAlertsPWS(String apiKey, String language, String country, String pws);
+    void initMetric(boolean isMetric);			// Added by fowlerk, 12/22/16, as an option to change metric setting other than at instantiation
     // JJG added
     String getHours();
     String getMinutes();
@@ -146,13 +149,13 @@ class WundergroundClient: public JsonListener {
     String getDewPoint();
 
     String getPrecipitationToday();
-	// fowlerk added...
-	String getFeelsLike();
+	  // fowlerk added...
+	  String getFeelsLike();
 
-	String getUV();
+	  String getUV();
 
-	String getObservationTime();			// fowlerk add, 04-Dec-2016
-	// end fowlerk add
+	  String getObservationTime();			// fowlerk add, 04-Dec-2016
+	  // end fowlerk add
 
     String getForecastIcon(int period);
 
@@ -161,36 +164,36 @@ class WundergroundClient: public JsonListener {
     String getForecastLowTemp(int period);
 
     String getForecastHighTemp(int period);
-	// fowlerk added...
-	String getForecastDay(int period);
+	  // fowlerk added...
+	  String getForecastDay(int period);
 
-	String getForecastMonth(int period);
+	  String getForecastMonth(int period);
 
-	String getForecastText(int period);
+	  String getForecastText(int period);
 
-	String getPoP(int period);
+	  String getPoP(int period);
 
-	int getActiveAlertsCnt();
+	  int getActiveAlertsCnt();
 
-	String getActiveAlerts(int alertIndex);
+	  String getActiveAlerts(int alertIndex);
 
-	String getActiveAlertsText(int alertIndex);
+	  String getActiveAlertsText(int alertIndex);
 
-	String getActiveAlertsMessage(int alertIndex);
+	  String getActiveAlertsMessage(int alertIndex);
 
-	bool getActiveAlertsMessageTrunc(int alertIndex);
+	  bool getActiveAlertsMessageTrunc(int alertIndex);
 
-	String getActiveAlertsStart(int alertIndex);
+	  String getActiveAlertsStart(int alertIndex);
 
-	String getActiveAlertsEnd(int alertIndex);
+	  String getActiveAlertsEnd(int alertIndex);
 
-	String getActiveAlertsPhenomena(int alertIndex);
+	  String getActiveAlertsPhenomena(int alertIndex);
 
-	String getActiveAlertsSignificance(int alertIndex);
+	  String getActiveAlertsSignificance(int alertIndex);
 
-	String getActiveAlertsAttribution(int alertIndex);
+	  String getActiveAlertsAttribution(int alertIndex);
 
-	// end fowlerk add
+	  // end fowlerk add
 
     virtual void whitespace(char c);
 
