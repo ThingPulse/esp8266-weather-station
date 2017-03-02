@@ -56,6 +56,11 @@ void WundergroundClient::updateForecast(String apiKey, String language, String c
   doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
+void WundergroundClient::updateForecast(String apiKey, String language, String zmwCode) {
+  isForecast = true;
+  doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/zmw:" + zmwCode + ".json");
+}
+
 // JJG added ////////////////////////////////
 void WundergroundClient::updateAstronomy(String apiKey, String language, String country, String city) {
   isForecast = true;
