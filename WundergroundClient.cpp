@@ -79,6 +79,11 @@ void WundergroundClient::updateAstronomy(String apiKey, String language, String 
 }
 // end JJG add  ////////////////////////////////////////////////////////////////////
 
+void WundergroundClient::updateAstronomyZMW(String apiKey, String language, String zmwCode) {
+  isForecast = true;
+  doUpdate("/api/" + apiKey + "/astronomy/lang:" + language + "/q/zmw:" + zmwCode);
+}
+
 void WundergroundClient::updateAstronomyPWS(String apiKey, String language, String pws) {
   isForecast = true;
   doUpdate("/api/" + apiKey + "/astronomy/lang:" + language + "/q/pws:" + pws + ".json");
