@@ -9,13 +9,17 @@ cache:
         - "~/.platformio"
 
 env:
+    - PLATFORMIO_CI_SRC=examples/PlaneSpotterDemo
     - PLATFORMIO_CI_SRC=examples/WeatherStationDemo
+    - PLATFORMIO_CI_SRC=examples/WeatherStationDemoExtended
+    - PLATFORMIO_CI_SRC=examples/WeatherStationDemoExtendedDST
     - PLATFORMIO_CI_SRC=examples/WorldClockDemo
+    - PLATFORMIO_CI_SRC=examples/WundergroundClientPlainDemo
 
 
 install:
     - pip install -U platformio
-    - platformio lib install 561 562
+    - platformio lib install "JsonStreamingParser" "ESP8266_SSD1306" "WifiManager" "simpleDSTadjust" "DHT sensor library"
     - platformio lib update
 
 script:

@@ -10,8 +10,8 @@ void AdsbExchangeClient::updateVisibleAircraft(String searchQuery) {
   parser.setListener(this);
   WiFiClient client;
 
-  // http://public-api.adsbexchange.com/VirtualRadar/AircraftList.json?lat=47.437691&lng=8.568854&fDstL=0&fDstU=20&fAltL=0&fAltU=5000
-  const char host[] = "public-api.adsbexchange.com";
+  // http://global.adsbexchange.com/VirtualRadar/AircraftList.json?lat=47.437691&lng=8.568854&fDstL=0&fDstU=20&fAltL=0&fAltU=5000
+  const char host[] = "global.adsbexchange.com";
   String url = "/VirtualRadar/AircraftList.json?" + searchQuery;
 
   const int httpPort = 80;
