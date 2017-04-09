@@ -179,7 +179,7 @@ void WundergroundClient::key(String key) {
 //	now indicate whether the JSON stream being processed is part of the text forecast (txt_forecast), the first section of the 10-day
 //	forecast API that contains detailed text for the forecast period; the simple forecast (simpleforecast), the second section of the
 //	10-day forecast API that contains such data as forecast highs/lows, conditions, precipitation / probabilities; the current
-//	observations (current_observation), from the observations API call; or alerts (alerts), for the future) weather alerts API call.
+//	observations (current_observation), from the observations API call; or alerts (alerts), for the weather alerts API call.
 //		Added by fowlerk...18-Dec-2016
   if (currentKey == "txt_forecast") {
 	isForecast = true;
@@ -728,6 +728,12 @@ String WundergroundClient::getTodayIconText() {
 String WundergroundClient::getForecastIcon(int period) {
   return getMeteoconIcon(forecastIcon[period]);
 }
+
+// fowlerk added...22-Mar-2017
+String WundergroundClient::getForecastIconText(int period) {
+  return forecastIcon[period];
+}
+// end fowlerk add...22-Mar-2017
 
 String WundergroundClient::getForecastTitle(int period) {
   return forecastTitle[period];

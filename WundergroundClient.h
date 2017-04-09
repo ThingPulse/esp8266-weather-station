@@ -158,6 +158,8 @@ class WundergroundClient: public JsonListener {
 	  // end fowlerk add
 
     String getForecastIcon(int period);
+	
+	String getForecastIconText(int period);	// fowlerk add, 22-Mar-2017
 
     String getForecastTitle(int period);
 
