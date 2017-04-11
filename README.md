@@ -5,7 +5,7 @@
 
 # esp8266-weather-station
 
-New version of the ESP8266 Weather Station
+New version of the ESP8266 Weather Station (original article here https://learn.adafruit.com/wifi-weather-station-with-tft-display/overview)
 
 ## Arduino IDE
 
