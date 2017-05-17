@@ -61,6 +61,11 @@ void WundergroundClient::updateForecast(String apiKey, String language, String c
   doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
+void WundergroundClient::updateForecast3dPWS(String apiKey, String language, String pws) {
+  isForecast = true;
+  doUpdate("/api/" + apiKey + "/forecast/lang:" + language + "/q/pws:" + pws + ".json");
+}
+
 
 void WundergroundClient::updateForecastPWS(String apiKey, String language, String pws) {
   isForecast = true;
@@ -162,6 +167,10 @@ void WundergroundClient::doUpdate(String url) {
       }
     }
   }
+  #ifdef WU_DEBUG
+  Serial.println("Stato:"+String(parser.state));
+  #endif
+  error_status=parser.state;
 }
 
 void WundergroundClient::whitespace(char c) {
@@ -320,8 +329,17 @@ void WundergroundClient::value(String value) {
    if (currentKey == "wind_dir") {
     windDir = value;
   }
-
+ 
 // end JJG add  ////////////////////////////////////////////////////////////////////
+
+//Add by Viktor70
+   if (currentKey == "visibility_mi" && !isMetric) {
+    visibility = value;
+  }
+   if (currentKey == "visibility_km" && isMetric) {
+    visibility = value;
+  }
+//End add
 
    if (currentKey == "local_time_rfc822") {
     date = value.substring(0, 16);
@@ -344,8 +362,10 @@ void WundergroundClient::value(String value) {
   }
   if (currentKey == "icon") {
     if (isForecast && !isSimpleForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+      #ifdef WU_DEBUG
       Serial.println(String(currentForecastPeriod) + ": " + value + ":" + currentParent);
-      forecastIcon[currentForecastPeriod] = value;
+      #endif
+	  forecastIcon[currentForecastPeriod] = value;
     }
     // if (!isForecast) {													// Removed by fowlerk
     if (isCurrentObservation && !(isForecast || isSimpleForecast)) {		// Added by fowlerk
@@ -382,55 +402,80 @@ void WundergroundClient::value(String value) {
 	activeAlertsCnt++;
 	currentAlert++;
 	activeAlerts[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Alert type processed, value:  "); Serial.println(activeAlerts[currentAlert-1]);
-  }
+    #endif
+	}
   if (currentKey == "description" && isAlerts && isAlertUS) {
     activeAlertsText[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Alert description processed, value:  "); Serial.println(activeAlertsText[currentAlert-1]);
+    #endif
   }
   if (currentKey == "wtype_meteoalarm_name" && isAlerts && isAlertEU) {
     activeAlertsText[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Alert description processed, value:  "); Serial.println(activeAlertsText[currentAlert-1]);
+    #endif
+  }
+  if (currentKey == "level_meteoalarm_name" && isAlerts && isAlertEU) {
+    activeAlertsLevel[currentAlert-1] = value;
   }
   if (currentKey == "message" && isAlerts) {
     activeAlertsMessage[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Alert msg length:  "); Serial.println(activeAlertsMessage[currentAlert-1].length());
+    #endif
 	if(activeAlertsMessage[currentAlert-1].length() >= 511) {
 		activeAlertsMessageTrunc[currentAlert-1] = true;
 	} else {
 		activeAlertsMessageTrunc[currentAlert-1] = false;
 	}
+	#ifdef WU_DEBUG
 	Serial.print("Alert message processed, value:  "); Serial.println(activeAlertsMessage[currentAlert-1]);
+    #endif
   }
   if (currentKey == "date" && isAlerts) {
 	activeAlertsStart[currentAlert-1] = value;
 	// Check last char for a "/"; the returned value sometimes includes this; if so, strip it (47 is a "/" char)
 	if (activeAlertsStart[currentAlert-1].charAt(activeAlertsStart[currentAlert-1].length()-1) == 47) {
+	#ifdef WU_DEBUG
 		Serial.println("...last char is a slash...");
+    #endif
 		activeAlertsStart[currentAlert-1] = activeAlertsStart[currentAlert-1].substring(0,(activeAlertsStart[currentAlert-1].length()-1));
 	}
 	// For meteoalarms, the start field is returned with the UTC=0 by default (not used?)
 	if (isAlertEU && activeAlertsStart[currentAlert-1] == "1970-01-01 00:00:00 GMT") {
 		activeAlertsStart[currentAlert-1] = "<Not specified>";
 	}
+	#ifdef WU_DEBUG
 	Serial.print("Alert start processed, value:  "); Serial.println(activeAlertsStart[currentAlert-1]);
+    #endif
   }
   if (currentKey == "expires" && isAlerts) {
     activeAlertsEnd[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Alert expiration processed, value:  "); Serial.println(activeAlertsEnd[currentAlert-1]);
+    #endif
   }
   if (currentKey == "phenomena" && isAlerts) {
     activeAlertsPhenomena[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Alert phenomena processed, value:  "); Serial.println(activeAlertsPhenomena[currentAlert-1]);
+    #endif
   }
   if (currentKey == "significance" && isAlerts && isAlertUS) {
     activeAlertsSignificance[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Alert significance processed, value:  "); Serial.println(activeAlertsSignificance[currentAlert-1]);
+    #endif
   }
   // Map meteoalarm level to the field for significance for consistency (used for European alerts)
   if (currentKey == "level_meteoalarm" && isAlerts && isAlertEU) {
     activeAlertsSignificance[currentAlert-1] = value;
+	#ifdef WU_DEBUG
 	Serial.print("Meteo alert significance processed, value:  "); Serial.println(activeAlertsSignificance[currentAlert-1]);
+    #endif
   }
   // For meteoalarms only (European alerts); attribution must be displayed according to the T&C's of use
   if (currentKey == "attribution" && isAlerts) {
@@ -450,10 +495,10 @@ void WundergroundClient::value(String value) {
     dewPoint = value;
   }
   if (currentKey == "precip_today_metric" && isMetric) {
-    precipitationToday = value + "mm";
+    precipitationToday = value;
   }
   if (currentKey == "precip_today_in" && !isMetric) {
-    precipitationToday = value + "in";
+    precipitationToday = value;
   }
   if (currentKey == "period") {
     currentForecastPeriod = value.toInt();
@@ -464,8 +509,10 @@ void WundergroundClient::value(String value) {
 //		Modified by fowlerk
   // if (currentKey == "title" && currentForecastPeriod < MAX_FORECAST_PERIODS) {				// Removed, fowlerk
   if (currentKey == "title" && isForecast && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+      #ifdef WU_DEBUG
       Serial.println(String(currentForecastPeriod) + ": " + value);
-      forecastTitle[currentForecastPeriod] = value;
+      #endif
+	  forecastTitle[currentForecastPeriod] = value;
   }
 
   // Added forecastText key following...fowlerk, 12/3/16
@@ -484,6 +531,34 @@ void WundergroundClient::value(String value) {
   }
   // end fowlerk add, 12/22/16
 
+
+  //Vikt1970
+  if (currentKey == "avehumidity" && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+	  forecastHumidity[currentForecastPeriod] = value;
+  }
+  if (currentKey == "mm" && isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+
+	  if (currentParent == "qpf_allday") {
+        forecastRain[currentForecastPeriod] = value;
+      }
+   }
+  if (currentKey == "cm" && isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+
+	  if (currentParent == "snow_allday") {
+        forecastSnow[currentForecastPeriod] = value;
+      }
+   }
+  if (currentKey == "in" && !isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+
+      if (currentParent == "qpf_allday") {
+        forecastRain[currentForecastPeriod] = value;
+      }
+      else if (currentParent == "snow_allday") {
+        forecastSnow[currentForecastPeriod] = value;
+      }
+  }
+  // End Vikt 1970
+  
   // The detailed forecast period has only one forecast per day with low/high for both
   // night and day, starting at index 1.
   int dailyForecastPeriod = (currentForecastPeriod - 1) * 2;
@@ -500,7 +575,9 @@ void WundergroundClient::value(String value) {
   if (currentKey == "celsius" && isMetric && dailyForecastPeriod < MAX_FORECAST_PERIODS) {
 
       if (currentParent == "high") {
-        Serial.println(String(currentForecastPeriod)+ ": " + value);
+        #ifdef WU_DEBUG
+		Serial.println(String(currentForecastPeriod)+ ": " + value);
+		#endif
         forecastHighTemp[dailyForecastPeriod] = value;
       }
       if (currentParent == "low") {
@@ -545,7 +622,7 @@ void WundergroundClient::endObject() {
 }
 
 void WundergroundClient::endDocument() {
-
+ error_status=-1;
 }
 
 void WundergroundClient::startArray() {
@@ -664,6 +741,12 @@ String WundergroundClient::getUV() {
   return UV;
 }
 
+//Add by Viktor1970
+String WundergroundClient::getVisibility() {
+  return visibility;
+}
+//End add
+
 // Added by fowlerk, 04-Dec-2016
 String WundergroundClient::getObservationTime() {
   return observationTime;
@@ -680,6 +763,10 @@ String WundergroundClient::getActiveAlertsText(int alertIndex) {
 
 String WundergroundClient::getActiveAlertsMessage(int alertIndex) {
   return activeAlertsMessage[alertIndex];
+}
+
+String WundergroundClient::getActiveAlertsLevel(int alertIndex) {
+  return activeAlertsLevel[alertIndex];
 }
 
 bool WundergroundClient::getActiveAlertsMessageTrunc(int alertIndex) {
@@ -718,19 +805,25 @@ String WundergroundClient::getPrecipitationToday() {
 }
 
 String WundergroundClient::getTodayIcon() {
-  return getMeteoconIcon(weatherIcon);
-}
-
-String WundergroundClient::getTodayIconText() {
   return weatherIcon;
 }
 
 String WundergroundClient::getForecastIcon(int period) {
-  return getMeteoconIcon(forecastIcon[period]);
+  return forecastIcon[period];
 }
 
 String WundergroundClient::getForecastTitle(int period) {
   return forecastTitle[period];
+}
+
+String WundergroundClient::getForecastHumidity(int period) {
+  return forecastHumidity[period];
+}
+String WundergroundClient::getForecastRain(int period) {
+  return forecastRain[period];
+}
+String WundergroundClient::getForecastSnow(int period) {
+  return forecastSnow[period];
 }
 
 String WundergroundClient::getForecastLowTemp(int period) {

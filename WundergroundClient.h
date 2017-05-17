@@ -59,7 +59,10 @@ class WundergroundClient: public JsonListener {
     String weatherText;
     String humidity;
     String pressure;
-    String dewPoint;
+    //Add Viktor70
+	String visibility;
+	//End add
+	String dewPoint;
     String precipitationToday;
 	// fowlerk added...
 	String feelslike;
@@ -79,16 +82,22 @@ class WundergroundClient: public JsonListener {
     int currentForecastPeriod;
     String forecastIcon [MAX_FORECAST_PERIODS];
     String forecastTitle [MAX_FORECAST_PERIODS];
+    //Add by Viktor70
+	String forecastHumidity [MAX_FORECAST_PERIODS];
     String forecastLowTemp [MAX_FORECAST_PERIODS];
     String forecastHighTemp [MAX_FORECAST_PERIODS];
+	//End add
 	// fowlerk added...
 	String forecastDay [MAX_FORECAST_PERIODS/2];
 	String forecastMonth [MAX_FORECAST_PERIODS/2];
 	String forecastText [MAX_FORECAST_PERIODS];
 	String PoP [MAX_FORECAST_PERIODS];
+	String forecastRain [MAX_FORECAST_PERIODS];
+	String forecastSnow [MAX_FORECAST_PERIODS];
 	// Active alerts...added 18-Dec-2016
 	String activeAlerts [MAX_WEATHER_ALERTS];			   // For a max of 6 currently-active alerts
 	String activeAlertsMessage [MAX_WEATHER_ALERTS];	   // Alert full-text message
+	String activeAlertsLevel [MAX_WEATHER_ALERTS];	   // Alert full-text message
 	bool   activeAlertsMessageTrunc [MAX_WEATHER_ALERTS];  // Alert full-text message truncation flag
 	String activeAlertsText [MAX_WEATHER_ALERTS];		   // Alerts description text
 	String activeAlertsStart [MAX_WEATHER_ALERTS];		   // Start of alert date/time
@@ -101,12 +110,14 @@ class WundergroundClient: public JsonListener {
 	// end fowlerk add
 
   public:
-    WundergroundClient(boolean isMetric);
+    int error_status;
+	WundergroundClient(boolean isMetric);
     void updateConditions(String apiKey, String language, String country, String city);
     void updateConditions(String apiKey, String language, String zmwCode);
     void updateConditionsPWS(String apiKey, String language, String pws);
     void updateForecast(String apiKey, String language, String country, String city);
     void updateForecastPWS(String apiKey, String language, String pws);
+    void updateForecast3dPWS(String apiKey, String language, String pws);
     void updateForecastZMW(String apiKey, String language, String zmwCode);
     void updateAstronomy(String apiKey, String language, String country, String city);
     void updateAstronomyPWS(String apiKey, String language, String pws);
@@ -136,8 +147,6 @@ class WundergroundClient: public JsonListener {
 
     String getTodayIcon();
 
-    String getTodayIconText();
-
     String getMeteoconIcon(String iconText);
 
     String getWeatherText();
@@ -147,6 +156,10 @@ class WundergroundClient: public JsonListener {
     String getPressure();
 
     String getDewPoint();
+	
+	//Add by Viktor70
+	String getVisibility();
+	//End add
 
     String getPrecipitationToday();
 	  // fowlerk added...
@@ -161,6 +174,12 @@ class WundergroundClient: public JsonListener {
 
     String getForecastTitle(int period);
 
+	//Add by Viktor70
+	String getForecastHumidity(int period);
+	String getForecastRain(int period);
+	String getForecastSnow(int period);
+    //End add
+	
     String getForecastLowTemp(int period);
 
     String getForecastHighTemp(int period);
@@ -180,6 +199,8 @@ class WundergroundClient: public JsonListener {
 	  String getActiveAlertsText(int alertIndex);
 
 	  String getActiveAlertsMessage(int alertIndex);
+
+	  String getActiveAlertsLevel(int alertIndex);
 
 	  bool getActiveAlertsMessageTrunc(int alertIndex);
 
