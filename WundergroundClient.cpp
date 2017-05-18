@@ -167,10 +167,6 @@ void WundergroundClient::doUpdate(String url) {
       }
     }
   }
-  #ifdef WU_DEBUG
-  Serial.println("Stato:"+String(parser.state));
-  #endif
-  error_status=parser.state;
 }
 
 void WundergroundClient::whitespace(char c) {
