@@ -28,10 +28,10 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
-#define MAX_FORECAST_PERIODS 20  // Changed from 7 to 12 to support 6 day / 2 screen forecast (Neptune)
+#define MAX_FORECAST_PERIODS 7  // Changed from 7 to 12 to support 6 day / 2 screen forecast (Neptune)
 								 // Changed to 20 to support max 10-day forecast returned from 'forecast10day' API (fowlerk)
 
-#define MAX_WEATHER_ALERTS 6  	 // The maximum number of concurrent weather alerts supported by the library
+#define MAX_WEATHER_ALERTS 3  	 // The maximum number of concurrent weather alerts supported by the library
 
 class WundergroundClient: public JsonListener {
   private:
@@ -146,7 +146,7 @@ class WundergroundClient: public JsonListener {
     String getCurrentTemp();
 
     String getTodayIcon();
-
+    String getTodayIconText();
     String getMeteoconIcon(String iconText);
 
     String getWeatherText();

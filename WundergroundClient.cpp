@@ -803,6 +803,9 @@ String WundergroundClient::getPrecipitationToday() {
 String WundergroundClient::getTodayIcon() {
   return weatherIcon;
 }
+String WundergroundClient::getTodayIconText() {
+  return weatherIcon;
+}
 
 String WundergroundClient::getForecastIcon(int period) {
   return forecastIcon[period];
