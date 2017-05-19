@@ -4,9 +4,10 @@
 * Development: [![Build Status](https://api.travis-ci.org/squix78/esp8266-weather-station.svg?branch=development)](https://travis-ci.org/squix78/esp8266-weather-station)
 
 # esp8266-weather-station
+<img src="https://github.com/squix78/esp8266-weather-station/raw/master/resources/CurrentWeatherReflection.jpg" width="250"/>
 
-![WeatherStation](https://github.com/squix78/esp8266-weather-station/raw/master/resources/CurrentWeatherReflection.jpg)
-New version of the ESP8266 Weather Station. 
+Code for the ESP8266 WeatherStation project. You can by a starter kit from here and support the developement:
+https://blog.squix.org/product/weatherstation-kit-w-white-oled
 
 ## Arduino IDE
 
