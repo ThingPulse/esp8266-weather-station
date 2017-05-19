@@ -5,7 +5,8 @@
 
 # esp8266-weather-station
 
-New version of the ESP8266 Weather Station
+![WeatherStation](https://github.com/squix78/esp8266-weather-station/raw/master/resources/CurrentWeatherReflection.jpg)
+New version of the ESP8266 Weather Station. 
 
 ## Arduino IDE
 
