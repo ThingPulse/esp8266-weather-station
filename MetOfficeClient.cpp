@@ -22,7 +22,16 @@
 *
 *   Based on WundergroundClient created by Daniel Eichhorn:
 *   https://github.com/squix78/esp8266-weather-station
-
+*
+*   CLIENT PURPOSE:
+*   This client will query the Met Office 3-hourly Datapoint API, which returns forecasts for a specific location
+*   for the upcoming 5 days split into 3-hour sections:
+*   http://www.metoffice.gov.uk/datapoint/product/uk-3hourly-site-specific-forecast
+*
+*   This client will create an array of a subset of the forecast details (see value() for which ones) and
+*   provides getters for each in a hardcoded way for the current period and the subsequent three. It can be
+*   expanded to cover further periods if required, hopefully the comments within the client details how.
+*
 *   USAGE INSTRUCTIONS:
 *   You will need an API key to use these services, available at http://www.metoffice.gov.uk/datapoint/api
 *   You will also need to determine your location ID. To get that you need to hit this url:
