@@ -27,7 +27,7 @@ See more at https://blog.squix.org
 
 #include <ESP8266WiFi.h>
 #include <JsonListener.h>
-#include "WundergroundForecast.h"
+#include "WundergroundAlerts.h"
 
 /**
  * Wunderground Settings
@@ -40,7 +40,7 @@ const boolean IS_METRIC = true;
 const boolean USE_PM = false;
 
 // initiate the WundergoundClient
-WundergroundForecast wunderground(IS_METRIC);
+WundergroundAlerts wunderground;
 
 
 /**
@@ -84,19 +84,20 @@ void setup() {
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
 
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
+  wunderground.updateAlerts(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
 
-  for (int i = 0; i < MAX_FORECAST_PERIODS; i++) {
+  for (int i = 0; i < wunderground.getActiveAlertsCnt(); i++) {
     Serial.println("------------------------------------");
-    Serial.println("getForecastIcon: " + wunderground.getForecastIcon(i));
-    Serial.println("getForecastTitle: " + wunderground.getForecastTitle(i));
-    Serial.println("getForecastLowTemp: " + wunderground.getForecastLowTemp(i));
-    Serial.println("getForecastHighTemp: " + wunderground.getForecastHighTemp(i));
-    Serial.println("getForecastDay: " + wunderground.getForecastDay(i));
-    Serial.println("getForecastMonth: " + wunderground.getForecastMonth(i));
-    Serial.println("getForecastText: " + wunderground.getForecastText(i));
-    Serial.println("getPoP: " + wunderground.getPoP(i));
 
+    Serial.println("getActiveAlerts: " + wunderground.getActiveAlerts(i));
+    Serial.println("getActiveAlertsText: " + wunderground.getActiveAlertsText(i));
+    Serial.println("getActiveAlertsMessage: " + wunderground.getActiveAlertsMessage(i));
+    Serial.println("getActiveAlertsMessageTrunc: " + wunderground.getActiveAlertsMessageTrunc(i));
+    Serial.println("getActiveAlertsStart: " + wunderground.getActiveAlertsStart(i));
+    Serial.println("getActiveAlertsEnd: " + wunderground.getActiveAlertsEnd(i));
+    Serial.println("getActiveAlertsPhenomena: " + wunderground.getActiveAlertsPhenomena(i));
+    Serial.println("getActiveAlertsSignificance: " + wunderground.getActiveAlertsSignificance(i));
+    Serial.println("getActiveAlertsAttribution: " + wunderground.getActiveAlertsAttribution(i));
   }
 
 
