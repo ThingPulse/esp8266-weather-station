@@ -31,20 +31,22 @@ WundergroundForecast::WundergroundForecast(boolean _isMetric) {
   isMetric = _isMetric;
 }
 
-void WundergroundForecast::updateForecast(String apiKey, String language, String country, String city) {
-  doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
+void WundergroundForecast::updateForecast(WGForecast *forecasts, uint8_t maxForecasts, String apiKey, String language, String country, String city) {
+  doUpdate(forecasts, maxForecasts, "/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
 
-void WundergroundForecast::updateForecastPWS(String apiKey, String language, String pws) {
-  doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/pws:" + pws + ".json");
+void WundergroundForecast::updateForecastPWS(WGForecast *forecasts, uint8_t maxForecasts, String apiKey, String language, String pws) {
+  doUpdate(forecasts, maxForecasts, "/api/" + apiKey + "/forecast10day/lang:" + language + "/q/pws:" + pws + ".json");
 }
 
-void WundergroundForecast::updateForecastZMW(String apiKey, String language, String zmwCode) {
-  doUpdate("/api/" + apiKey + "/forecast10day/lang:" + language + "/q/zmw:" + zmwCode + ".json");
+void WundergroundForecast::updateForecastZMW(WGForecast *forecasts, uint8_t maxForecasts, String apiKey, String language, String zmwCode) {
+  doUpdate(forecasts, maxForecasts, "/api/" + apiKey + "/forecast10day/lang:" + language + "/q/zmw:" + zmwCode + ".json");
 }
 
-void WundergroundForecast::doUpdate(String url) {
+void WundergroundForecast::doUpdate(WGForecast *forecasts, uint8_t maxForecasts, String url) {
+  this->forecasts = forecasts;
+  this->maxForecasts = maxForecasts;
   JsonStreamingParser parser;
   parser.setListener(this);
   WiFiClient client;
@@ -114,28 +116,27 @@ void WundergroundForecast::value(String value) {
   if (currentKey == "period") {
     currentForecastPeriod = value.toInt();
   }
-// Modified below line to add check to ensure we are processing the 10-day forecast
-// before setting the forecastTitle (day of week of the current forecast day).
-// (The keyword title is used in both the current observation and the 10-day forecast.)
-//		Modified by fowlerk
-  // if (currentKey == "title" && currentForecastPeriod < MAX_FORECAST_PERIODS) {				// Removed, fowlerk
-  if (currentKey == "title" && currentForecastPeriod < MAX_FORECAST_PERIODS) {
+
+  if (currentKey == "icon" && currentForecastPeriod < maxForecasts) {
+    forecasts[currentForecastPeriod].forecastIcon = value;
+  }
+  if (currentKey == "title" && currentForecastPeriod < maxForecasts) {
       Serial.println(String(currentForecastPeriod) + ": " + value);
-      forecastTitle[currentForecastPeriod] = value;
+      forecasts[currentForecastPeriod].forecastTitle = value;
   }
 
   // Added forecastText key following...fowlerk, 12/3/16
-  if (currentKey == "fcttext" && !isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
-      forecastText[currentForecastPeriod] = value;
+  if (currentKey == "fcttext" && !isMetric && currentForecastPeriod < maxForecasts) {
+      forecasts[currentForecastPeriod].forecastText = value;
   }
   // Added option for metric forecast following...fowlerk, 12/22/16
-  if (currentKey == "fcttext_metric" && isMetric && currentForecastPeriod < MAX_FORECAST_PERIODS) {
-      forecastText[currentForecastPeriod] = value;
+  if (currentKey == "fcttext_metric" && isMetric && currentForecastPeriod < maxForecasts) {
+      forecasts[currentForecastPeriod].forecastText = value;
   }
 
   // Added PoP (probability of precipitation) key following...fowlerk, 12/22/16
-  if (currentKey == "pop" && currentForecastPeriod < MAX_FORECAST_PERIODS) {
-      PoP[currentForecastPeriod] = value;
+  if (currentKey == "pop" && currentForecastPeriod < maxForecasts) {
+      forecasts[currentForecastPeriod].PoP = value;
   }
 
 
@@ -143,44 +144,44 @@ void WundergroundForecast::value(String value) {
   // night and day, starting at index 1.
   int dailyForecastPeriod = (currentForecastPeriod - 1) * 2;
 
-  if (currentKey == "fahrenheit" && !isMetric && dailyForecastPeriod < MAX_FORECAST_PERIODS) {
+  if (currentKey == "fahrenheit" && !isMetric && dailyForecastPeriod < maxForecasts) {
 
       if (currentParent == "high") {
-        forecastHighTemp[dailyForecastPeriod] = value;
+        forecasts[dailyForecastPeriod].forecastHighTemp = value;
       }
       if (currentParent == "low") {
-        forecastLowTemp[dailyForecastPeriod] = value;
+        forecasts[dailyForecastPeriod].forecastLowTemp = value;
       }
   }
-  if (currentKey == "celsius" && dailyForecastPeriod < MAX_FORECAST_PERIODS) {
+  if (currentKey == "celsius" && dailyForecastPeriod < maxForecasts) {
 
       if (currentParent == "high") {
         Serial.println(String(currentForecastPeriod)+ ": " + value);
-        forecastHighTemp[dailyForecastPeriod] = value;
+        forecasts[dailyForecastPeriod].forecastHighTemp = value;
       }
       if (currentParent == "low") {
-        forecastLowTemp[dailyForecastPeriod] = value;
+        forecasts[dailyForecastPeriod].forecastLowTemp = value;
       }
   }
 
-  if (currentKey == "month" && isSimpleForecast && currentForecastPeriod < MAX_FORECAST_PERIODS)  {
+  if (currentKey == "month" && isSimpleForecast && currentForecastPeriod < maxForecasts)  {
   	//	Handle transition from txtforecast to simpleforecast, as
   	//	the key "period" doesn't appear until after some of the key values needed and is
   	//	used as an array index.
   	if (isSimpleForecast && currentForecastPeriod == 19) {
   		currentForecastPeriod = 0;
   	}
-  	forecastMonth[currentForecastPeriod] = value;
+  	forecasts[currentForecastPeriod].forecastMonth = value;
   }
 
-  if (currentKey == "day" && isSimpleForecast && currentForecastPeriod < MAX_FORECAST_PERIODS)  {
+  if (currentKey == "day" && isSimpleForecast && currentForecastPeriod < maxForecasts)  {
   	//	Handle transition from txtforecast to simpleforecast, as
   	//	the key "period" doesn't appear until after some of the key values needed and is
   	//	used as an array index.
   	if (isSimpleForecast && currentForecastPeriod == 19) {
   		currentForecastPeriod = 0;
   	}
-  	forecastDay[currentForecastPeriod] = value;
+  	forecasts[currentForecastPeriod].forecastDay = value;
   }
   // end fowlerk add
 
@@ -207,36 +208,6 @@ void WundergroundForecast::startArray() {
 
 }
 
-String WundergroundForecast::getForecastIcon(int period) {
-  return getMeteoconIcon(forecastIcon[period]);
-}
-
-String WundergroundForecast::getForecastTitle(int period) {
-  return forecastTitle[period];
-}
-
-String WundergroundForecast::getForecastLowTemp(int period) {
-  return forecastLowTemp[period];
-}
-
-String WundergroundForecast::getForecastHighTemp(int period) {
-  return forecastHighTemp[period];
-}
-
-String WundergroundForecast::getForecastDay(int period) {
-  return forecastDay[period];
-}
-
-String WundergroundForecast::getForecastMonth(int period) {
-  return forecastMonth[period];
-}
-
-String WundergroundForecast::getForecastText(int period) {
-  return forecastText[period];
-}
-String WundergroundForecast::getPoP(int period) {
-  return PoP[period];
-}
 
 
 String WundergroundForecast::getMeteoconIcon(String iconText) {

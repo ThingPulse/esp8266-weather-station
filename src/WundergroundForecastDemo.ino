@@ -83,19 +83,20 @@ void setup() {
 
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
+  uint8_t maxForecasts = 10;
+  WGForecast forecasts[maxForecasts];
+  wunderground.updateForecast(forecasts, maxForecasts, WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
 
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
-
-  for (int i = 0; i < MAX_FORECAST_PERIODS; i++) {
+  for (int i = 0; i < maxForecasts; i++) {
     Serial.println("------------------------------------");
-    Serial.println("getForecastIcon: " + wunderground.getForecastIcon(i));
-    Serial.println("getForecastTitle: " + wunderground.getForecastTitle(i));
-    Serial.println("getForecastLowTemp: " + wunderground.getForecastLowTemp(i));
-    Serial.println("getForecastHighTemp: " + wunderground.getForecastHighTemp(i));
-    Serial.println("getForecastDay: " + wunderground.getForecastDay(i));
-    Serial.println("getForecastMonth: " + wunderground.getForecastMonth(i));
-    Serial.println("getForecastText: " + wunderground.getForecastText(i));
-    Serial.println("getPoP: " + wunderground.getPoP(i));
+    Serial.println("getForecastIcon: " + forecasts[i].forecastIcon);
+    Serial.println("getForecastTitle: " + forecasts[i].forecastTitle);
+    Serial.println("getForecastLowTemp: " + forecasts[i].forecastLowTemp);
+    Serial.println("getForecastHighTemp: " + forecasts[i].forecastHighTemp);
+    Serial.println("getForecastDay: " + forecasts[i].forecastDay);
+    Serial.println("getForecastMonth: " + forecasts[i].forecastMonth);
+    Serial.println("getForecastText: " + forecasts[i].forecastText);
+    Serial.println("getPoP: " + forecasts[i].PoP);
 
   }
 

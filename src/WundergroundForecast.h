@@ -28,13 +28,23 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
-#define MAX_FORECAST_PERIODS 20  // Changed from 7 to 12 to support 6 day / 2 screen forecast (Neptune)
-								 // Changed to 20 to support max 10-day forecast returned from 'forecast10day' API (fowlerk)
+struct WGForecast {
+  String forecastIcon;
+  String forecastTitle;
+  String forecastLowTemp;
+  String forecastHighTemp;
+  String forecastDay;
+  String forecastMonth;
+  String forecastText;
+  String PoP;
+};
 
 class WundergroundForecast: public JsonListener {
   private:
     String currentKey;
     String currentParent = "";
+    WGForecast *forecasts;
+    uint8_t maxForecasts;
     long localEpoc = 0;
     int gmtOffset = 1;
     long localMillisAtUpdate;
@@ -42,40 +52,17 @@ class WundergroundForecast: public JsonListener {
     boolean isMetric = true;
     bool isSimpleForecast = false;
 
-    void doUpdate(String url);
+    void doUpdate(WGForecast *forecasts, uint8_t maxForecasts, String url);
 
     int currentForecastPeriod;
-    String forecastIcon [MAX_FORECAST_PERIODS];
-    String forecastTitle [MAX_FORECAST_PERIODS];
-    String forecastLowTemp [MAX_FORECAST_PERIODS];
-    String forecastHighTemp [MAX_FORECAST_PERIODS];
-    String forecastDay [MAX_FORECAST_PERIODS/2];
-    String forecastMonth [MAX_FORECAST_PERIODS/2];
-    String forecastText [MAX_FORECAST_PERIODS];
-    String PoP [MAX_FORECAST_PERIODS];
+
 
 
   public:
     WundergroundForecast(boolean isMetric);
-    void updateForecast(String apiKey, String language, String country, String city);
-    void updateForecastPWS(String apiKey, String language, String pws);
-    void updateForecastZMW(String apiKey, String language, String zmwCode);
-
-    String getForecastIcon(int period);
-
-    String getForecastTitle(int period);
-
-    String getForecastLowTemp(int period);
-
-    String getForecastHighTemp(int period);
-
-	  String getForecastDay(int period);
-
-	  String getForecastMonth(int period);
-
-	  String getForecastText(int period);
-
-	  String getPoP(int period);
+    void updateForecast(WGForecast *forecasts, uint8_t maxForecasts, String apiKey, String language, String country, String city);
+    void updateForecastPWS(WGForecast *forecasts, uint8_t maxForecasts, String apiKey, String language, String pws);
+    void updateForecastZMW(WGForecast *forecasts, uint8_t maxForecasts, String apiKey, String language, String zmwCode);
 
     String getMeteoconIcon(String iconText);
 
