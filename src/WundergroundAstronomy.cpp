@@ -31,16 +31,17 @@ See more at http://blog.squix.ch
 WundergroundAstronomy::WundergroundAstronomy(boolean _usePM) {
   usePM = _usePM;
 }
-void WundergroundAstronomy::updateAstronomy(String apiKey, String language, String country, String city) {
-  doUpdate("/api/" + apiKey + "/astronomy/lang:" + language + "/q/" + country + "/" + city + ".json");
+void WundergroundAstronomy::updateAstronomy(WGAstronomy *astronomy, String apiKey, String language, String country, String city) {
+  doUpdate(astronomy, "/api/" + apiKey + "/astronomy/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 // end JJG add  ////////////////////////////////////////////////////////////////////
 
-void WundergroundAstronomy::updateAstronomyPWS(String apiKey, String language, String pws) {
-  doUpdate("/api/" + apiKey + "/astronomy/lang:" + language + "/q/pws:" + pws + ".json");
+void WundergroundAstronomy::updateAstronomyPWS(WGAstronomy *astronomy, String apiKey, String language, String pws) {
+  doUpdate(astronomy, "/api/" + apiKey + "/astronomy/lang:" + language + "/q/pws:" + pws + ".json");
 }
 
-void WundergroundAstronomy::doUpdate(String url) {
+void WundergroundAstronomy::doUpdate(WGAstronomy *astronomy, String url) {
+  this->astronomy = astronomy;
   JsonStreamingParser parser;
   parser.setListener(this);
   WiFiClient client;
@@ -100,15 +101,15 @@ void WundergroundAstronomy::key(String key) {
 void WundergroundAstronomy::value(String value) {
 
   if (currentKey == "ageOfMoon") {
-    moonAge = value;
+    astronomy->moonAge = value;
   }
 
   if (currentKey == "phaseofMoon") {
-    moonPhase = value;
+    astronomy->moonPhase = value;
   }
 
   if (currentKey == "percentIlluminated") {
-    moonPctIlum = value;
+    astronomy->moonPctIlum = value;
   }
 
 
@@ -122,13 +123,13 @@ void WundergroundAstronomy::value(String value) {
 		else isPM = false;
 		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
-		sunriseTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
+		astronomy->sunriseTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
         //sunriseTime = value;
       }
 	if (currentKey == "minute") {
 		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		sunriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+		astronomy->sunriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
 		if (isPM) sunriseTime += "pm";
 		else if (usePM) sunriseTime += "am";
 	}
@@ -145,13 +146,13 @@ void WundergroundAstronomy::value(String value) {
 		else isPM = false;
 		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
-		sunsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
+		astronomy->sunsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
        // sunsetTime = value;
       }
 	if (currentKey == "minute") {
 		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		sunsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+		astronomy->sunsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
 		if (isPM) sunsetTime += "pm";
 		else if(usePM) sunsetTime += "am";
     }
@@ -167,13 +168,13 @@ void WundergroundAstronomy::value(String value) {
 		else isPM = false;
 		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
-		moonriseTime = String(tempHourBuff);			// fowlerk add for formatting, 12/22/16
+		astronomy->moonriseTime = String(tempHourBuff);			// fowlerk add for formatting, 12/22/16
        // moonriseTime = value;
       }
 	if (currentKey == "minute") {
 		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		moonriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+		astronomy->moonriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
 		if (isPM) moonriseTime += "pm";
 		else if (usePM) moonriseTime += "am";
     }
@@ -183,12 +184,12 @@ void WundergroundAstronomy::value(String value) {
 	if (currentKey == "hour") {
 		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempHourBuff, "%2d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		moonsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
+		astronomy->moonsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
     }
 	if (currentKey == "minute") {
 		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
 		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		moonsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+		astronomy->moonsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
     }
   }
 
@@ -214,33 +215,3 @@ void WundergroundAstronomy::endDocument() {
 void WundergroundAstronomy::startArray() {
 
 }
-
-
-// JJG added ... /////////////////////////////////////////////////////////////////////////////////////////
-String WundergroundAstronomy::getMoonPctIlum() {
-  return moonPctIlum;
-}
-
-String WundergroundAstronomy::getMoonAge() {
-  return moonAge;
-}
-
-String WundergroundAstronomy::getMoonPhase() {
-  return moonPhase;
-}
-
-String WundergroundAstronomy::getSunriseTime() {
-  return sunriseTime;
- }
-
-String WundergroundAstronomy::getSunsetTime() {
-  return sunsetTime;
- }
-
-String WundergroundAstronomy::getMoonriseTime() {
-  return moonriseTime;
- }
-
-String WundergroundAstronomy::getMoonsetTime() {
-  return moonsetTime;
- }

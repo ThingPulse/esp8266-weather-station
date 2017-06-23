@@ -83,16 +83,16 @@ void setup() {
 
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
+  WGAstronomy astronomy;
+  wunderground.updateAstronomy(&astronomy, WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
 
-  wunderground.updateAstronomy(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
-
-  Serial.println("wundergroundMoonPctIlum: " + wunderground.getMoonPctIlum());
-  Serial.println("wundergroundMoonAge: " + wunderground.getMoonAge());
-  Serial.println("wundergroundMoonPhase: " + wunderground.getMoonPhase());
-  Serial.println("wundergroundSunriseTime: " + wunderground.getSunriseTime());
-  Serial.println("wundergroundSunsetTime: " + wunderground.getSunsetTime());
-  Serial.println("wundergroundMoonriseTime: " + wunderground.getMoonriseTime());
-  Serial.println("wundergroundMoonsetTime: " + wunderground.getMoonsetTime());
+  Serial.println("moonPctIlum: " + astronomy.moonPctIlum);
+  Serial.println("moonAge: " + astronomy.moonAge);
+  Serial.println("moonPhase: " + astronomy.moonPhase);
+  Serial.println("sunriseTime: " + astronomy.sunriseTime);
+  Serial.println("sunsetTime: " + astronomy.sunsetTime);
+  Serial.println("moonriseTime: " + astronomy.moonriseTime);
+  Serial.println("moonsetTime: " + astronomy.moonsetTime);
 
 
   Serial.println();

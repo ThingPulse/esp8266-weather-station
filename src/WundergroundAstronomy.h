@@ -28,8 +28,19 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
+struct WGAstronomy {
+  String moonPctIlum;
+  String moonAge;
+  String moonPhase;
+  String sunriseTime;
+  String sunsetTime;
+  String moonriseTime;
+  String moonsetTime;
+};
+
 class WundergroundAstronomy: public JsonListener {
   private:
+    WGAstronomy *astronomy;
     String currentKey;
     String currentParent = "";
     String moonPctIlum;  // not used
@@ -43,21 +54,13 @@ class WundergroundAstronomy: public JsonListener {
     boolean usePM;
     boolean isPM;
 
-    void doUpdate(String url);
+    void doUpdate(WGAstronomy *astronomy, String url);
 
 
   public:
     WundergroundAstronomy(boolean usePM);
-    void updateAstronomy(String apiKey, String language, String country, String city);
-    void updateAstronomyPWS(String apiKey, String language, String pws);
-
-    String getMoonPctIlum();
-    String getMoonAge();
-    String getMoonPhase();
-    String getSunriseTime();
-    String getSunsetTime();
-    String getMoonriseTime();
-    String getMoonsetTime();
+    void updateAstronomy(WGAstronomy *astronomy, String apiKey, String language, String country, String city);
+    void updateAstronomyPWS(WGAstronomy *astronomy, String apiKey, String language, String pws);
 
     virtual void whitespace(char c);
 
