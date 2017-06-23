@@ -32,7 +32,7 @@ See more at https://blog.squix.org
 /**
  * Wunderground Settings
  */
-const String  WUNDERGRROUND_API_KEY = "808ba87ed77c4501";
+const String  WUNDERGRROUND_API_KEY = "<Wunderground-KEY>";
 const boolean IS_METRIC = true;
 const boolean USE_PM = false;
 // to retrieve the ZMW-Code use

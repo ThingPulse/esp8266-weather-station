@@ -32,7 +32,7 @@ See more at https://blog.squix.org
 /**
  * Wunderground Settings
  */
-const String  WUNDERGRROUND_API_KEY = "808ba87ed77c4501";
+const String  WUNDERGRROUND_API_KEY = "<Wunderground-KEY>";
 const String  WUNDERGR_UND_STATE_OR_COUNTRY = "CH";
 const String  WUNDERGR_UND_CITY = "ZURICH";
 const String  WUNDERGRROUND_LANGUAGE = "EN";
