@@ -24,4 +24,4 @@ install:
     - platformio lib update
 
 script:
-    - platformio ci --lib="." --board=nodemcuv2
+    - platformio ci --lib="." --project-option="lib_deps=JsonStreamingParser" --board=nodemcuv2
