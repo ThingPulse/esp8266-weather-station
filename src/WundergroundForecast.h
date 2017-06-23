@@ -38,11 +38,8 @@ class WundergroundForecast: public JsonListener {
     long localEpoc = 0;
     int gmtOffset = 1;
     long localMillisAtUpdate;
-    String date = "-";
-    String observationDate = "-";
+
     boolean isMetric = true;
-    bool usePM = false;
-    bool isPM = false;
     bool isSimpleForecast = false;
 
     void doUpdate(String url);
