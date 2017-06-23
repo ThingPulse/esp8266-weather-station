@@ -28,54 +28,39 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
+struct WGConditions {
+  String currentTemp;
+  String windSpeed;
+  String windDir;
+  String weatherIcon;
+  String weatherText;
+  String humidity;
+  String pressure;
+  String dewPoint;
+  String precipitationToday;
+  String feelslike;
+  String UV;
+  String observationTime;
+  String date = "-";
+  String observationDate = "-";
+};
 
 class WundergroundConditions: public JsonListener {
   private:
-    String currentKey;
-    String currentParent = "";
-
-    String date = "-";
-    String observationDate = "-";
     boolean isMetric = true;
-    String currentTemp;
+    String currentKey;
+    String currentParent;
+    WGConditions *conditions;
 
-    String windSpeed;
-    String windDir;
-    String weatherIcon;
-    String weatherText;
-    String humidity;
-    String pressure;
-    String dewPoint;
-    String precipitationToday;
-    String feelslike;
-    String UV;
-    String observationTime;
 
-  void doUpdate(String url);
+  void doUpdate(WGConditions *conditions, String url);
 
   public:
     WundergroundConditions(boolean isMetric);
-    void updateConditions(String apiKey, String language, String country, String city);
-    void updateConditions(String apiKey, String language, String zmwCode);
-    void updateConditionsPWS(String apiKey, String language, String pws);
-    String getDate();
-    String getObservationDate();
-    String getWindSpeed();
-    String getWindDir();
-    long getCurrentEpoch();
-    String getCurrentTemp();
-    String getTodayIcon();
-    String getTodayIconText();
-    String getMeteoconIcon(String iconText);
-    String getWeatherText();
-    String getHumidity();
-    String getPressure();
-    String getDewPoint();
-    String getPrecipitationToday();
-	  String getFeelsLike();
-	  String getUV();
-	  String getObservationTime();
-
+    void updateConditions(WGConditions *conditions, String apiKey, String language, String country, String city);
+    void updateConditions(WGConditions *conditions, String apiKey, String language, String zmwCode);
+    void updateConditionsPWS(WGConditions *conditions, String apiKey, String language, String pws);
+    String getMeteoconIcon(String icon);
     virtual void whitespace(char c);
 
     virtual void startDocument();

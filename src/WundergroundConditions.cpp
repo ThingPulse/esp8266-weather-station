@@ -32,21 +32,22 @@ WundergroundConditions::WundergroundConditions(boolean _isMetric) {
 }
 
 
-void WundergroundConditions::updateConditions(String apiKey, String language, String country, String city) {
-  doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/" + country + "/" + city + ".json");
+void WundergroundConditions::updateConditions(WGConditions *conditions, String apiKey, String language, String country, String city) {
+  doUpdate(conditions, "/api/" + apiKey + "/conditions/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
 // wunderground change the API URL scheme:
 // http://api.wunderground.com/api/<API-KEY>/conditions/lang:de/q/zmw:00000.215.10348.json
-void WundergroundConditions::updateConditions(String apiKey, String language, String zmwCode) {
-  doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/zmw:" + zmwCode + ".json");
+void WundergroundConditions::updateConditions(WGConditions *conditions, String apiKey, String language, String zmwCode) {
+  doUpdate(conditions, "/api/" + apiKey + "/conditions/lang:" + language + "/q/zmw:" + zmwCode + ".json");
 }
 
-void WundergroundConditions::updateConditionsPWS(String apiKey, String language, String pws) {
-  doUpdate("/api/" + apiKey + "/conditions/lang:" + language + "/q/pws:" + pws + ".json");
+void WundergroundConditions::updateConditionsPWS(WGConditions *conditions, String apiKey, String language, String pws) {
+  doUpdate(conditions, "/api/" + apiKey + "/conditions/lang:" + language + "/q/pws:" + pws + ".json");
 }
 
-void WundergroundConditions::doUpdate(String url) {
+void WundergroundConditions::doUpdate(WGConditions *conditions, String url) {
+  this->conditions = conditions;
   JsonStreamingParser parser;
   parser.setListener(this);
   WiFiClient client;
@@ -106,75 +107,75 @@ void WundergroundConditions::key(String key) {
 void WundergroundConditions::value(String value) {
 
   if (currentKey == "wind_mph" && !isMetric) {
-    windSpeed = value + "mph";
+    conditions->windSpeed = value + "mph";
   }
 
   if (currentKey == "wind_kph" && isMetric) {
-    windSpeed = value + "km/h";
+    conditions->windSpeed = value + "km/h";
   }
 
    if (currentKey == "wind_dir") {
-    windDir = value;
+    conditions->windDir = value;
   }
 
    if (currentKey == "local_time_rfc822") {
-    date = value.substring(0, 16);
+    conditions->date = value.substring(0, 16);
   }
 
   if (currentKey == "observation_time_rfc822") {
-    observationDate = value.substring(0, 16);
+    conditions->observationDate = value.substring(0, 16);
   }
 
   if (currentKey == "observation_time") {
-    observationTime = value;
+    conditions->observationTime = value;
   }
 
 
   if (currentKey == "temp_f" && !isMetric) {
-    currentTemp = value;
+    conditions->currentTemp = value;
   }
   if (currentKey == "temp_c" && isMetric) {
-    currentTemp = value;
+    conditions->currentTemp = value;
   }
   if (currentKey == "icon") {
-      weatherIcon = value;
+    conditions->weatherIcon = value;
   }
   if (currentKey == "weather") {
-    weatherText = value;
+    conditions->weatherText = value;
   }
   if (currentKey == "relative_humidity") {
-    humidity = value;
+    conditions->humidity = value;
   }
   if (currentKey == "pressure_mb" && isMetric) {
-    pressure = value + "mb";
+    conditions->pressure = value + "mb";
   }
   if (currentKey == "pressure_in" && !isMetric) {
-    pressure = value + "in";
+    conditions->pressure = value + "in";
   }
 
   if (currentKey == "feelslike_f" && !isMetric) {
-    feelslike = value;
+    conditions->feelslike = value;
   }
 
   if (currentKey == "feelslike_c" && isMetric) {
-    feelslike = value;
+    conditions->feelslike = value;
   }
 
   if (currentKey == "UV") {
-    UV = value;
+    conditions->UV = value;
   }
 
   if (currentKey == "dewpoint_f" && !isMetric) {
-    dewPoint = value;
+    conditions->dewPoint = value;
   }
   if (currentKey == "dewpoint_c" && isMetric) {
-    dewPoint = value;
+    conditions->dewPoint = value;
   }
   if (currentKey == "precip_today_metric" && isMetric) {
-    precipitationToday = value + "mm";
+    conditions->precipitationToday = value + "mm";
   }
   if (currentKey == "precip_today_in" && !isMetric) {
-    precipitationToday = value + "in";
+    conditions->precipitationToday = value + "in";
   }
 
 }
@@ -200,64 +201,6 @@ void WundergroundConditions::startArray() {
 
 }
 
-String WundergroundConditions::getDate() {
-  return date;
-}
-String WundergroundConditions::getObservationDate() {
-  return observationDate;
-}
-
-String WundergroundConditions::getWindSpeed() {
-  return windSpeed;
- }
-
-String WundergroundConditions::getWindDir() {
-  return windDir;
-}
-
-String WundergroundConditions::getCurrentTemp() {
-  return currentTemp;
-}
-
-String WundergroundConditions::getWeatherText() {
-  return weatherText;
-}
-
-String WundergroundConditions::getHumidity() {
-  return humidity;
-}
-
-String WundergroundConditions::getPressure() {
-  return pressure;
-}
-
-String WundergroundConditions::getDewPoint() {
-  return dewPoint;
-}
-// fowlerk added...
-String WundergroundConditions::getFeelsLike() {
-  return feelslike;
-}
-
-String WundergroundConditions::getUV() {
-  return UV;
-}
-
-String WundergroundConditions::getObservationTime() {
-  return observationTime;
-}
-
-String WundergroundConditions::getPrecipitationToday() {
-  return precipitationToday;
-}
-
-String WundergroundConditions::getTodayIcon() {
-  return getMeteoconIcon(weatherIcon);
-}
-
-String WundergroundConditions::getTodayIconText() {
-  return weatherIcon;
-}
 
 String WundergroundConditions::getMeteoconIcon(String iconText) {
   if (iconText == "chanceflurries") return "F";

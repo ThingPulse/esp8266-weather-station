@@ -88,23 +88,23 @@ void setup() {
 
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
+  WGConditions conditions;
+  wunderground.updateConditions(&conditions, WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_ZMW_CODE);
 
-  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_ZMW_CODE);
+  Serial.println("wundergroundDate: " + conditions.date);
 
-  Serial.println("wundergroundDate: " + wunderground.getDate());
+  Serial.println("wundergroundWindSpeed: " + conditions.windSpeed);
+  Serial.println("wundergroundWindDir: " + conditions.windDir);
 
-  Serial.println("wundergroundWindSpeed: " + wunderground.getWindSpeed());
-  Serial.println("wundergroundWindDir: " + wunderground.getWindDir());
-
-  Serial.println("wundergroundCurrentTemp: " + wunderground.getCurrentTemp());
-  Serial.println("wundergroundTodayIcon: " + wunderground.getTodayIcon());
-  Serial.println("wundergroundTodayIconText: " + wunderground.getTodayIconText());
-  Serial.println("wundergroundMeteoconIcon: " + wunderground.getMeteoconIcon(wunderground.getTodayIconText()));
-  Serial.println("wundergroundWeatherText: " + wunderground.getWeatherText());
-  Serial.println("wundergroundHumidity: " + wunderground.getHumidity());
-  Serial.println("wundergroundPressure: " + wunderground.getPressure());
-  Serial.println("wundergroundDewPoint: " + wunderground.getDewPoint());
-  Serial.println("wundergroundPrecipitationToday: " + wunderground.getPrecipitationToday());
+  Serial.println("wundergroundCurrentTemp: " + conditions.currentTemp);
+  Serial.println("wundergroundTodayIcon: " + conditions.weatherIcon);
+  Serial.println("wundergroundTodayIconText: " + conditions.weatherText);
+  Serial.println("wundergroundMeteoconIcon: " + wunderground.getMeteoconIcon(conditions.weatherIcon));
+  Serial.println("wundergroundWeatherText: " + conditions.weatherText);
+  Serial.println("wundergroundHumidity: " + conditions.humidity);
+  Serial.println("wundergroundPressure: " + conditions.pressure);
+  Serial.println("wundergroundDewPoint: " + conditions.dewPoint);
+  Serial.println("wundergroundPrecipitationToday: " + conditions.precipitationToday);
 
   Serial.println();
   Serial.println("---------------------------------------------------/\n");
