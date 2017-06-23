@@ -28,36 +28,59 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
-class WundergroundAstronomy: public JsonListener {
+#define MAX_FORECAST_PERIODS 20  // Changed from 7 to 12 to support 6 day / 2 screen forecast (Neptune)
+								 // Changed to 20 to support max 10-day forecast returned from 'forecast10day' API (fowlerk)
+
+class WundergroundForecast: public JsonListener {
   private:
     String currentKey;
     String currentParent = "";
-    String moonPctIlum;  // not used
-    String moonAge;      // make this a long?
-    String moonPhase;
-    String sunriseTime;
-    String sunsetTime;
-    String moonriseTime;
-    String moonsetTime;
-
-    boolean usePM;
-    boolean isPM;
+    long localEpoc = 0;
+    int gmtOffset = 1;
+    long localMillisAtUpdate;
+    String date = "-";
+    String observationDate = "-";
+    boolean isMetric = true;
+    bool usePM = false;
+    bool isPM = false;
+    bool isSimpleForecast = false;
 
     void doUpdate(String url);
 
+    int currentForecastPeriod;
+    String forecastIcon [MAX_FORECAST_PERIODS];
+    String forecastTitle [MAX_FORECAST_PERIODS];
+    String forecastLowTemp [MAX_FORECAST_PERIODS];
+    String forecastHighTemp [MAX_FORECAST_PERIODS];
+    String forecastDay [MAX_FORECAST_PERIODS/2];
+    String forecastMonth [MAX_FORECAST_PERIODS/2];
+    String forecastText [MAX_FORECAST_PERIODS];
+    String PoP [MAX_FORECAST_PERIODS];
+
 
   public:
-    WundergroundAstronomy(boolean usePM);
-    void updateAstronomy(String apiKey, String language, String country, String city);
-    void updateAstronomyPWS(String apiKey, String language, String pws);
+    WundergroundForecast(boolean isMetric);
+    void updateForecast(String apiKey, String language, String country, String city);
+    void updateForecastPWS(String apiKey, String language, String pws);
+    void updateForecastZMW(String apiKey, String language, String zmwCode);
 
-    String getMoonPctIlum();
-    String getMoonAge();
-    String getMoonPhase();
-    String getSunriseTime();
-    String getSunsetTime();
-    String getMoonriseTime();
-    String getMoonsetTime();
+    String getForecastIcon(int period);
+
+    String getForecastTitle(int period);
+
+    String getForecastLowTemp(int period);
+
+    String getForecastHighTemp(int period);
+
+	  String getForecastDay(int period);
+
+	  String getForecastMonth(int period);
+
+	  String getForecastText(int period);
+
+	  String getPoP(int period);
+
+    String getMeteoconIcon(String iconText);
 
     virtual void whitespace(char c);
 
