@@ -27,9 +27,8 @@ See more at http://blog.squix.ch
 #include <WiFiClient.h>
 #include "WundergroundConditions.h"
 
-WundergroundConditions::WundergroundConditions(boolean _isMetric, boolean _usePM) {
+WundergroundConditions::WundergroundConditions(boolean _isMetric) {
   isMetric = _isMetric;
-  usePM = _usePM;
 }
 
 

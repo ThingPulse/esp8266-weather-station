@@ -26,22 +26,19 @@ SOFTWARE.
 
 #include <ESP8266WiFi.h>
 #include <JsonListener.h>
-#include "WundergroundConditions.h"
+#include "WundergroundAstronomy.h"
 
 /**
  * Wunderground Settings
  */
 const String  WUNDERGRROUND_API_KEY = "808ba87ed77c4501";
-const boolean IS_METRIC = true;
+const String  WUNDERGR_UND_STATE_OR_COUNTRY = "CH";
+const String  WUNDERGR_UND_CITY = "ZURICH";
+const String  WUNDERGRROUND_LANGUAGE = "EN";
 const boolean USE_PM = false;
-// to retrieve the ZMW-Code use
-// 		http://api.wunderground.com/api/<API-KEY>/conditions/q/<COUNTRY-CODE>/<CITY-NAME>.json
-// for example and grab for the zmw ...
-const String  WUNDERGROUND_ZMW_CODE = "00000.215.10348"; // Braunschweig-Flughafen -> EDVE
-const String  WUNDERGRROUND_LANGUAGE = "DE";
 
 // initiate the WundergoundClient
-WundergroundConditions wunderground(IS_METRIC, USE_PM);
+WundergroundAstronomy wunderground(USE_PM);
 
 
 /**
@@ -60,9 +57,7 @@ WiFiClient wifiClient;
  * Helping funtions
  */
 void connectWifi() {
-  WiFi.hostname(ESP_HOST_NAME);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  delay(20);
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
   while (WiFi.status() != WL_CONNECTED) {
@@ -82,28 +77,22 @@ void connectWifi() {
 void setup() {
 
   Serial.begin(115200);
-
+  delay(500);
   connectWifi();
 
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
 
-  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_ZMW_CODE);
+  wunderground.updateAstronomy(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
 
-  Serial.println("wundergroundDate: " + wunderground.getDate());
+  Serial.println("wundergroundMoonPctIlum: " + wunderground.getMoonPctIlum());
+  Serial.println("wundergroundMoonAge: " + wunderground.getMoonAge());
+  Serial.println("wundergroundMoonPhase: " + wunderground.getMoonPhase());
+  Serial.println("wundergroundSunriseTime: " + wunderground.getSunriseTime());
+  Serial.println("wundergroundSunsetTime: " + wunderground.getSunsetTime());
+  Serial.println("wundergroundMoonriseTime: " + wunderground.getMoonriseTime());
+  Serial.println("wundergroundMoonsetTime: " + wunderground.getMoonsetTime());
 
-  Serial.println("wundergroundWindSpeed: " + wunderground.getWindSpeed());
-  Serial.println("wundergroundWindDir: " + wunderground.getWindDir());
-
-  Serial.println("wundergroundCurrentTemp: " + wunderground.getCurrentTemp());
-  Serial.println("wundergroundTodayIcon: " + wunderground.getTodayIcon());
-  Serial.println("wundergroundTodayIconText: " + wunderground.getTodayIconText());
-  Serial.println("wundergroundMeteoconIcon: " + wunderground.getMeteoconIcon(wunderground.getTodayIconText()));
-  Serial.println("wundergroundWeatherText: " + wunderground.getWeatherText());
-  Serial.println("wundergroundHumidity: " + wunderground.getHumidity());
-  Serial.println("wundergroundPressure: " + wunderground.getPressure());
-  Serial.println("wundergroundDewPoint: " + wunderground.getDewPoint());
-  Serial.println("wundergroundPrecipitationToday: " + wunderground.getPrecipitationToday());
 
   Serial.println();
   Serial.println("---------------------------------------------------/\n");

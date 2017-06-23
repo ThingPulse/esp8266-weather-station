@@ -33,52 +33,36 @@ See more at http://blog.squix.ch
 
 #define MAX_WEATHER_ALERTS 6  	 // The maximum number of concurrent weather alerts supported by the library
 
-class WundergroundConditions: public JsonListener {
+class WundergroundAstronomy: public JsonListener {
   private:
     String currentKey;
     String currentParent = "";
+    String moonPctIlum;  // not used
+    String moonAge;      // make this a long?
+    String moonPhase;
+    String sunriseTime;
+    String sunsetTime;
+    String moonriseTime;
+    String moonsetTime;
 
-    String date = "-";
-    String observationDate = "-";
-    boolean isMetric = true;
-    String currentTemp;
+    boolean usePM;
+    boolean isPM;
 
-    String windSpeed;
-    String windDir;
-    String weatherIcon;
-    String weatherText;
-    String humidity;
-    String pressure;
-    String dewPoint;
-    String precipitationToday;
-    String feelslike;
-    String UV;
-    String observationTime;
+    void doUpdate(String url);
 
-  void doUpdate(String url);
 
   public:
-    WundergroundConditions(boolean isMetric);
-    void updateConditions(String apiKey, String language, String country, String city);
-    void updateConditions(String apiKey, String language, String zmwCode);
-    void updateConditionsPWS(String apiKey, String language, String pws);
-    String getDate();
-    String getObservationDate();
-    String getWindSpeed();
-    String getWindDir();
-    long getCurrentEpoch();
-    String getCurrentTemp();
-    String getTodayIcon();
-    String getTodayIconText();
-    String getMeteoconIcon(String iconText);
-    String getWeatherText();
-    String getHumidity();
-    String getPressure();
-    String getDewPoint();
-    String getPrecipitationToday();
-	  String getFeelsLike();
-	  String getUV();
-	  String getObservationTime();
+    WundergroundAstronomy(boolean usePM);
+    void updateAstronomy(String apiKey, String language, String country, String city);
+    void updateAstronomyPWS(String apiKey, String language, String pws);
+
+    String getMoonPctIlum();
+    String getMoonAge();
+    String getMoonPhase();
+    String getSunriseTime();
+    String getSunsetTime();
+    String getMoonriseTime();
+    String getMoonsetTime();
 
     virtual void whitespace(char c);
 
