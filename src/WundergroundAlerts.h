@@ -30,53 +30,41 @@ See more at http://blog.squix.ch
 
 #define MAX_WEATHER_ALERTS 6  	 // The maximum number of concurrent weather alerts supported by the library
 
+struct WGAlert {
+  String activeAlerts;
+  String activeAlertsMessage;
+  bool   activeAlertsMessageTrunc;
+  String activeAlertsText;
+  String activeAlertsStart;
+  String activeAlertsEnd;
+  String activeAlertsPhenomena;
+  String activeAlertsSignificance;
+  String activeAlertsAttribution;
+};
+
 class WundergroundAlerts: public JsonListener {
   private:
     String currentKey;
     String currentParent = "";
+    WGAlert *alerts;
+    uint8_t maxAlerts;
 
 
-    void doUpdate(String url);
+    void doUpdate(WGAlert *alerts, uint8_t maxAlerts, String url);
 
-	boolean isAlerts = false;				// Added by fowlerk
-	boolean isAlertUS = false;				// Added by fowlerk
-	boolean isAlertEU = false;				// Added by fowlerk
-	String activeAlerts [MAX_WEATHER_ALERTS];			   // For a max of 6 currently-active alerts
-	String activeAlertsMessage [MAX_WEATHER_ALERTS];	   // Alert full-text message
-	bool   activeAlertsMessageTrunc [MAX_WEATHER_ALERTS];  // Alert full-text message truncation flag
-	String activeAlertsText [MAX_WEATHER_ALERTS];		   // Alerts description text
-	String activeAlertsStart [MAX_WEATHER_ALERTS];		   // Start of alert date/time
-	String activeAlertsEnd [MAX_WEATHER_ALERTS];		   // Expiration of alert date/time
-	String activeAlertsPhenomena [MAX_WEATHER_ALERTS];	   // Alert phenomena code
-	String activeAlertsSignificance [MAX_WEATHER_ALERTS];  // Alert significance code
-	String activeAlertsAttribution [MAX_WEATHER_ALERTS];   // Alert significance code
-	int activeAlertsCnt;				   				   // Number of active alerts
-	int currentAlert;					   				   // For indexing the current active alert
-	// end fowlerk add
+    boolean isAlerts = false;
+    boolean isAlertUS = false;
+    boolean isAlertEU = false;
+
+    int activeAlertsCnt;				   				   // Number of active alerts
+    int currentAlert;					   				   // For indexing the current active alert
+
 
   public:
     WundergroundAlerts();
-	  void updateAlerts(String apiKey, String language, String country, String city);		// Added by fowlerk, 18-Dec-2016
-	  void updateAlertsPWS(String apiKey, String language, String country, String pws);
-	  int getActiveAlertsCnt();
-
-	  String getActiveAlerts(int alertIndex);
-
-	  String getActiveAlertsText(int alertIndex);
-
-	  String getActiveAlertsMessage(int alertIndex);
-
-	  bool getActiveAlertsMessageTrunc(int alertIndex);
-
-	  String getActiveAlertsStart(int alertIndex);
-
-	  String getActiveAlertsEnd(int alertIndex);
-
-	  String getActiveAlertsPhenomena(int alertIndex);
-
-	  String getActiveAlertsSignificance(int alertIndex);
-
-	  String getActiveAlertsAttribution(int alertIndex);
+    void updateAlerts(WGAlert *alert, uint8_t maxAlerts, String apiKey, String language, String country, String city);		// Added by fowlerk, 18-Dec-2016
+    void updateAlertsPWS(WGAlert *alert, uint8_t maxAlerts, String apiKey, String language, String country, String pws);
+    int getActiveAlertsCnt();
 
     virtual void whitespace(char c);
 

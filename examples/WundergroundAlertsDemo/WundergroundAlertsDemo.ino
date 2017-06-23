@@ -83,21 +83,21 @@ void setup() {
 
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
-
-  wunderground.updateAlerts(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
+  uint8_t maxAlerts = 3;
+  WGAlert alerts[maxAlerts];
+  wunderground.updateAlerts(alerts, maxAlerts, WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGR_UND_STATE_OR_COUNTRY, WUNDERGR_UND_CITY);
 
   for (int i = 0; i < wunderground.getActiveAlertsCnt(); i++) {
     Serial.println("------------------------------------");
-
-    Serial.println("getActiveAlerts: " + wunderground.getActiveAlerts(i));
-    Serial.println("getActiveAlertsText: " + wunderground.getActiveAlertsText(i));
-    Serial.println("getActiveAlertsMessage: " + wunderground.getActiveAlertsMessage(i));
-    Serial.println("getActiveAlertsMessageTrunc: " + wunderground.getActiveAlertsMessageTrunc(i));
-    Serial.println("getActiveAlertsStart: " + wunderground.getActiveAlertsStart(i));
-    Serial.println("getActiveAlertsEnd: " + wunderground.getActiveAlertsEnd(i));
-    Serial.println("getActiveAlertsPhenomena: " + wunderground.getActiveAlertsPhenomena(i));
-    Serial.println("getActiveAlertsSignificance: " + wunderground.getActiveAlertsSignificance(i));
-    Serial.println("getActiveAlertsAttribution: " + wunderground.getActiveAlertsAttribution(i));
+    Serial.println("activeAlerts: " + alerts[i].activeAlerts);
+    Serial.println("activeAlertsMessage: " + alerts[i].activeAlertsMessage);
+    Serial.println("activeAlertsMessageTrunc: " + alerts[i].activeAlertsMessageTrunc);
+    Serial.println("activeAlertsText: " + alerts[i].activeAlertsText);
+    Serial.println("activeAlertsStart: " + alerts[i].activeAlertsStart);
+    Serial.println("activeAlertsEnd: " + alerts[i].activeAlertsEnd);
+    Serial.println("activeAlertsPhenomena: " + alerts[i].activeAlertsPhenomena);
+    Serial.println("activeAlertsSignificance: " + alerts[i].activeAlertsSignificance);
+    Serial.println("activeAlertsAttribution: " + alerts[i].activeAlertsAttribution);
   }
 
 

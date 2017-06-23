@@ -30,7 +30,7 @@ See more at http://blog.squix.ch
 WundergroundAlerts::WundergroundAlerts() {
 
 }
-void WundergroundAlerts::updateAlerts(String apiKey, String language, String country, String city) {
+void WundergroundAlerts::updateAlerts(WGAlert *alerts, uint8_t maxAlerts, String apiKey, String language, String country, String city) {
   currentAlert = 0;
   activeAlertsCnt = 0;
   isAlerts = true;
@@ -41,11 +41,11 @@ void WundergroundAlerts::updateAlerts(String apiKey, String language, String cou
 	isAlertUS = false;
 	isAlertEU = true;
   }
-  doUpdate("/api/" + apiKey + "/alerts/lang:" + language + "/q/" + country + "/" + city + ".json");
+  doUpdate(alerts, maxAlerts, "/api/" + apiKey + "/alerts/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 // end fowlerk add
 
-void WundergroundAlerts::updateAlertsPWS(String apiKey, String language, String country, String pws) {
+void WundergroundAlerts::updateAlertsPWS(WGAlert *alert, uint8_t maxAlerts, String apiKey, String language, String country, String pws) {
   currentAlert = 0;
   activeAlertsCnt = 0;
   isAlerts = true;
@@ -56,10 +56,12 @@ void WundergroundAlerts::updateAlertsPWS(String apiKey, String language, String 
     isAlertUS = false;
     isAlertEU = true;
   }
-  doUpdate("/api/" + apiKey + "/alerts/lang:" + language + "/q/pws:" + pws + ".json");
+  doUpdate(alerts, maxAlerts, "/api/" + apiKey + "/alerts/lang:" + language + "/q/pws:" + pws + ".json");
 }
 
-void WundergroundAlerts::doUpdate(String url) {
+void WundergroundAlerts::doUpdate(WGAlert *alerts, uint8_t maxAlerts, String url) {
+  this->alerts = alerts;
+  this->maxAlerts = maxAlerts;
   JsonStreamingParser parser;
   parser.setListener(this);
   WiFiClient client;
@@ -102,6 +104,7 @@ void WundergroundAlerts::doUpdate(String url) {
       }
     }
   }
+  this->alerts = nullptr;
 }
 
 void WundergroundAlerts::whitespace(char c) {
@@ -120,64 +123,74 @@ void WundergroundAlerts::value(String value) {
   if (currentKey == "type" && isAlerts) {
   	activeAlertsCnt++;
   	currentAlert++;
-  	activeAlerts[currentAlert-1] = value;
-  	Serial.print("Alert type processed, value:  "); Serial.println(activeAlerts[currentAlert-1]);
+  	alerts[currentAlert-1].activeAlerts = value;
+  	Serial.print("Alert type processed, value:  ");
+    Serial.println(alerts[currentAlert-1].activeAlerts);
   }
   if (currentKey == "description" && isAlerts && isAlertUS) {
-    activeAlertsText[currentAlert-1] = value;
-  	Serial.print("Alert description processed, value:  "); Serial.println(activeAlertsText[currentAlert-1]);
+    alerts[currentAlert-1].activeAlertsText = value;
+  	Serial.print("Alert description processed, value:  ");
+    Serial.println(alerts[currentAlert-1].activeAlertsText);
   }
   if (currentKey == "wtype_meteoalarm_name" && isAlerts && isAlertEU) {
-    activeAlertsText[currentAlert-1] = value;
-    Serial.print("Alert description processed, value:  "); Serial.println(activeAlertsText[currentAlert-1]);
+    alerts[currentAlert-1].activeAlertsText = value;
+    Serial.print("Alert description processed, value:  ");
+    Serial.println(alerts[currentAlert-1].activeAlertsText);
   }
   if (currentKey == "message" && isAlerts) {
-    activeAlertsMessage[currentAlert-1] = value;
-    Serial.print("Alert msg length:  "); Serial.println(activeAlertsMessage[currentAlert-1].length());
-    if(activeAlertsMessage[currentAlert-1].length() >= 511) {
-      activeAlertsMessageTrunc[currentAlert-1] = true;
+    alerts[currentAlert-1].activeAlertsMessage = value;
+    Serial.print("Alert msg length:  ");
+    Serial.println(alerts[currentAlert-1].activeAlertsMessage.length());
+    if(alerts[currentAlert-1].activeAlertsMessage.length() >= 511) {
+      alerts[currentAlert-1].activeAlertsMessageTrunc = true;
   	} else {
-  		activeAlertsMessageTrunc[currentAlert-1] = false;
+  		alerts[currentAlert-1].activeAlertsMessageTrunc = false;
   	}
-	   Serial.print("Alert message processed, value:  "); Serial.println(activeAlertsMessage[currentAlert-1]);
+	   Serial.print("Alert message processed, value:  ");
+     Serial.println(alerts[currentAlert-1].activeAlertsMessage);
   }
   if (currentKey == "date" && isAlerts) {
-      activeAlertsStart[currentAlert-1] = value;
+      alerts[currentAlert-1].activeAlertsStart = value;
 	    // Check last char for a "/"; the returned value sometimes includes this; if so, strip it (47 is a "/" char)
-      if (activeAlertsStart[currentAlert-1].charAt(activeAlertsStart[currentAlert-1].length()-1) == 47) {
+      if (alerts[currentAlert-1].activeAlertsStart.charAt(alerts[currentAlert-1].activeAlertsStart.length()-1) == 47) {
         Serial.println("...last char is a slash...");
-        activeAlertsStart[currentAlert-1] = activeAlertsStart[currentAlert-1].substring(0,(activeAlertsStart[currentAlert-1].length()-1));
+        alerts[currentAlert-1].activeAlertsStart = alerts[currentAlert-1].activeAlertsStart.substring(0,(alerts[currentAlert-1].activeAlertsStart.length()-1));
       }
     	// For meteoalarms, the start field is returned with the UTC=0 by default (not used?)
-    	if (isAlertEU && activeAlertsStart[currentAlert-1] == "1970-01-01 00:00:00 GMT") {
-    		activeAlertsStart[currentAlert-1] = "<Not specified>";
+    	if (isAlertEU && alerts[currentAlert-1].activeAlertsStart == "1970-01-01 00:00:00 GMT") {
+    		alerts[currentAlert-1].activeAlertsStart = "<Not specified>";
     	}
-      Serial.print("Alert start processed, value:  "); Serial.println(activeAlertsStart[currentAlert-1]);
+      Serial.print("Alert start processed, value:  ");
+      Serial.println(alerts[currentAlert-1].activeAlertsStart);
   }
   if (currentKey == "expires" && isAlerts) {
-    activeAlertsEnd[currentAlert-1] = value;
-    Serial.print("Alert expiration processed, value:  "); Serial.println(activeAlertsEnd[currentAlert-1]);
+    alerts[currentAlert-1].activeAlertsEnd = value;
+    Serial.print("Alert expiration processed, value:  ");
+    Serial.println(alerts[currentAlert-1].activeAlertsEnd);
   }
   if (currentKey == "phenomena" && isAlerts) {
-    activeAlertsPhenomena[currentAlert-1] = value;
-    Serial.print("Alert phenomena processed, value:  "); Serial.println(activeAlertsPhenomena[currentAlert-1]);
+    alerts[currentAlert-1].activeAlertsPhenomena = value;
+    Serial.print("Alert phenomena processed, value:  ");
+    Serial.println(alerts[currentAlert-1].activeAlertsPhenomena);
   }
   if (currentKey == "significance" && isAlerts && isAlertUS) {
-    activeAlertsSignificance[currentAlert-1] = value;
-    Serial.print("Alert significance processed, value:  "); Serial.println(activeAlertsSignificance[currentAlert-1]);
+    alerts[currentAlert-1].activeAlertsSignificance = value;
+    Serial.print("Alert significance processed, value:  ");
+    Serial.println(alerts[currentAlert-1].activeAlertsSignificance);
   }
   // Map meteoalarm level to the field for significance for consistency (used for European alerts)
   if (currentKey == "level_meteoalarm" && isAlerts && isAlertEU) {
-    activeAlertsSignificance[currentAlert-1] = value;
-    Serial.print("Meteo alert significance processed, value:  "); Serial.println(activeAlertsSignificance[currentAlert-1]);
+    alerts[currentAlert-1].activeAlertsSignificance = value;
+    Serial.print("Meteo alert significance processed, value:  ");
+    Serial.println(alerts[currentAlert-1].activeAlertsSignificance);
   }
   // For meteoalarms only (European alerts); attribution must be displayed according to the T&C's of use
   if (currentKey == "attribution" && isAlerts) {
-  	activeAlertsAttribution[currentAlert-1] = value;
+  	alerts[currentAlert-1].activeAlertsAttribution = value;
   	// Remove some of the markup in the attribution
-  	activeAlertsAttribution[currentAlert-1].replace(" <a href='"," ");
-  	activeAlertsAttribution[currentAlert-1].replace("</a>","");
-  	activeAlertsAttribution[currentAlert-1].replace("/'>"," ");
+  	alerts[currentAlert-1].activeAlertsAttribution.replace(" <a href='"," ");
+  	alerts[currentAlert-1].activeAlertsAttribution.replace("</a>","");
+  	alerts[currentAlert-1].activeAlertsAttribution.replace("/'>"," ");
   }
 
 }
@@ -201,42 +214,6 @@ void WundergroundAlerts::endDocument() {
 
 void WundergroundAlerts::startArray() {
 
-}
-
-String WundergroundAlerts::getActiveAlerts(int alertIndex) {
-  return activeAlerts[alertIndex];
-}
-
-String WundergroundAlerts::getActiveAlertsText(int alertIndex) {
-  return activeAlertsText[alertIndex];
-}
-
-String WundergroundAlerts::getActiveAlertsMessage(int alertIndex) {
-  return activeAlertsMessage[alertIndex];
-}
-
-bool WundergroundAlerts::getActiveAlertsMessageTrunc(int alertIndex) {
-  return activeAlertsMessageTrunc[alertIndex];
-}
-
-String WundergroundAlerts::getActiveAlertsStart(int alertIndex) {
-  return activeAlertsStart[alertIndex];
-}
-
-String WundergroundAlerts::getActiveAlertsEnd(int alertIndex) {
-  return activeAlertsEnd[alertIndex];
-}
-
-String WundergroundAlerts::getActiveAlertsPhenomena(int alertIndex) {
-  return activeAlertsPhenomena[alertIndex];
-}
-
-String WundergroundAlerts::getActiveAlertsSignificance(int alertIndex) {
-  return activeAlertsSignificance[alertIndex];
-}
-
-String WundergroundAlerts::getActiveAlertsAttribution(int alertIndex) {
-  return activeAlertsAttribution[alertIndex];
 }
 
 int WundergroundAlerts::getActiveAlertsCnt() {
