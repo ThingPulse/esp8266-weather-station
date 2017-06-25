@@ -23,11 +23,17 @@ SOFTWARE.
 See more at http://blog.squix.org
 */
 
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
+#if defined(ESP8266)
 #include <Ticker.h>
+#endif
 #include <JsonListener.h>
 #include <ArduinoOTA.h>
+#if defined(ESP8266)
 #include <ESP8266mDNS.h>
+#else
+#include <ESPmDNS.h>
+#endif
 
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
@@ -57,8 +63,13 @@ const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
 
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
-const int SDA_PIN = 0;
-const int SDC_PIN = 2;
+#if defined(ESP8266)
+const int SDA_PIN = D3;
+const int SDC_PIN = D4;
+#else
+const int SDA_PIN = 5; //D3;
+const int SDC_PIN = 4; //D4;
+#endif
 
 // TimeClient settings
 const float UTC_OFFSET = 2;
@@ -95,7 +106,11 @@ bool readyForWeatherUpdate = false;
 
 String lastUpdate = "--";
 
+#if defined(ESP8266)
 Ticker ticker;
+#else
+long timeSinceLastWUpdate = 0;
+#endif
 
 //declaring prototypes
 void configModeCallback (WiFiManager *myWiFiManager);
@@ -121,6 +136,17 @@ int numberOfFrames = 4;
 OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
 
+String ESPChipID(void) {
+#if defined(ESP8266)
+  return String(ESP.getChipId(), HEX);
+#else
+  uint64_t EspChipID = ESP.getEfuseMac();
+  char chipID[14];
+  sprintf(chipID, "%04X%08X", (uint16_t)(EspChipID >> 32), (uint32_t)EspChipID);
+  return chipID;
+
+#endif
+}
 void setup() {
     // Turn On VCC
   //pinMode(D4, OUTPUT);
@@ -150,8 +176,12 @@ void setup() {
   //Manual Wifi
   //WiFi.begin(WIFI_SSID, WIFI_PWD);
   String hostname(HOSTNAME);
-  hostname += String(ESP.getChipId(), HEX);
+  hostname += ESPChipID();
+#if defined(ESP8266)
   WiFi.hostname(hostname);
+#else
+  MDNS.begin((char *)&hostname);
+#endif
 
 
   int counter = 0;
@@ -195,12 +225,21 @@ void setup() {
   ArduinoOTA.begin();
 
   updateData(&display);
-
+  
+#if defined(ESP8266)
   ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
+#endif
 
 }
 
 void loop() {
+
+#if !defined(ESP8266)
+  if (millis() - timeSinceLastWUpdate > (1000L*UPDATE_INTERVAL_SECS)) {
+    setReadyForWeatherUpdate();
+    timeSinceLastWUpdate = millis();
+  }
+#endif
 
   if (readyForWeatherUpdate && ui.getUiState()->frameState == FIXED) {
     updateData(&display);
@@ -379,3 +418,4 @@ void setReadyForWeatherUpdate() {
   Serial.println("Setting readyForUpdate to true");
   readyForWeatherUpdate = true;
 }
+
