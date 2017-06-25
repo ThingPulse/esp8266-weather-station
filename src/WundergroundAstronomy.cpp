@@ -23,11 +23,7 @@ SOFTWARE.
 See more at http://blog.squix.ch
 */
 
-#if defined(ESP8266)
-#include <ESP8266WiFi.h>
-#else
-#include <WiFi.h>
-#endif
+#include <ESPWiFi.h>
 #include <WiFiClient.h>
 #include "WundergroundAstronomy.h"
 

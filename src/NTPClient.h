@@ -2,11 +2,7 @@
 
 #include "Arduino.h"
 
-#if defined(ESP8266)
-#include <ESP8266WiFi.h>
-#else
-#include <WiFi.h>
-#endif
+#include <ESPWiFi.h>
 #include <WiFiUdp.h>
 
 #define SEVENZYYEARS 2208988800UL
