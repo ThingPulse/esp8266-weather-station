@@ -30,7 +30,7 @@ See more at http://blog.squix.ch
 
 #define MAX_WEATHER_ALERTS 6  	 // The maximum number of concurrent weather alerts supported by the library
 
-struct WGAlert {
+typedef struct WGAlert {
   String activeAlerts;
   String activeAlertsMessage;
   bool   activeAlertsMessageTrunc;
@@ -40,7 +40,7 @@ struct WGAlert {
   String activeAlertsPhenomena;
   String activeAlertsSignificance;
   String activeAlertsAttribution;
-};
+} WGAlert;
 
 class WundergroundAlerts: public JsonListener {
   private:

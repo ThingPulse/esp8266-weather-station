@@ -28,7 +28,7 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
-struct WGForecast {
+typedef struct WGForecast {
   String forecastIcon;
   String forecastTitle;
   String forecastLowTemp;
@@ -37,7 +37,7 @@ struct WGForecast {
   String forecastMonth;
   String forecastText;
   String PoP;
-};
+} WGForecast;
 
 class WundergroundForecast: public JsonListener {
   private:

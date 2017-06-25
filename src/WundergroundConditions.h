@@ -28,7 +28,7 @@ See more at http://blog.squix.ch
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
-struct WGConditions {
+typedef struct WGConditions {
   String currentTemp;
   String windSpeed;
   String windDir;
@@ -41,9 +41,9 @@ struct WGConditions {
   String feelslike;
   String UV;
   String observationTime;
-  String date = "-";
-  String observationDate = "-";
-};
+  String date;
+  String observationDate;
+} WGConditions;
 
 class WundergroundConditions: public JsonListener {
   private:
