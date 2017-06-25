@@ -34,7 +34,6 @@ WundergroundAstronomy::WundergroundAstronomy(boolean _usePM) {
 void WundergroundAstronomy::updateAstronomy(WGAstronomy *astronomy, String apiKey, String language, String country, String city) {
   doUpdate(astronomy, "/api/" + apiKey + "/astronomy/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
-// end JJG add  ////////////////////////////////////////////////////////////////////
 
 void WundergroundAstronomy::updateAstronomyPWS(WGAstronomy *astronomy, String apiKey, String language, String pws) {
   doUpdate(astronomy, "/api/" + apiKey + "/astronomy/lang:" + language + "/q/pws:" + pws + ".json");
@@ -114,83 +113,104 @@ void WundergroundAstronomy::value(String value) {
 
 
   if (currentParent == "sunrise") {      // Has a Parent key and 2 sub-keys
-	if (currentKey == "hour") {
-		int tempHour = value.toInt();    // do this to concert to 12 hour time (make it a function!)
-		if (usePM && tempHour > 12){
-			tempHour -= 12;
-			isPM = true;
-		}
-		else isPM = false;
-		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
-		astronomy->sunriseTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
-        //sunriseTime = value;
+    if (currentKey == "hour") {
+      int tempHour = value.toInt();    // do this to concert to 12 hour time (make it a function!)
+      if (usePM && tempHour > 12){
+        tempHour -= 12;
+        isPM = true;
       }
-	if (currentKey == "minute") {
-		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		astronomy->sunriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
-		if (isPM) sunriseTime += "pm";
-		else if (usePM) sunriseTime += "am";
-	}
+      else {
+        isPM = false;
+      }
+      char tempHourBuff[3] = "";
+      sprintf(tempHourBuff, "%02d", tempHour);
+      astronomy->sunriseTime = String(tempHourBuff);
+    }
+    if (currentKey == "minute") {
+      char tempMinBuff[4] = "";
+      if (usePM) {
+        sprintf(tempMinBuff, "%02d%s", value.toInt(), isPM?"pm":"am");
+      } else {
+        sprintf(tempMinBuff, "%02d", value.toInt());
+      }
+      astronomy->sunriseTime += ":" + String(tempMinBuff);
+
+    }
+    this->sunriseTime.trim();
   }
 
 
   if (currentParent == "sunset") {      // Has a Parent key and 2 sub-keys
-	if (currentKey == "hour") {
-		int tempHour = value.toInt();   // do this to concert to 12 hour time (make it a function!)
-		if (usePM && tempHour > 12){
-			tempHour -= 12;
-			isPM = true;
-		}
-		else isPM = false;
-		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
-		astronomy->sunsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
-       // sunsetTime = value;
+    if (currentKey == "hour") {
+      int tempHour = value.toInt();   // do this to concert to 12 hour time (make it a function!)
+      if (usePM && tempHour > 12) {
+        tempHour -= 12;
+        isPM = true;
+      } else {
+        isPM = false;
       }
-	if (currentKey == "minute") {
-		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		astronomy->sunsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
-		if (isPM) sunsetTime += "pm";
-		else if(usePM) sunsetTime += "am";
+      char tempHourBuff[3] = "";
+      sprintf(tempHourBuff, "%02d", tempHour);
+      astronomy->sunsetTime = String(tempHourBuff);
     }
+    if (currentKey == "minute") {
+      char tempMinBuff[4] = "";
+      if (usePM) {
+        sprintf(tempMinBuff, "%02d%s", value.toInt(), isPM?"pm":"am");
+      } else {
+        sprintf(tempMinBuff, "%02d", value.toInt());
+      }
+      astronomy->sunsetTime += ":" + String(tempMinBuff);
+    }
+    this->sunsetTime.trim();
   }
 
   if (currentParent == "moonrise") {      // Has a Parent key and 2 sub-keys
-	if (currentKey == "hour") {
-		int tempHour = value.toInt();   // do this to concert to 12 hour time (make it a function!)
-		if (usePM && tempHour > 12){
-			tempHour -= 12;
-			isPM = true;
-		}
-		else isPM = false;
-		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempHourBuff, "%2d", tempHour);			// fowlerk add for formatting, 12/22/16
-		astronomy->moonriseTime = String(tempHourBuff);			// fowlerk add for formatting, 12/22/16
-       // moonriseTime = value;
-      }
-	if (currentKey == "minute") {
-		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		astronomy->moonriseTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
-		if (isPM) moonriseTime += "pm";
-		else if (usePM) moonriseTime += "am";
+    if (currentKey == "hour") {
+    int tempHour = value.toInt();   // do this to concert to 12 hour time (make it a function!)
+    if (usePM && tempHour > 12){
+      tempHour -= 12;
+      isPM = true;
     }
+    else isPM = false;
+    char tempHourBuff[3] = "";
+    sprintf(tempHourBuff, "%02d", tempHour);
+    astronomy->moonriseTime = String(tempHourBuff);
+    }
+    if (currentKey == "minute") {
+      char tempMinBuff[4] = "";
+      if (usePM) {
+        sprintf(tempMinBuff, "%02d%s", value.toInt(), isPM?"pm":"am");
+      } else {
+        sprintf(tempMinBuff, "%02d", value.toInt());
+      }
+      astronomy->moonriseTime += ":" + String(tempMinBuff);
+    }
+    this->moonriseTime.trim();
   }
 
-  if (currentParent == "moonset") {      // Not used - has a Parent key and 2 sub-keys
-	if (currentKey == "hour") {
-		char tempHourBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempHourBuff, "%2d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		astronomy->moonsetTime = String(tempHourBuff);				// fowlerk add for formatting, 12/22/16
+  if (currentParent == "moonset") {      // Has a Parent key and 2 sub-keys
+    if (currentKey == "hour") {
+      int tempHour = value.toInt();   // do this to concert to 12 hour time (make it a function!)
+      if (usePM && tempHour > 12){
+        tempHour -= 12;
+        isPM = true;
+      }
+      else isPM = false;
+      char tempHourBuff[3] = "";
+      sprintf(tempHourBuff, "%02d", tempHour);
+      astronomy->moonsetTime = String(tempHourBuff);
     }
-	if (currentKey == "minute") {
-		char tempMinBuff[3] = "";						// fowlerk add for formatting, 12/22/16
-		sprintf(tempMinBuff, "%02d", value.toInt());	// fowlerk add for formatting, 12/22/16
-		astronomy->moonsetTime += ":" + String(tempMinBuff);		// fowlerk add for formatting, 12/22/16
+    if (currentKey == "minute") {
+      char tempMinBuff[4] = "";
+      if (usePM) {
+        sprintf(tempMinBuff, "%02d%s", value.toInt(), isPM?"pm":"am");
+      } else {
+        sprintf(tempMinBuff, "%02d", value.toInt());
+      }
+      astronomy->moonsetTime += ":" + String(tempMinBuff);
     }
+    astronomy->moonsetTime.trim();
   }
 
 }

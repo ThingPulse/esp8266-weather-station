@@ -153,7 +153,7 @@ void WundergroundForecast::value(String value) {
         forecasts[dailyForecastPeriod].forecastLowTemp = value;
       }
   }
-  if (currentKey == "celsius" && dailyForecastPeriod < maxForecasts) {
+  if (currentKey == "celsius" && isMetric && dailyForecastPeriod < maxForecasts) {
 
       if (currentParent == "high") {
         Serial.println(String(currentForecastPeriod)+ ": " + value);
