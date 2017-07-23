@@ -32,6 +32,9 @@ See more at http://blog.squix.ch
 WundergroundAstronomy::WundergroundAstronomy(boolean _usePM) {
   usePM = _usePM;
 }
+void WundergroundAstronomy::setPM(boolean usePM) {
+  this->usePM = usePM;
+}
 void WundergroundAstronomy::updateAstronomy(WGAstronomy *astronomy, String apiKey, String language, String country, String city) {
   doUpdate(astronomy, "http://api.wunderground.com/api/" + apiKey + "/astronomy/lang:" + language + "/q/" + country + "/" + city + ".json");
 }

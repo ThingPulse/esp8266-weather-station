@@ -60,6 +60,7 @@ class WundergroundConditions: public JsonListener {
     void updateConditions(WGConditions *conditions, String apiKey, String language, String country, String city);
     void updateConditions(WGConditions *conditions, String apiKey, String language, String zmwCode);
     void updateConditionsPWS(WGConditions *conditions, String apiKey, String language, String pws);
+    void setMetric(boolean isMetric);
     String getMeteoconIcon(String icon);
     virtual void whitespace(char c);
 

@@ -32,6 +32,10 @@ WundergroundForecast::WundergroundForecast(boolean _isMetric) {
   isMetric = _isMetric;
 }
 
+void WundergroundForecast::setMetric(bool isMetric) {
+  this->isMetric = isMetric;
+}
+
 void WundergroundForecast::updateForecast(WGForecast *forecasts, uint8_t maxForecasts, String apiKey, String language, String country, String city) {
   doUpdate(forecasts, maxForecasts, "http://api.wunderground.com/api/" + apiKey + "/forecast10day/lang:" + language + "/q/" + country + "/" + city + ".json");
 }

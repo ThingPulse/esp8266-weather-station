@@ -32,6 +32,9 @@ WundergroundConditions::WundergroundConditions(boolean _isMetric) {
   isMetric = _isMetric;
 }
 
+void WundergroundConditions::setMetric(boolean isMetric) {
+  this->isMetric = isMetric;
+}
 
 void WundergroundConditions::updateConditions(WGConditions *conditions, String apiKey, String language, String country, String city) {
   doUpdate(conditions, "http://api.wunderground.com/api/" + apiKey + "/conditions/lang:" + language + "/q/" + country + "/" + city + ".json");
