@@ -14,10 +14,11 @@ env:
     - PLATFORMIO_CI_SRC=examples/WeatherStationDemoExtended
     - PLATFORMIO_CI_SRC=examples/WeatherStationDemoExtendedDST
     - PLATFORMIO_CI_SRC=examples/WorldClockDemo
-    - PLATFORMIO_CI_SRC=examples/WundergroundAlertsDemo    
+    - PLATFORMIO_CI_SRC=examples/WundergroundAlertsDemo
     - PLATFORMIO_CI_SRC=examples/WundergroundAstronomyDemo
     - PLATFORMIO_CI_SRC=examples/WundergroundConditionsDemo
     - PLATFORMIO_CI_SRC=examples/WundergroundForecastDemo
+    - PLATFORMIO_CI_SRC=examples/WundergroundHourlyDemo
 
 install:
     - pip install -U platformio
