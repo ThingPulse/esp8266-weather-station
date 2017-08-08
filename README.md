@@ -4,10 +4,13 @@
 * Development: [![Build Status](https://api.travis-ci.org/squix78/esp8266-weather-station.svg?branch=development)](https://travis-ci.org/squix78/esp8266-weather-station)
 
 # esp8266-weather-station
-<img src="https://github.com/squix78/esp8266-weather-station/raw/master/resources/CurrentWeatherReflection.jpg" width="250"/>
-
-Code for the ESP8266 WeatherStation project. You can by a starter kit from here and support the developement:
+This code works best with the NodeMCU V1, 0.96" OLED display.
+Since it is sometimes complicated to find the right parts I created a kit which contains all the parts including the connector PCB:
 https://blog.squix.org/product/weatherstation-kit-w-white-oled
+By buying the kit from me you are supporting future development. Thank you!
+
+[![Squix ESP8266 WeatherStation Classic Kit](https://blog.squix.org/wp-content/uploads/2016/12/Components4-300x300.jpg)](https://blog.squix.org/product/weatherstation-kit-w-white-oled)
+
 
 ## Arduino IDE
 
