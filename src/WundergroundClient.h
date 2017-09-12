@@ -41,6 +41,8 @@ class WundergroundClient: public JsonListener {
     int gmtOffset = 1;
     long localMillisAtUpdate;
     String date = "-";
+	String localTime = "-";
+	String utcOffset = "-";
     String observationDate = "-";
     boolean isMetric = true;
     String currentTemp;
@@ -118,6 +120,8 @@ class WundergroundClient: public JsonListener {
     String getMinutes();
     String getSeconds();
     String getDate();
+	String getLocalTime();
+	String getUtcOffset();
     String getObservationDate();
     // JJG added ... ///////////////////function name to string ////////////////////////////
     String getMoonPctIlum();

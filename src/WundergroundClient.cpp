@@ -325,6 +325,8 @@ void WundergroundClient::value(String value) {
 
    if (currentKey == "local_time_rfc822") {
     date = value.substring(0, 16);
+	localTime = value.substring(17, 24);
+	utcOffset = value.substring(26);
   }
 
   if (currentKey == "observation_time_rfc822") {
@@ -588,6 +590,12 @@ String WundergroundClient::getSeconds() {
 }
 String WundergroundClient::getDate() {
   return date;
+}
+String WundergroundClient::getLocalTime() {
+  return localTime;
+}
+String WundergroundClient::getUtcOffset() {
+  return utcOffset;
 }
 String WundergroundClient::getObservationDate() {
   return observationDate;
