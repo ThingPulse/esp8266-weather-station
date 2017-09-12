@@ -44,7 +44,7 @@ class TimeClient {
   public:
     TimeClient(float utcOffset);
     void updateTime();
-	void setUtcOffset(float utcOffset);
+    void setUtcOffset(float utcOffset);
     String getHours();
     String getMinutes();
     String getSeconds();
