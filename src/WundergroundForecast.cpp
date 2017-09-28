@@ -112,10 +112,15 @@ void WundergroundForecast::value(String value) {
   if (currentKey == "period") {
     currentForecastPeriod = value.toInt();
   }
-
+#ifdef NIGHTICONS
+  if (currentKey == "icon" && !isSimpleForecast && currentForecastPeriod < maxForecasts) {
+    forecasts[currentForecastPeriod].forecastIcon = value;
+  }
+#else
   if (currentKey == "icon" && isSimpleForecast && currentForecastPeriod < maxForecasts) {
     forecasts[currentForecastPeriod].forecastIcon = value;
   }
+#endif
   if (currentKey == "title" && currentForecastPeriod < maxForecasts) {
       Serial.println(String(currentForecastPeriod) + ": " + value);
       forecasts[currentForecastPeriod].forecastTitle = value;

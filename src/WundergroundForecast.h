@@ -24,7 +24,7 @@ See more at http://blog.squix.ch
 */
 
 #pragma once
-
+//#define NIGHTICONS
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 

@@ -132,9 +132,17 @@ void WundergroundConditions::value(String value) {
   if (currentKey == "temp_c" && isMetric) {
     conditions->currentTemp = value;
   }
+#ifdef NIGHTICONS
+  if (currentKey == "icon_url") { //"icon_url":"http://icons.wxug.com/i/c/k/nt_clear.gif"
+    int b1 = value.lastIndexOf('/') + 1;
+    int b2 = value.lastIndexOf('.');
+    conditions->weatherIcon = value.substring(b1, b2); //clear the begining and get from nt_ ... for night
+  }
+#else
   if (currentKey == "icon") {
     conditions->weatherIcon = value;
   }
+#endif
   if (currentKey == "weather") {
     conditions->weatherText = value;
   }
