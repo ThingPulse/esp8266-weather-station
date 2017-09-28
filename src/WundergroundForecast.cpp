@@ -113,7 +113,7 @@ void WundergroundForecast::value(String value) {
     currentForecastPeriod = value.toInt();
   }
 
-  if (currentKey == "icon" && currentForecastPeriod < maxForecasts) {
+  if (currentKey == "icon" && isSimpleForecast && currentForecastPeriod < maxForecasts) {
     forecasts[currentForecastPeriod].forecastIcon = value;
   }
   if (currentKey == "title" && currentForecastPeriod < maxForecasts) {
@@ -131,7 +131,7 @@ void WundergroundForecast::value(String value) {
   }
 
   // Added PoP (probability of precipitation) key following...fowlerk, 12/22/16
-  if (currentKey == "pop" && currentForecastPeriod < maxForecasts) {
+  if (currentKey == "pop" && !isSimpleForecast && currentForecastPeriod < maxForecasts) {
       forecasts[currentForecastPeriod].PoP = value;
   }
 
