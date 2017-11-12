@@ -52,6 +52,7 @@ class WundergroundHourly: public JsonListener {
     void doUpdate(WGHourly *hourlies, String url);
 
     int currentHour;
+    int hoursParsed;
 
 
 
