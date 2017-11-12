@@ -39,6 +39,10 @@ void WundergroundAstronomy::updateAstronomy(WGAstronomy *astronomy, String apiKe
   doUpdate(astronomy, "http://api.wunderground.com/api/" + apiKey + "/astronomy/lang:" + language + "/q/" + country + "/" + city + ".json");
 }
 
+void WundergroundAstronomy::updateAstronomy(WGAstronomy *astronomy, String apiKey, String language, String zmw) {
+  doUpdate(astronomy, "http://api.wunderground.com/api/" + apiKey + "/astronomy/lang:" + language + "/q/zmw:" + zmw + ".json");
+}
+
 void WundergroundAstronomy::updateAstronomyPWS(WGAstronomy *astronomy, String apiKey, String language, String pws) {
   doUpdate(astronomy, "http://api.wunderground.com/api/" + apiKey + "/astronomy/lang:" + language + "/q/pws:" + pws + ".json");
 }
