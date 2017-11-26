@@ -1,3 +1,14 @@
+# Changes by Lorol
+
+* Fix for [last two wrong icon entries](https://github.com/squix78/esp8266-weather-station-color/issues/39) , see [esp8266-weather-station-color](https://github.com/lorol/esp8266-weather-station-color) project fork
+* Modified WundergroundForecast and WundergroundConditions (.h and .cpp files)
+* Use #define NIGHTICONS to enable night time nt_xxxx icons processing 
+
+ The original README.md follows
+ 
+----
+
+
 # Build
 
 * Stable: [![Build Status](https://api.travis-ci.org/squix78/esp8266-weather-station.svg?branch=master)](https://travis-ci.org/squix78/esp8266-weather-station)
