@@ -51,6 +51,9 @@ void WundergroundConditions::updateConditionsPWS(WGConditions *conditions, Strin
 }
 
 void WundergroundConditions::doUpdate(WGConditions *conditions, String url) {
+  unsigned long lostTest = 10000UL;
+  unsigned long lost_do = millis();
+	
   this->conditions = conditions;
   JsonStreamingParser parser;
   parser.setListener(this);
@@ -67,12 +70,15 @@ void WundergroundConditions::doUpdate(WGConditions *conditions, String url) {
   Serial.printf("[HTTP] GET... code: %d\n", httpCode);
   if(httpCode > 0) {
 
-
-
     WiFiClient * client = http.getStreamPtr();
 
     while(client->connected()) {
       while((size = client->available()) > 0) {
+		if ((millis() - lost_do) > lostTest) {
+			Serial.println ("lost in client with a timeout");
+			client->stop(); 
+			ESP.restart();
+	    }
         c = client->read();
         if (c == '{' || c == '[') {
 
