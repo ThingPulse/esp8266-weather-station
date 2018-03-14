@@ -25,7 +25,7 @@ See more at http://blog.squix.ch
 #define FONT_LIB_V3
 // Created by http://oleddisplay.squix.ch/ Consider a donation
 // In case of problems make sure that you are using the font file with the correct version!
-const char Meteocons_Plain_42[] PROGMEM = {
+const uint8_t Meteocons_Plain_42[] PROGMEM = {
   0x2A, // Width: 42
   0x2C, // Height: 44
   0x20, // First Char: 32
@@ -451,7 +451,7 @@ const char Meteocons_Plain_42[] PROGMEM = {
 #define FONT_LIB_V3
 // Created by http://oleddisplay.squix.ch/ Consider a donation
 // In case of problems make sure that you are using the font file with the correct version!
-const char Meteocons_Plain_21[] PROGMEM = {
+const uint8_t Meteocons_Plain_21[] PROGMEM = {
   0x15, // Width: 21
   0x16, // Height: 22
   0x20, // First Char: 32
@@ -875,7 +875,7 @@ const char Meteocons_Plain_21[] PROGMEM = {
   0x00,0x00,0x40,0x00,0x03,0x40,0x00,0x0F,0x40,0x00,0x3C,0x40,0x60,0xF0,0x60,0x00,0xC0,0x63,0x00,0x00,0x3F,0x00,0x00,0x1F,0x00,0xC0,0x07,0x60,0xF8,0x00,0x00,0x3E,0x00,0x00,0x07,0x00,0x00,0x01 // 255
 };
 
-const char Meteocons_Plain_10[] PROGMEM = {
+const uint8_t Meteocons_Plain_10[] PROGMEM = {
 	0x0A, // Width: 10
 	0x0B, // Height: 11
 	0x20, // First Char: 32
