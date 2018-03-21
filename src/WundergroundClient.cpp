@@ -23,7 +23,7 @@ SOFTWARE.
 See more at http://blog.squix.ch
 */
 
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
 #include <WiFiClient.h>
 #include "WundergroundClient.h"
 bool usePM = false; // Set to true if you want to use AM/PM time disaply
@@ -151,7 +151,8 @@ void WundergroundClient::doUpdate(String url) {
 
   int size = 0;
   client.setNoDelay(false);
-  while(client.connected()) {
+  // while(client.connected()) {
+  do {
     while((size = client.available()) > 0) {
       c = client.read();
       if (c == '{' || c == '[') {
@@ -161,7 +162,7 @@ void WundergroundClient::doUpdate(String url) {
         parser.parse(c);
       }
     }
-  }
+  } while(client.connected());
 }
 
 void WundergroundClient::whitespace(char c) {

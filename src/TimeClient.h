@@ -24,7 +24,7 @@ See more at http://blog.squix.ch
 */
 #pragma once
 
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
 
 #define NTP_PACKET_SIZE 48
 
