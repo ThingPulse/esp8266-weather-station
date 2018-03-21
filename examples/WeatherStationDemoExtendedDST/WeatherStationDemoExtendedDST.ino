@@ -53,6 +53,7 @@ See more at http://blog.squix.ch
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>
+#include <Adafruit_Sensor.h>
 
 #include "WundergroundClient.h"
 #include "WeatherStationFonts.h"
