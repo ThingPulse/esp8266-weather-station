@@ -25,7 +25,7 @@ See more at http://blog.squix.ch
 
 #include <ESPWiFi.h>
 #include <WiFiClient.h>
-#include <ESP8266HTTPClient.h>
+#include <ESPHTTPClient.h>
 #include "WundergroundForecast.h"
 
 WundergroundForecast::WundergroundForecast(boolean _isMetric) {
@@ -52,7 +52,7 @@ void WundergroundForecast::updateForecastZMW(WGForecast *forecasts, uint8_t maxF
 void WundergroundForecast::doUpdate(WGForecast *forecasts, uint8_t maxForecasts, String url) {
   unsigned long lostTest = 10000UL;
   unsigned long lost_do = millis();
-  
+
   this->forecasts = forecasts;
   this->maxForecasts = maxForecasts;
   JsonStreamingParser parser;
@@ -78,7 +78,7 @@ void WundergroundForecast::doUpdate(WGForecast *forecasts, uint8_t maxForecasts,
       while((size = client->available()) > 0) {
 		if ((millis() - lost_do) > lostTest) {
 			Serial.println ("lost in client with a timeout");
-			client->stop(); 
+			client->stop();
 			ESP.restart();
 		}
         c = client->read(); //stream.setTimeout(time=1000) returns -1

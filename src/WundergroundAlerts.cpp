@@ -25,7 +25,7 @@ See more at http://blog.squix.ch
 
 #include <ESPWiFi.h>
 #include <WiFiClient.h>
-#include <ESP8266HTTPClient.h>
+#include <ESPHTTPClient.h>
 #include "WundergroundAlerts.h"
 
 WundergroundAlerts::WundergroundAlerts() {

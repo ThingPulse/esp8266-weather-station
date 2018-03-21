@@ -41,7 +41,7 @@
 *   from the api response above.
 */
 
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
 #include "MetOfficeClient.h"
 
 MetOfficeClient::MetOfficeClient() {

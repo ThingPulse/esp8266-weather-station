@@ -25,7 +25,7 @@ See more at http://blog.squix.ch
 
 #include <ESPWiFi.h>
 #include <WiFiClient.h>
-#include <ESP8266HTTPClient.h>
+#include <ESPHTTPClient.h>
 #include "WundergroundConditions.h"
 
 WundergroundConditions::WundergroundConditions(boolean _isMetric) {
@@ -53,7 +53,7 @@ void WundergroundConditions::updateConditionsPWS(WGConditions *conditions, Strin
 void WundergroundConditions::doUpdate(WGConditions *conditions, String url) {
   unsigned long lostTest = 10000UL;
   unsigned long lost_do = millis();
-	
+
   this->conditions = conditions;
   JsonStreamingParser parser;
   parser.setListener(this);
@@ -76,7 +76,7 @@ void WundergroundConditions::doUpdate(WGConditions *conditions, String url) {
       while((size = client->available()) > 0) {
 		if ((millis() - lost_do) > lostTest) {
 			Serial.println ("lost in client with a timeout");
-			client->stop(); 
+			client->stop();
 			ESP.restart();
 	    }
         c = client->read();

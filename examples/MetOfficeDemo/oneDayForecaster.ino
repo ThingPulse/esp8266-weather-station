@@ -35,8 +35,8 @@
 
 #include <Arduino.h>
 #include <SD.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <ESPWiFi.h>
+#include <ESPHTTPClient.h>
 #include <ArduinoOTA.h>
 #include <ESP8266mDNS.h>
 #include <Adafruit_GFX.h>

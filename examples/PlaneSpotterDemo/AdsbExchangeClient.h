@@ -27,7 +27,7 @@ See more at http://blog.squix.ch
 
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
 #include <WiFiClient.h>
 
 #define CURRENT 0

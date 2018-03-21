@@ -24,6 +24,7 @@ See more at http://blog.squix.ch
 */
 
 #include <ESPWiFi.h>
+#include <ESPHTTPClient.h>
 #if defined(ESP8266)
 #include <Ticker.h>
 #endif
@@ -180,7 +181,7 @@ void setup() {
   Serial.println("");
 
   updateData(&display);
-  
+
 #if defined(ESP8266)
   ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
 #endif

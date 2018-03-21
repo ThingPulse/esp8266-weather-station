@@ -23,8 +23,8 @@ SOFTWARE.
 See more at http://blog.squix.ch
 */
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <ESPWiFi.h>
+#include <ESPHTTPClient.h>
 #include <Ticker.h>
 #include <JsonListener.h>
 #include <ArduinoOTA.h>
