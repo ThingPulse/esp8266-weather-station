@@ -1,5 +1,6 @@
 # ThingPulse ESP8266 Weather Station
 
+
 [![ThingPulse logo](https://thingpulse.com/assets/ThingPulse-w300.svg)](https://thingpulse.com)
 
 
@@ -60,3 +61,11 @@ The ESP8266 Oled Library changed a lot with the latest release of version 3.0.0.
 I realized that more and more the Weather Station was becoming a general framework for displaying data over WiFi to one of these pretty displays. But everyone would have different ways or sources for data and having the important part of the library would rather be the classes which fetch the data then the main class.
 So if you write data fetchers which might be of interest to others please contact me to integrate them here or offer your code as extension library yourself and call it something like esp8266-weather-station-<yourservice>.
 I will gladly list it here as third party library...
+  
+# Changes by Lorol
+
+* Fix for [last two wrong icon entries](https://github.com/squix78/esp8266-weather-station-color/issues/39) , see [esp8266-weather-station-color](https://github.com/lorol/esp8266-weather-station-color) project fork
+* Modified WundergroundForecast and WundergroundConditions (.h and .cpp files)
+* Use #define NIGHTICONS to enable night time nt_xxxx icons processing 
+
+ The original README.md follows
