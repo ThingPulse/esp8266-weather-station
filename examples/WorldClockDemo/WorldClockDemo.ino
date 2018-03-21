@@ -24,6 +24,7 @@ See more at https://blog.squix.org
 */
 
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
 #include <Ticker.h>
 #include <JsonListener.h>
 #include <SSD1306Wire.h>

@@ -30,12 +30,13 @@
 *   You will need to get an API key and location id from the Met Office, as described in the
 *   client, and add them to settings.h together with wifi details and an OTA password if you want
 *   to use that.
-*   
+*
 */
 
 #include <Arduino.h>
 #include <SD.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
 #include <ArduinoOTA.h>
 #include <ESP8266mDNS.h>
 #include <Adafruit_GFX.h>

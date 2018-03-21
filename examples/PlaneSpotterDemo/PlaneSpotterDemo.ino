@@ -24,6 +24,7 @@ See more at http://blog.squix.ch
 */
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
 #include <Ticker.h>
 #include <JsonListener.h>
 #include <ArduinoOTA.h>
@@ -44,7 +45,7 @@ See more at http://blog.squix.ch
 
 /**************
  * Required Libraries:
- * - Weather Station by Daniel Eichhorn 
+ * - Weather Station by Daniel Eichhorn
  * - WifiManager by tzapu
  * - ESP8266 OLED Driver by Daniel Eichhorn, Fabrice Weinberg
  * - Json Streaming Parser by Daniel Eichhorn
