@@ -23,7 +23,7 @@ SOFTWARE.
 See more at http://blog.squix.ch
 */
 
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
 #include <WiFiClient.h>
 #include "WundergroundClient.h"
 bool usePM = false; // Set to true if you want to use AM/PM time disaply
@@ -151,7 +151,8 @@ void WundergroundClient::doUpdate(String url) {
 
   int size = 0;
   client.setNoDelay(false);
-  while(client.connected()) {
+  // while(client.connected()) {
+  do {
     while((size = client.available()) > 0) {
       c = client.read();
       if (c == '{' || c == '[') {
@@ -161,7 +162,7 @@ void WundergroundClient::doUpdate(String url) {
         parser.parse(c);
       }
     }
-  }
+  } while(client.connected());
 }
 
 void WundergroundClient::whitespace(char c) {
@@ -325,6 +326,8 @@ void WundergroundClient::value(String value) {
 
    if (currentKey == "local_time_rfc822") {
     date = value.substring(0, 16);
+    localTime = value.substring(17, 24);
+    utcOffset = value.substring(26);
   }
 
   if (currentKey == "observation_time_rfc822") {
@@ -589,6 +592,12 @@ String WundergroundClient::getSeconds() {
 String WundergroundClient::getDate() {
   return date;
 }
+String WundergroundClient::getLocalTime() {
+  return localTime;
+}
+String WundergroundClient::getUtcOffset() {
+  return utcOffset;
+}
 String WundergroundClient::getObservationDate() {
   return observationDate;
 }
@@ -764,14 +773,14 @@ String WundergroundClient::getPoP(int period) {
 
 
 String WundergroundClient::getMeteoconIcon(String iconText) {
-  if (iconText == "chanceflurries") return "F";
+  if (iconText == "chanceflurries") return "X";
   if (iconText == "chancerain") return "Q";
   if (iconText == "chancesleet") return "W";
   if (iconText == "chancesnow") return "V";
   if (iconText == "chancetstorms") return "S";
   if (iconText == "clear") return "B";
   if (iconText == "cloudy") return "Y";
-  if (iconText == "flurries") return "F";
+  if (iconText == "flurries") return "X";
   if (iconText == "fog") return "M";
   if (iconText == "hazy") return "E";
   if (iconText == "mostlycloudy") return "Y";
@@ -784,14 +793,14 @@ String WundergroundClient::getMeteoconIcon(String iconText) {
   if (iconText == "sunny") return "B";
   if (iconText == "tstorms") return "0";
 
-  if (iconText == "nt_chanceflurries") return "F";
+  if (iconText == "nt_chanceflurries") return "$";
   if (iconText == "nt_chancerain") return "7";
   if (iconText == "nt_chancesleet") return "#";
   if (iconText == "nt_chancesnow") return "#";
   if (iconText == "nt_chancetstorms") return "&";
   if (iconText == "nt_clear") return "2";
   if (iconText == "nt_cloudy") return "Y";
-  if (iconText == "nt_flurries") return "9";
+  if (iconText == "nt_flurries") return "$";
   if (iconText == "nt_fog") return "M";
   if (iconText == "nt_hazy") return "E";
   if (iconText == "nt_mostlycloudy") return "5";

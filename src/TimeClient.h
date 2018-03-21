@@ -24,7 +24,7 @@ See more at http://blog.squix.ch
 */
 #pragma once
 
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
 
 #define NTP_PACKET_SIZE 48
 
@@ -44,7 +44,7 @@ class TimeClient {
   public:
     TimeClient(float utcOffset);
     void updateTime();
-
+    void setUtcOffset(float utcOffset);
     String getHours();
     String getMinutes();
     String getSeconds();
