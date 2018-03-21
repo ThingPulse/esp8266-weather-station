@@ -24,6 +24,7 @@ See more at http://blog.squix.org
 */
 
 #include <ESPWiFi.h>
+#include <ESPHTTPClient.h>
 #if defined(ESP8266)
 #include <Ticker.h>
 #endif
@@ -225,7 +226,7 @@ void setup() {
   ArduinoOTA.begin();
 
   updateData(&display);
-  
+
 #if defined(ESP8266)
   ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
 #endif
@@ -418,4 +419,3 @@ void setReadyForWeatherUpdate() {
   Serial.println("Setting readyForUpdate to true");
   readyForWeatherUpdate = true;
 }
-

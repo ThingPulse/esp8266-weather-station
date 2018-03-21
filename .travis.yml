@@ -22,8 +22,8 @@ env:
 
 install:
     - pip install -U platformio
-    - platformio lib -g install "JsonStreamingParser" "ESP8266_SSD1306@4.0.0" 567@0.12 "simpleDSTadjust" "DHT sensor library"
+    - platformio lib -g install "JsonStreamingParser" "ESP8266_SSD1306@4.0.0" 567@0.12 "simpleDSTadjust" "Adafruit Unified Sensor" "DHT sensor library"
     - platformio lib update
 
 script:
-    - platformio ci --lib="." --project-option="lib_deps=JsonStreamingParser" --board=nodemcuv2 
+    - platformio ci --lib="." --project-option="lib_deps=JsonStreamingParser" --board=nodemcuv2
