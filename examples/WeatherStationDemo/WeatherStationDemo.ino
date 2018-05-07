@@ -68,7 +68,7 @@ const float UTC_OFFSET = 2;
 // Wunderground Settings
 const boolean IS_METRIC = true;
 const String WUNDERGRROUND_API_KEY = "WUNDERGROUND_API_KEY";
-const String WUNDERGRROUND_LANGUAGE = "DL";
+const String WUNDERGRROUND_LANGUAGE = "DL"; // as per https://www.wunderground.com/weather/api/d/docs?d=resources/country-to-iso-matching
 const String WUNDERGROUND_COUNTRY = "CH";
 const String WUNDERGROUND_CITY = "Zurich";
 
