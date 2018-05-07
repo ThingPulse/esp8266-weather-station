@@ -39,7 +39,7 @@ const boolean USE_PM = false;
 // 		http://api.wunderground.com/api/<API-KEY>/conditions/q/<COUNTRY-CODE>/<CITY-NAME>.json
 // for example and grab for the zmw ...
 const String  WUNDERGROUND_ZMW_CODE = "00000.215.10348"; // Braunschweig-Flughafen -> EDVE
-const String  WUNDERGRROUND_LANGUAGE = "DE";
+const String  WUNDERGRROUND_LANGUAGE = "DL"; // as per https://www.wunderground.com/weather/api/d/docs?d=resources/country-to-iso-matching
 
 // initiate the WundergoundClient
 WundergroundConditions wunderground(IS_METRIC);

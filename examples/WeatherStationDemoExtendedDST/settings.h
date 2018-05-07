@@ -122,7 +122,7 @@ struct dstRule EndRule = {"CET", Last, Sun, Oct, 2, 0};       // Central Europea
 // Wunderground Settings
 const boolean IS_METRIC = true;
 const String WUNDERGRROUND_API_KEY = "<WUNDERGROUND KEY HERE>";
-const String WUNDERGRROUND_LANGUAGE = "EN";
+const String WUNDERGRROUND_LANGUAGE = "EN"; // as per https://www.wunderground.com/weather/api/d/docs?d=resources/country-to-iso-matching
 const String WUNDERGROUND_COUNTRY = "CH";
 const String WUNDERGROUND_CITY = "Zurich";
 #endif
@@ -141,7 +141,7 @@ struct dstRule EndRule = {"EST", First, Sun, Nov, 1, 0};       // Eastern Standa
 // Wunderground Settings
 const boolean IS_METRIC = false;
 const String WUNDERGRROUND_API_KEY = "<WUNDERGROUND KEY HERE>";
-const String WUNDERGRROUND_LANGUAGE = "EN";
+const String WUNDERGRROUND_LANGUAGE = "EN"; // as per https://www.wunderground.com/weather/api/d/docs?d=resources/country-to-iso-matching
 const String WUNDERGROUND_COUNTRY = "MA";
 const String WUNDERGROUND_CITY = "Boston";
 #endif
@@ -160,7 +160,7 @@ struct dstRule EndRule = {"AEST", First, Sun, Apr, 2, 0};      // Australia East
 // Wunderground Settings
 const boolean IS_METRIC = true;
 const String WUNDERGRROUND_API_KEY = "<WUNDERGROUND KEY HERE>";
-const String WUNDERGRROUND_LANGUAGE = "EN";
+const String WUNDERGRROUND_LANGUAGE = "EN"; // as per https://www.wunderground.com/weather/api/d/docs?d=resources/country-to-iso-matching
 const String WUNDERGROUND_COUNTRY = "AU";
 const String WUNDERGROUND_CITY = "Sydney";
 #endif
