@@ -34,7 +34,7 @@ typedef struct WGHourly {
   String temp;
   String hour;
   String PoP;
-} WGForecast;
+} WGHourly;
 
 class WundergroundHourly: public JsonListener {
   private:
