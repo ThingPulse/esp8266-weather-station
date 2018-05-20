@@ -55,7 +55,7 @@ const char* WIFI_PWD = "yourpassw0rd";
 #define DST_MN          60      // use 60mn for summer time in some countries
 
 // Setup
-const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
+const int UPDATE_INTERVAL_SECS = 20 * 60; // Update every 20 minutes
 
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
@@ -70,7 +70,7 @@ const int SDC_PIN = 4; //D4;
 // TimeClient settings
 const float UTC_OFFSET = 2;
 
-// Wunderground Settings
+// Aeris Settings
 const boolean IS_METRIC = true;
 const String AERIS_CLIENT_ID = "tWOmsRUXe4EFTHQKmUKOK";
 const String AERIS_CLIENT_SECRET = "gRoMoapOyg46HwB7dRmoVPaJ0vUgAiud1CFWuLfF";
