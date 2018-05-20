@@ -1,6 +1,6 @@
 /**The MIT License (MIT)
 
-Copyright (c) 2017 by Daniel Eichhorn
+Copyright (c) 2018 by Daniel Eichhorn - ThingPulse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-See more at https://blog.squix.org
+See more at https://thingpulse.com
 */
 
 #include <Arduino.h>
@@ -226,9 +226,9 @@ void setup() {
     // uint16_t windSpeedMaxMPH; // 7
     print("windSpeedMaxMPH", forecasts[i].windSpeedMaxMPH);
     // uint16_t windSpeedMinKTS; // 1
-    print("windSpeedMinKTS", forecasts[i].validTime);
+    print("windSpeedMinKTS", forecasts[i].windSpeedMinKTS);
     // uint16_t windSpeedMinKPH; // 2
-    print("validTime", forecasts[i].windSpeedMinKTS);
+    print("validTime", forecasts[i].windSpeedMinKPH);
     // uint16_t windSpeedMinMPH; // 1
     print("windSpeedMinMPH", forecasts[i].windSpeedMinMPH);
     // uint16_t windDir80mDEG; // 5

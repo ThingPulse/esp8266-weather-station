@@ -92,7 +92,7 @@ void AerisObservations::key(String key) {
 }
 
 void AerisObservations::value(String value) {
-  Serial.printf("Key: %s, value: %s\n", currentKey.c_str(), value.c_str());
+  // Serial.printf("Key: %s, value: %s\n", currentKey.c_str(), value.c_str());
   //uint64_t timestamp;
   if (currentKey == "timestamp") {
     this->observations->timestamp = value.toInt();

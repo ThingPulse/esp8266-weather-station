@@ -1,6 +1,6 @@
 /**The MIT License (MIT)
 
-Copyright (c) 2016 by Daniel Eichhorn
+Copyright (c) 2018 by Daniel Eichhorn - ThingPulse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-See more at http://blog.squix.ch
+See more at https://thingpulse.com
 */
 
 #include <ESPWiFi.h>
@@ -36,6 +36,7 @@ See more at http://blog.squix.ch
 #include "OLEDDisplayUi.h"
 #include "Wire.h"
 #include "AerisObservations.h"
+#include "AerisForecasts.h"
 #include "WeatherStationFonts.h"
 #include "WeatherStationImages.h"
 
@@ -74,17 +75,24 @@ const boolean IS_METRIC = true;
 const String AERIS_CLIENT_ID = "tWOmsRUXe4EFTHQKmUKOK";
 const String AERIS_CLIENT_SECRET = "gRoMoapOyg46HwB7dRmoVPaJ0vUgAiud1CFWuLfF";
 const String AERIS_LOCATION = "Zurich,CH";
+const uint8_t MAX_FORECASTS = 4;
 
 // Initialize the oled display for address 0x3c
 // sda-pin=14 and sdc-pin=12
 SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
 OLEDDisplayUi   ui( &display );
 
+const String WDAY_NAMES[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+const String MONTH_NAMES[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+
 /***************************
  * End Settings
  **************************/
 AerisObservationsData aerisData;
 AerisObservations aerisClient;
+
+AerisForecastData forecasts[MAX_FORECASTS];
+AerisForecasts forecastClient;
 
 #define TZ_MN           ((TZ)*60)
 #define TZ_SEC          ((TZ)*3600)
@@ -217,10 +225,9 @@ void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
   drawProgress(display, 30, "Updating observations...");
   aerisClient.updateObservations(&aerisData, AERIS_CLIENT_ID, AERIS_CLIENT_SECRET, AERIS_LOCATION);
-  /*drawProgress(display, 50, "Updating forecasts...");
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
-  drawProgress(display, 80, "Updating thingspeak...");
-  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);*/
+  drawProgress(display, 50, "Updating forecasts...");
+  forecastClient.updateForecasts(forecasts, AERIS_CLIENT_ID, AERIS_CLIENT_SECRET, AERIS_LOCATION, MAX_FORECASTS);
+
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");
   delay(1000);
@@ -232,16 +239,19 @@ void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
   now = time(nullptr);
   struct tm* timeInfo;
   timeInfo = localtime(&now);
+  char buff[16];
+
 
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
-  String date = "X"; //wunderground.getDate();
+  String date = WDAY_NAMES[timeInfo->tm_wday];
 
-  display->drawString(64 + x, 5 + y, date);
+  sprintf_P(buff, PSTR("%s, %02d/%02d/%04d"), WDAY_NAMES[timeInfo->tm_wday].c_str(), timeInfo->tm_mday, timeInfo->tm_mon+1, timeInfo->tm_year + 1900);
+  display->drawString(64 + x, 5 + y, String(buff));
   display->setFont(ArialMT_Plain_24);
-  char buff[14];
+
   sprintf_P(buff, PSTR("%02d:%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec);
-  display->drawString(64 + x, 15 + y, buff);
+  display->drawString(64 + x, 15 + y, String(buff));
   display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
@@ -261,34 +271,43 @@ void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t
 
 
 void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  drawForecastDetails(display, x, y, 0);
+  drawForecastDetails(display, x, y, 1);
   drawForecastDetails(display, x + 44, y, 2);
-  drawForecastDetails(display, x + 88, y, 4);
+  drawForecastDetails(display, x + 88, y, 3);
 }
 
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
-/*  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  time_t observationTimestamp = forecasts[dayIndex].timestamp;
+  struct tm* timeInfo;
+  timeInfo = localtime(&observationTimestamp);
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
-  String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
-  day.toUpperCase();
-  display->drawString(x + 20, y, day);
+  display->drawString(x + 20, y, WDAY_NAMES[timeInfo->tm_wday]);
 
   display->setFont(Meteocons_Plain_21);
-  display->drawString(x + 20, y + 12, wunderground.getForecastIcon(dayIndex));
-
+  display->drawString(x + 20, y + 12, forecasts[dayIndex].iconMeteoCon);
+  String temp = String(forecasts[dayIndex].minTempC) + "|" + String(forecasts[dayIndex].maxTempC);
+  if (!IS_METRIC) {
+    String temp = String(forecasts[dayIndex].minTempF) + "|" + String(forecasts[dayIndex].maxTempF);
+  }
   display->setFont(ArialMT_Plain_10);
-  display->drawString(x + 20, y + 34, wunderground.getForecastLowTemp(dayIndex) + "|" + wunderground.getForecastHighTemp(dayIndex));
-  display->setTextAlignment(TEXT_ALIGN_LEFT);*/
+  display->drawString(x + 20, y + 34, temp);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
+  now = time(nullptr);
+  struct tm* timeInfo;
+  timeInfo = localtime(&now);
+  char buff[14];
+  sprintf_P(buff, PSTR("%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min);
+
   display->setColor(WHITE);
   display->setFont(ArialMT_Plain_10);
-  String time = "X";
   display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->drawString(0, 54, time);
+  display->drawString(0, 54, String(buff));
   display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  String temp = IS_METRIC ? aerisData.tempC + "°C" : aerisData.tempF + "°F";
+  String temp = IS_METRIC ? String(aerisData.tempC) + "°C" : String(aerisData.tempF) + "°F";
   display->drawString(128, 54, temp);
   display->drawHorizontalLine(0, 52, 128);
 }

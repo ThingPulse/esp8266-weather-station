@@ -96,7 +96,7 @@ void AerisForecasts::key(String key) {
 void AerisForecasts::value(String value) {
   // Serial.printf("Key: %s, value: %s\n", currentKey.c_str(), value.c_str());
   if (currentForecast >= maxForecasts) {
-    Serial.println("Skipping forecast. MaxForecasts reached");
+    //Serial.println("Skipping forecast. MaxForecasts reached");
     return;
   }
   // uint64_t timestamp; //  1526706000
