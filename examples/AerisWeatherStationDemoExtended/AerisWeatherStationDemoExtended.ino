@@ -20,17 +20,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-See more at http://blog.squix.ch
+See more at http://blog.squix.org
 */
 
 #include <ESPWiFi.h>
 #include <ESPHTTPClient.h>
+#if defined(ESP8266)
+#include <Ticker.h>
+#endif
 #include <JsonListener.h>
+#include <ArduinoOTA.h>
+#if defined(ESP8266)
+#include <ESP8266mDNS.h>
+#else
+#include <ESPmDNS.h>
+#endif
 
-// time
-#include <time.h>                       // time() ctime()
-#include <sys/time.h>                   // struct timeval
-#include <coredecls.h>                  // settimeofday_cb()
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>
 
 #include "SSD1306Wire.h"
 #include "OLEDDisplayUi.h"
@@ -39,19 +47,14 @@ See more at http://blog.squix.ch
 #include "WeatherStationFonts.h"
 #include "WeatherStationImages.h"
 
-
 /***************************
  * Begin Settings
  **************************/
 // Please read http://blog.squix.org/weatherstation-getting-code-adapting-it
-// for setup instructions
+// for setup instructions.
+// In addition to the "normal" libraries you also need to install the WifiManager fro tzapu
 
-// WIFI
-const char* WIFI_SSID = "yourssid";
-const char* WIFI_PWD = "yourpassw0rd";
-
-#define TZ              2       // (utc+) TZ in hours
-#define DST_MN          60      // use 60mn for summer time in some countries
+#define HOSTNAME "ESP8266-OTA-"
 
 // Setup
 const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
@@ -71,9 +74,9 @@ const float UTC_OFFSET = 2;
 
 // Wunderground Settings
 const boolean IS_METRIC = true;
-const String AERIS_CLIENT_ID = "tWOmsRUXe4EFTHQKmUKOK";
-const String AERIS_CLIENT_SECRET = "gRoMoapOyg46HwB7dRmoVPaJ0vUgAiud1CFWuLfF";
-const String AERIS_LOCATION = "Zurich,CH";
+const String AERIS_WEATHER_CLIENT_ID = "CLIENT_ID";
+const String AERIS_WEATHER_SECRET = "SECRET_KEY";
+const String AERIS_WEATHER_LOCATION = "Zurich,CH";
 
 // Initialize the oled display for address 0x3c
 // sda-pin=14 and sdc-pin=12
@@ -83,23 +86,29 @@ OLEDDisplayUi   ui( &display );
 /***************************
  * End Settings
  **************************/
-AerisObservationsData aerisData;
-AerisObservations aerisClient;
 
-#define TZ_MN           ((TZ)*60)
-#define TZ_SEC          ((TZ)*3600)
-#define DST_SEC         ((DST_MN)*60)
-time_t now;
+TimeClient timeClient(UTC_OFFSET);
+
+// Set to false, if you prefere imperial/inches, Fahrenheit
+WundergroundClient wunderground(IS_METRIC);
+
+ThingspeakClient thingspeak;
 
 // flag changed in the ticker function every 10 minutes
 bool readyForWeatherUpdate = false;
 
 String lastUpdate = "--";
 
+#if defined(ESP8266)
+Ticker ticker;
+#else
 long timeSinceLastWUpdate = 0;
+#endif
 
 //declaring prototypes
+void configModeCallback (WiFiManager *myWiFiManager);
 void drawProgress(OLEDDisplay *display, int percentage, String label);
+void drawOtaProgress(unsigned int, unsigned int);
 void updateData(OLEDDisplay *display);
 void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
@@ -108,21 +117,34 @@ void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, 
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex);
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
 void setReadyForWeatherUpdate();
+int8_t getWifiQuality();
 
 
 // Add frames
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
-FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast };
-int numberOfFrames = 3;
+FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast, drawThingspeak };
+int numberOfFrames = 4;
 
 OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
 
+String ESPChipID(void) {
+#if defined(ESP8266)
+  return String(ESP.getChipId(), HEX);
+#else
+  uint64_t EspChipID = ESP.getEfuseMac();
+  char chipID[14];
+  sprintf(chipID, "%04X%08X", (uint16_t)(EspChipID >> 32), (uint32_t)EspChipID);
+  return chipID;
+
+#endif
+}
 void setup() {
+    // Turn On VCC
+  //pinMode(D4, OUTPUT);
+  //digitalWrite(D4, HIGH);
   Serial.begin(115200);
-  Serial.println();
-  Serial.println();
 
   // initialize dispaly
   display.init();
@@ -134,7 +156,26 @@ void setup() {
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setContrast(255);
 
-  WiFi.begin(WIFI_SSID, WIFI_PWD);
+  //WiFiManager
+  //Local intialization. Once its business is done, there is no need to keep it around
+  WiFiManager wifiManager;
+  // Uncomment for testing wifi manager
+  //wifiManager.resetSettings();
+  wifiManager.setAPCallback(configModeCallback);
+
+  //or use this for auto generated name ESP + ChipID
+  wifiManager.autoConnect();
+
+  //Manual Wifi
+  //WiFi.begin(WIFI_SSID, WIFI_PWD);
+  String hostname(HOSTNAME);
+  hostname += ESPChipID();
+#if defined(ESP8266)
+  WiFi.hostname(hostname);
+#else
+  MDNS.begin((char *)&hostname);
+#endif
+
 
   int counter = 0;
   while (WiFi.status() != WL_CONNECTED) {
@@ -142,27 +183,22 @@ void setup() {
     Serial.print(".");
     display.clear();
     display.drawString(64, 10, "Connecting to WiFi");
-    display.drawXbm(46, 30, 8, 8, counter % 3 == 0 ? activeSymbole : inactiveSymbole);
-    display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbole : inactiveSymbole);
-    display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbole : inactiveSymbole);
+    display.drawXbm(46, 30, 8, 8, counter % 3 == 0 ? activeSymbol : inactiveSymbol);
+    display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbol : inactiveSymbol);
+    display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbol : inactiveSymbol);
     display.display();
 
     counter++;
   }
-  // Get time from network time service
-  configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
 
   ui.setTargetFPS(30);
 
-  ui.setActiveSymbol(activeSymbole);
-  ui.setInactiveSymbol(inactiveSymbole);
+  //Hack until disableIndicator works:
+  //Set an empty symbol
+  ui.setActiveSymbol(emptySymbol);
+  ui.setInactiveSymbol(emptySymbol);
 
-  // You can change this to
-  // TOP, LEFT, BOTTOM, RIGHT
-  ui.setIndicatorPosition(BOTTOM);
-
-  // Defines where the first frame is located in the bar.
-  ui.setIndicatorDirection(LEFT_RIGHT);
+  ui.disableIndicator();
 
   // You can change the transition that is used
   // SLIDE_LEFT, SLIDE_RIGHT, SLIDE_TOP, SLIDE_DOWN
@@ -175,18 +211,28 @@ void setup() {
   // Inital UI takes care of initalising the display too.
   ui.init();
 
-  Serial.println("");
+  // Setup OTA
+  Serial.println("Hostname: " + hostname);
+  ArduinoOTA.setHostname((const char *)hostname.c_str());
+  ArduinoOTA.onProgress(drawOtaProgress);
+  ArduinoOTA.begin();
 
   updateData(&display);
+
+#if defined(ESP8266)
+  ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
+#endif
 
 }
 
 void loop() {
 
+#if !defined(ESP8266)
   if (millis() - timeSinceLastWUpdate > (1000L*UPDATE_INTERVAL_SECS)) {
     setReadyForWeatherUpdate();
     timeSinceLastWUpdate = millis();
   }
+#endif
 
   if (readyForWeatherUpdate && ui.getUiState()->frameState == FIXED) {
     updateData(&display);
@@ -198,10 +244,26 @@ void loop() {
     // You can do some work here
     // Don't do stuff if you are below your
     // time budget.
+    ArduinoOTA.handle();
     delay(remainingTimeBudget);
   }
 
 
+}
+
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  //if you used auto generated SSID, print it
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(64, 10, "Wifi Manager");
+  display.drawString(64, 20, "Please connect to AP");
+  display.drawString(64, 30, myWiFiManager->getConfigPortalSSID());
+  display.drawString(64, 40, "To setup Wifi Configuration");
+  display.display();
 }
 
 void drawProgress(OLEDDisplay *display, int percentage, String label) {
@@ -213,14 +275,25 @@ void drawProgress(OLEDDisplay *display, int percentage, String label) {
   display->display();
 }
 
+void drawOtaProgress(unsigned int progress, unsigned int total) {
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(64, 10, "OTA Update");
+  display.drawProgressBar(2, 28, 124, 10, progress / (total / 100));
+  display.display();
+}
+
 void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
-  drawProgress(display, 30, "Updating observations...");
-  aerisClient.updateObservations(&aerisData, AERIS_CLIENT_ID, AERIS_CLIENT_SECRET, AERIS_LOCATION);
-  /*drawProgress(display, 50, "Updating forecasts...");
+  timeClient.updateTime();
+  drawProgress(display, 30, "Updating conditions...");
+  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  drawProgress(display, 50, "Updating forecasts...");
   wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
   drawProgress(display, 80, "Updating thingspeak...");
-  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);*/
+  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
+  lastUpdate = timeClient.getFormattedTime();
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");
   delay(1000);
@@ -229,34 +302,32 @@ void updateData(OLEDDisplay *display) {
 
 
 void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  now = time(nullptr);
-  struct tm* timeInfo;
-  timeInfo = localtime(&now);
-
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
-  String date = "X"; //wunderground.getDate();
-
+  String date = wunderground.getDate();
+  int textWidth = display->getStringWidth(date);
   display->drawString(64 + x, 5 + y, date);
   display->setFont(ArialMT_Plain_24);
-  char buff[14];
-  sprintf_P(buff, PSTR("%02d:%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec);
-  display->drawString(64 + x, 15 + y, buff);
+  String time = timeClient.getFormattedTime();
+  textWidth = display->getStringWidth(time);
+  display->drawString(64 + x, 15 + y, time);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
 void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setFont(ArialMT_Plain_10);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->drawString(60 + x, 5 + y, aerisData.weather);
+  display->drawString(60 + x, 5 + y, wunderground.getWeatherText());
 
   display->setFont(ArialMT_Plain_24);
-  String temp = IS_METRIC ? String(aerisData.tempC) + "°C" : String(aerisData.tempF) + "°F";
+  String temp = wunderground.getCurrentTemp() + "°C";
   display->drawString(60 + x, 15 + y, temp);
+  int tempWidth = display->getStringWidth(temp);
 
   display->setFont(Meteocons_Plain_42);
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->drawString(32 + x, 05 + y, aerisData.iconMeteoCon);
+  String weatherIcon = wunderground.getTodayIcon();
+  int weatherIconWidth = display->getStringWidth(weatherIcon);
+  display->drawString(32 + x - weatherIconWidth / 2, 05 + y, weatherIcon);
 }
 
 
@@ -266,8 +337,17 @@ void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
   drawForecastDetails(display, x + 88, y, 4);
 }
 
+void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(64 + x, 0 + y, "Outdoor");
+  display->setFont(ArialMT_Plain_16);
+  display->drawString(64 + x, 10 + y, thingspeak.getFieldValue(0) + "°C");
+  display->drawString(64 + x, 30 + y, thingspeak.getFieldValue(1) + "%");
+}
+
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
-/*  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
   String day = wunderground.getForecastTitle(dayIndex).substring(0, 3);
   day.toUpperCase();
@@ -278,19 +358,53 @@ void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
 
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 20, y + 34, wunderground.getForecastLowTemp(dayIndex) + "|" + wunderground.getForecastHighTemp(dayIndex));
-  display->setTextAlignment(TEXT_ALIGN_LEFT);*/
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
   display->setColor(WHITE);
   display->setFont(ArialMT_Plain_10);
-  String time = "X";
   display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->drawString(0, 54, time);
-  display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  String temp = IS_METRIC ? aerisData.tempC + "°C" : aerisData.tempF + "°F";
-  display->drawString(128, 54, temp);
+  display->drawString(0, 54, String(state->currentFrame + 1) + "/" + String(numberOfFrames));
+
+  String time = timeClient.getFormattedTime().substring(0, 5);
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->drawString(38, 54, time);
+
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  String temp = wunderground.getCurrentTemp() + "°C";
+  display->drawString(90, 54, temp);
+
+  int8_t quality = getWifiQuality();
+  for (int8_t i = 0; i < 4; i++) {
+    for (int8_t j = 0; j < 2 * (i + 1); j++) {
+      if (quality > i * 25 || j == 0) {
+        display->setPixel(120 + 2 * i, 63 - j);
+      }
+    }
+  }
+
+
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(Meteocons_Plain_10);
+  String weatherIcon = wunderground.getTodayIcon();
+  int weatherIconWidth = display->getStringWidth(weatherIcon);
+  display->drawString(64, 55, weatherIcon);
+
   display->drawHorizontalLine(0, 52, 128);
+
+}
+
+// converts the dBm to a range between 0 and 100%
+int8_t getWifiQuality() {
+  int32_t dbm = WiFi.RSSI();
+  if(dbm <= -100) {
+      return 0;
+  } else if(dbm >= -50) {
+      return 100;
+  } else {
+      return 2 * (dbm + 100);
+  }
 }
 
 void setReadyForWeatherUpdate() {
