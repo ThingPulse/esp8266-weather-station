@@ -1,6 +1,6 @@
 /**The MIT License (MIT)
 
-Copyright (c) 2015 by Daniel Eichhorn
+Copyright (c) 2018 by Daniel Eichhorn, ThingPulse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-See more at http://blog.squix.ch
+See more at https://thingpulse.com
 */
 #pragma once
 
@@ -34,13 +34,13 @@ class TimeClient {
     float myUtcOffset = 0;
     long localEpoc = 0;
     long localMillisAtUpdate;
-    
+
     const char* ntpServerName = "time.nist.gov";
     unsigned int localPort = 2390;
-    
+
     byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 
-    
+
   public:
     TimeClient(float utcOffset);
     void updateTime();
@@ -53,4 +53,3 @@ class TimeClient {
     long getCurrentEpochWithUtcOffset();
 
 };
-
