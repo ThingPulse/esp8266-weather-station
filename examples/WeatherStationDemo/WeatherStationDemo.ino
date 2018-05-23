@@ -72,7 +72,7 @@ const int SDC_PIN = 4; //D4;
 // Sign up here to get an API key:
 // https://home.openweathermap.org/users/sign_up
 const boolean IS_METRIC = true;
-String OPEN_WEATHER_MAP_APP_ID = "6bdd4d9d45a97d690103477a4c67c38f";
+String OPEN_WEATHER_MAP_APP_ID = "XXX";
 String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
 
 // Pick a language code from this list:
