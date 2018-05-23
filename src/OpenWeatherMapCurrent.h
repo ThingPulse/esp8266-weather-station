@@ -77,14 +77,20 @@ class OpenWeatherMapCurrent: public JsonListener {
     String currentParent;
     OpenWeatherMapCurrentData *data;
     uint8_t weatherItemCounter = 0;
-
+    boolean metric = true;
+    String language;
 
   void doUpdate(OpenWeatherMapCurrentData *data, String url);
 
   public:
     OpenWeatherMapCurrent();
-    void updateCurrent(OpenWeatherMapCurrentData *data, String appId, String location, boolean isMetric);
+    void updateCurrent(OpenWeatherMapCurrentData *data, String appId, String location);
 
+    void setMetric(boolean metric) {this->metric = metric;}
+    boolean isMetric() { return metric; }
+    void setLanguage(String language) { this->language = language; }
+    String getLanguage() { return language; }
+    
     String getMeteoconIcon(String icon);
     virtual void whitespace(char c);
 

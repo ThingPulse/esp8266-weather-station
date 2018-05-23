@@ -35,8 +35,8 @@ See more at https://thingpulse.com
 #include "SSD1306Wire.h"
 #include "OLEDDisplayUi.h"
 #include "Wire.h"
-#include "AerisObservations.h"
-#include "AerisForecasts.h"
+#include "OpenWeatherMapCurrent.h"
+#include "OpenWeatherMapForecast.h"
 #include "WeatherStationFonts.h"
 #include "WeatherStationImages.h"
 
@@ -67,32 +67,43 @@ const int SDA_PIN = 5; //D3;
 const int SDC_PIN = 4; //D4;
 #endif
 
-// TimeClient settings
-const float UTC_OFFSET = 2;
 
-// Aeris Settings
+// OpenWeatherMap Settings
+// Sign up here to get an API key:
+// https://home.openweathermap.org/users/sign_up
 const boolean IS_METRIC = true;
-const String AERIS_CLIENT_ID = "tWOmsRUXe4EFTHQKmUKOK";
-const String AERIS_CLIENT_SECRET = "gRoMoapOyg46HwB7dRmoVPaJ0vUgAiud1CFWuLfF";
-const String AERIS_LOCATION = "Zurich,CH";
+String OPEN_WEATHER_MAP_APP_ID = "6bdd4d9d45a97d690103477a4c67c38f";
+String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
+
+// Pick a language code from this list:
+// Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
+// English - en, Persian (Farsi) - fa, Finnish - fi, French - fr, Galician - gl,
+// Croatian - hr, Hungarian - hu, Italian - it, Japanese - ja, Korean - kr,
+// Latvian - la, Lithuanian - lt, Macedonian - mk, Dutch - nl, Polish - pl,
+// Portuguese - pt, Romanian - ro, Russian - ru, Swedish - se, Slovak - sk,
+// Slovenian - sl, Spanish - es, Turkish - tr, Ukrainian - ua, Vietnamese - vi,
+// Chinese Simplified - zh_cn, Chinese Traditional - zh_tw.
+
+String OPEN_WEATHER_MAP_LANGUAGE = "de";
 const uint8_t MAX_FORECASTS = 4;
 
-// Initialize the oled display for address 0x3c
-// sda-pin=14 and sdc-pin=12
-SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
-OLEDDisplayUi   ui( &display );
-
+// Adjust according to your language
 const String WDAY_NAMES[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 const String MONTH_NAMES[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
 /***************************
  * End Settings
  **************************/
-AerisObservationsData aerisData;
-AerisObservations aerisClient;
+ // Initialize the oled display for address 0x3c
+ // sda-pin=14 and sdc-pin=12
+ SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+ OLEDDisplayUi   ui( &display );
 
-AerisForecastData forecasts[MAX_FORECASTS];
-AerisForecasts forecastClient;
+OpenWeatherMapCurrentData currentWeather;
+OpenWeatherMapCurrent currentWeatherClient;
+
+OpenWeatherMapForecastData forecasts[MAX_FORECASTS];
+OpenWeatherMapForecast forecastClient;
 
 #define TZ_MN           ((TZ)*60)
 #define TZ_SEC          ((TZ)*3600)
@@ -112,8 +123,8 @@ void updateData(OLEDDisplay *display);
 void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex);
+void drawDHTData(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
 void setReadyForWeatherUpdate();
 
@@ -121,8 +132,8 @@ void setReadyForWeatherUpdate();
 // Add frames
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
-FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast };
-int numberOfFrames = 3;
+FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast, drawDHTData };
+int numberOfFrames = 4;
 
 OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
@@ -223,10 +234,16 @@ void drawProgress(OLEDDisplay *display, int percentage, String label) {
 
 void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
-  drawProgress(display, 30, "Updating observations...");
-  aerisClient.updateObservations(&aerisData, AERIS_CLIENT_ID, AERIS_CLIENT_SECRET, AERIS_LOCATION);
+  drawProgress(display, 30, "Updating weather...");
+  currentWeatherClient.setMetric(IS_METRIC);
+  currentWeatherClient.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
+  currentWeatherClient.updateCurrent(&currentWeather, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION);
   drawProgress(display, 50, "Updating forecasts...");
-  forecastClient.updateForecasts(forecasts, AERIS_CLIENT_ID, AERIS_CLIENT_SECRET, AERIS_LOCATION, MAX_FORECASTS);
+  forecastClient.setMetric(IS_METRIC);
+  forecastClient.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
+  uint8_t allowedHours[] = {12};
+  forecastClient.setAllowedHours(allowedHours, sizeof(allowedHours));
+  forecastClient.updateForecasts(forecasts, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION, MAX_FORECASTS);
 
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");
@@ -257,27 +274,28 @@ void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
 
 void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setFont(ArialMT_Plain_10);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->drawString(60 + x, 5 + y, aerisData.weather);
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->drawString(64 + x, 38 + y, currentWeather.description);
 
   display->setFont(ArialMT_Plain_24);
-  String temp = IS_METRIC ? String(aerisData.tempC) + "°C" : String(aerisData.tempF) + "°F";
-  display->drawString(60 + x, 15 + y, temp);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  String temp = String(currentWeather.temp, 1) + (IS_METRIC ? "°C" : "°F");
+  display->drawString(60 + x, 5 + y, temp);
 
-  display->setFont(Meteocons_Plain_42);
+  display->setFont(Meteocons_Plain_36);
   display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->drawString(32 + x, 05 + y, aerisData.iconMeteoCon);
+  display->drawString(32 + x, 0 + y, currentWeather.iconMeteoCon);
 }
 
 
 void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  drawForecastDetails(display, x, y, 1);
-  drawForecastDetails(display, x + 44, y, 2);
-  drawForecastDetails(display, x + 88, y, 3);
+  drawForecastDetails(display, x, y, 0);
+  drawForecastDetails(display, x + 44, y, 1);
+  drawForecastDetails(display, x + 88, y, 2);
 }
 
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
-  time_t observationTimestamp = forecasts[dayIndex].timestamp;
+  time_t observationTimestamp = forecasts[dayIndex].observationTime;
   struct tm* timeInfo;
   timeInfo = localtime(&observationTimestamp);
   display->setTextAlignment(TEXT_ALIGN_CENTER);
@@ -286,13 +304,16 @@ void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
 
   display->setFont(Meteocons_Plain_21);
   display->drawString(x + 20, y + 12, forecasts[dayIndex].iconMeteoCon);
-  String temp = String(forecasts[dayIndex].minTempC) + "|" + String(forecasts[dayIndex].maxTempC);
-  if (!IS_METRIC) {
-    String temp = String(forecasts[dayIndex].minTempF) + "|" + String(forecasts[dayIndex].maxTempF);
-  }
+  String temp = String(forecasts[dayIndex].temp, 0) + (IS_METRIC ? "°C" : "°F");
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 20, y + 34, temp);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
+}
+
+void drawDHTData(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  display->setTextAlignment(TEXT_ALIGN_CENTER);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(x + 64, y, "Sensor Data");
 }
 
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
@@ -307,7 +328,7 @@ void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->drawString(0, 54, String(buff));
   display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  String temp = IS_METRIC ? String(aerisData.tempC) + "°C" : String(aerisData.tempF) + "°F";
+  String temp = String(currentWeather.temp, 1) + (IS_METRIC ? "°C" : "°F");
   display->drawString(128, 54, temp);
   display->drawHorizontalLine(0, 52, 128);
 }

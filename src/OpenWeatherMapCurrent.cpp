@@ -32,9 +32,9 @@ OpenWeatherMapCurrent::OpenWeatherMapCurrent() {
 
 }
 
-void OpenWeatherMapCurrent::updateCurrent(OpenWeatherMapCurrentData *data, String appId, String location, boolean isMetric) {
-  String units = isMetric ? "metric" : "imperial";
-  doUpdate(data, "http://api.openweathermap.org/data/2.5/weather?q=" + location + "&appid=" + appId + "&units=" + units);
+void OpenWeatherMapCurrent::updateCurrent(OpenWeatherMapCurrentData *data, String appId, String location) {
+  String units = metric ? "metric" : "imperial";
+  doUpdate(data, "http://api.openweathermap.org/data/2.5/weather?q=" + location + "&appid=" + appId + "&units=" + units + "&lang=" + language);
 }
 
 void OpenWeatherMapCurrent::doUpdate(OpenWeatherMapCurrentData *data, String url) {
