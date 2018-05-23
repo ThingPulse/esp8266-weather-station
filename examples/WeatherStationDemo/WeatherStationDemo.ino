@@ -124,7 +124,6 @@ void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
 void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex);
-void drawDHTData(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
 void setReadyForWeatherUpdate();
 
@@ -132,8 +131,8 @@ void setReadyForWeatherUpdate();
 // Add frames
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
-FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast, drawDHTData };
-int numberOfFrames = 4;
+FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast };
+int numberOfFrames = 3;
 
 OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
@@ -308,12 +307,6 @@ void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 20, y + 34, temp);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
-}
-
-void drawDHTData(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(x + 64, y, "Sensor Data");
 }
 
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
