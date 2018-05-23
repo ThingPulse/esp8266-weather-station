@@ -45,7 +45,7 @@ Portuguese - pt, Romanian - ro, Russian - ru, Swedish - se, Slovak - sk,
 Slovenian - sl, Spanish - es, Turkish - tr, Ukrainian - ua, Vietnamese - vi,
 Chinese Simplified - zh_cn, Chinese Traditional - zh_tw.
 */
-String OPEN_WEATHER_MAP_LANGUAGE = "de";
+String OPEN_WEATHER_MAP_LANGUAGE = "en";
 boolean IS_METRIC = false;
 uint8_t MAX_FORECASTS = 15;
 

@@ -36,6 +36,16 @@ OpenWeatherMapCurrent client;
 
 String OPEN_WEATHER_MAP_APP_ID = "XXX";
 String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
+/*
+Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
+English - en, Persian (Farsi) - fa, Finnish - fi, French - fr, Galician - gl,
+Croatian - hr, Hungarian - hu, Italian - it, Japanese - ja, Korean - kr,
+Latvian - la, Lithuanian - lt, Macedonian - mk, Dutch - nl, Polish - pl,
+Portuguese - pt, Romanian - ro, Russian - ru, Swedish - se, Slovak - sk,
+Slovenian - sl, Spanish - es, Turkish - tr, Ukrainian - ua, Vietnamese - vi,
+Chinese Simplified - zh_cn, Chinese Traditional - zh_tw.
+*/
+String OPEN_WEATHER_MAP_LANGUAGE = "en";
 boolean IS_METRIC = true;
 
 /**
@@ -80,7 +90,9 @@ void setup() {
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
 
   OpenWeatherMapCurrentData data;
-  client.updateCurrent(&data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION, IS_METRIC);
+  client.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
+  client.setMetric(IS_METRIC);
+  client.updateCurrent(&data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION);
 
   Serial.println("------------------------------------");
 
