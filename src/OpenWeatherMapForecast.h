@@ -26,6 +26,7 @@ See more at https://thingpulse.com
 #pragma once
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
+#include <time.h>
 
 typedef struct OpenWeatherMapForecastData {
   // {"dt":1527066000,
@@ -63,6 +64,8 @@ typedef struct OpenWeatherMapForecastData {
   float windSpeed;
   //   "deg":207.501
   float windDeg;
+  // rain: {3h: 0.055},
+  float rain;
   // },"sys":{"pod":"d"}
   // dt_txt: "2018-05-23 09:00:00"
   String observationTimeText;
@@ -79,18 +82,24 @@ class OpenWeatherMapForecast: public JsonListener {
     uint8_t currentForecast;
     boolean metric = true;
     String language = "en";
+    uint8_t *allowedHours;
+    uint8_t allowedHoursCount = 0;
+    boolean isCurrentForecastAllowed = true;
 
-
-  void doUpdate(OpenWeatherMapForecastData *data, String url);
+  uint8_t doUpdate(OpenWeatherMapForecastData *data, String url);
 
   public:
     OpenWeatherMapForecast();
-    void updateForecasts(OpenWeatherMapForecastData *data, String appId, String location, uint8_t maxForecasts);
+    uint8_t updateForecasts(OpenWeatherMapForecastData *data, String appId, String location, uint8_t maxForecasts);
 
     void setMetric(boolean metric) { this->metric = metric; }
     boolean isMetric() { return this->metric; }
     void setLanguage(String language) { this->language = language; }
     String getLanguage() { return this->language; }
+    void setAllowedHours(uint8_t *allowedHours, uint8_t allowedHoursCount) {
+      this->allowedHours = allowedHours;
+      this->allowedHoursCount = allowedHoursCount;
+    }
 
 
     String getMeteoconIcon(String icon);

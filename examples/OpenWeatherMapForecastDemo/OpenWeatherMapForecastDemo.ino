@@ -34,7 +34,7 @@ See more at https://blog.squix.org
 // initiate the client
 OpenWeatherMapForecast client;
 
-String OPEN_WEATHER_MAP_APP_ID = "XXX";
+String OPEN_WEATHER_MAP_APP_ID = "";
 String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
 /*
 Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
@@ -47,7 +47,7 @@ Chinese Simplified - zh_cn, Chinese Traditional - zh_tw.
 */
 String OPEN_WEATHER_MAP_LANGUAGE = "de";
 boolean IS_METRIC = false;
-uint8_t MAX_FORECASTS = 20;
+uint8_t MAX_FORECASTS = 15;
 
 /**
  * WiFi Settings
@@ -93,11 +93,13 @@ void setup() {
   OpenWeatherMapForecastData data[MAX_FORECASTS];
   client.setMetric(IS_METRIC);
   client.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
-  client.updateForecasts(data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION, MAX_FORECASTS);
-
+  uint8_t allowedHours[] = {0,12};
+  client.setAllowedHours(allowedHours, 2);
+  uint8_t foundForecasts = client.updateForecasts(data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION, MAX_FORECASTS);
+  Serial.printf("Found %d forecasts in this call\n", foundForecasts);
   Serial.println("------------------------------------");
   time_t time;
-  for (uint8_t i = 0; i < MAX_FORECASTS; i++) {
+  for (uint8_t i = 0; i < foundForecasts; i++) {
     Serial.printf("---\nForecast number: %d\n", i);
     // {"dt":1527066000, uint32_t observationTime;
     time = data[i].observationTime;
@@ -135,6 +137,8 @@ void setup() {
     Serial.printf("windSpeed: %f\n", data[i].windSpeed);
     //   "deg":207.501 float windDeg;
     Serial.printf("windDeg: %f\n", data[i].windDeg);
+    // rain: {3h: 0.055}, float rain;
+    Serial.printf("rain: %f\n", data[i].rain);
     // },"sys":{"pod":"d"}
     // dt_txt: "2018-05-23 09:00:00"   String observationTimeText;
     Serial.printf("observationTimeText: %s\n", data[i].observationTimeText.c_str());

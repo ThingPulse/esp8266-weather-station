@@ -32,13 +32,13 @@ OpenWeatherMapForecast::OpenWeatherMapForecast() {
 
 }
 
-void OpenWeatherMapForecast::updateForecasts(OpenWeatherMapForecastData *data, String appId, String location, uint8_t maxForecasts) {
+uint8_t OpenWeatherMapForecast::updateForecasts(OpenWeatherMapForecastData *data, String appId, String location, uint8_t maxForecasts) {
   String units = metric ? "metric" : "imperial";
   this->maxForecasts = maxForecasts;
-  doUpdate(data, "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&appid=" + appId + "&units=" + units + "&lang=" + language);
+  return doUpdate(data, "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&appid=" + appId + "&units=" + units + "&lang=" + language);
 }
 
-void OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, String url) {
+uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, String url) {
   unsigned long lostTest = 10000UL;
   unsigned long lost_do = millis();
   this->weatherItemCounter = 0;
@@ -80,6 +80,7 @@ void OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, String u
     }
   }
   this->data = nullptr;
+  return currentForecast;
 }
 
 void OpenWeatherMapForecast::whitespace(char c) {
@@ -101,11 +102,31 @@ void OpenWeatherMapForecast::value(String value) {
   // {"dt":1527066000,  uint32_t observationTime;
   if (currentKey == "dt") {
     data[currentForecast].observationTime = value.toInt();
+
+    if (allowedHoursCount > 0) {
+      time_t time = data[currentForecast].observationTime;
+      struct tm* timeInfo;
+      timeInfo = localtime(&time);
+      uint8_t currentHour = timeInfo->tm_hour;
+      for (uint8_t i = 0; i < allowedHoursCount; i++) {
+        if (currentHour == allowedHours[i]) {
+          isCurrentForecastAllowed = true;
+          return;
+        }
+      }
+      isCurrentForecastAllowed = false;
+      return;
+    }
+  }
+  if (!isCurrentForecastAllowed) {
+    return;
   }
   // "main":{
   //   "temp":17.35, float temp;
   if (currentKey == "temp") {
     data[currentForecast].temp = value.toFloat();
+    // initialize potentially empty values:
+    data[currentForecast].rain = 0;;
   }
   //   "temp_min":16.89, float tempMin;
   if (currentKey == "temp_min") {
@@ -166,6 +187,10 @@ void OpenWeatherMapForecast::value(String value) {
   //   "deg":207.501 float windDeg;
   if (currentKey == "deg") {
     data[currentForecast].windDeg = value.toFloat();
+  }
+  // rain: {3h: 0.055}, float rain;
+  if (currentKey == "3h") {
+    data[currentForecast].rain = value.toFloat();
   }
   // },"sys":{"pod":"d"}
   // dt_txt: "2018-05-23 09:00:00"   String observationTimeText;
