@@ -20,6 +20,7 @@ env:
     - PLATFORMIO_CI_SRC=examples/WundergroundForecastDemo
     - PLATFORMIO_CI_SRC=examples/WundergroundHourlyDemo
     - PLATFORMIO_CI_SRC=examples/OpenWeatherMapCurrentDemo
+    - PLATFORMIO_CI_SRC=examples/OpenWeatherMapForecastDemo
 
 install:
     - pip install -U platformio
