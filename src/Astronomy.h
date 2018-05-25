@@ -24,8 +24,7 @@ See more at https://thingpulse.com
 */
 
 #pragma once
-#include <JsonListener.h>
-#include <JsonStreamingParser.h>
+#include "Arduino.h"
 
 typedef struct AstronomyData {
 
@@ -38,6 +37,6 @@ class Astronomy {
   public:
     Astronomy();
     uint8_t calculateMoonPhase(time_t timestamp);
-    uint8_t calculateMoonPhase(uint16_t year, uint16_t month, uint16_t day);
+    uint8_t calculateMoonPhase(uint16_t year, uint8_t month, uint8_t day);
 
 };

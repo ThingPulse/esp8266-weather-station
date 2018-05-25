@@ -45,27 +45,36 @@ uint8_t Astronomy::calculateMoonPhase(time_t timestamp) {
  *
  * Source: https://www.voidware.com/moon_phase.htm
  */
-uint8_t Astronomy::calculateMoonPhase(uint16_t year, uint16_t month, uint16_t day) {
-  uint16_t yearAsDays, monthAsDays;
+uint8_t Astronomy::calculateMoonPhase(uint16_t year, uint8_t month, uint8_t day) {
+
+  // This floating point moon phase algorithm works by simply dividing the lunar month of 29.53 days into the number
+  // of days elapsed since a known new moon. So, it’s highly simplified, but should be good enough to get quarter
+  // phases.
+
+  uint32_t yearAsDays;
+  uint16_t monthAsDays;
   double daysSinceReferenceNewMoon;
   double moonCycles;
   uint16_t completedMoonCycles;
-  double moonAge;
+  double moonAge;
   uint8_t phase;
 
+  // This adjustment ultimately comes from the calculation to turn y/m/d into a whole number of days offset. It’s a
+  // modified version of the Julian Day number, but here it’s been simplified to work only between years 2000/1/1 and
+  // 2099/12/31.
   if (month < 3) {
     year--;
     month += 12;
   }
-  ++month;          /* why incrementing the month? */
+  month++;
 
-  yearAsDays = 365.25 * year;                                             /* 365.25 -> mean length of a calendar year */
-  monthAsDays = 30.6 * month;                                             /* 30.6 -> mean length of a month */
-  daysSinceReferenceNewMoon = yearAsDays + monthAsDays + day - 694039.09; /* number of days since known new moon on 1900-01-01, 694039.09 -> days elapsed since zero */
-  moonCycles = daysSinceReferenceNewMoon / 29.53;                         /* 29.53 -> long-term average moon cycle duration in days */
-  completedMoonCycles = moonCycles;                                       /* "casting" to int to get *completed* moon cycles i.e. only integer part */
-  moonAge = moonCycles - completedMoonCycles;                             /* subtract integer part to leave fractional part which represents the current moon age */
-  phase = moonAge * 8 + 0.5;                                              /* scale fraction from 0-8 and round by adding 0.5 */
-  phase = phase & 7;                                                      /* 0 and 8 are the same so turn 8 into 0 */
+  yearAsDays = 365.25 * year;                                               // 365.25 -> mean length of a calendar year
+  monthAsDays = 30.6 * month;                                               // 30.6 -> mean length of a month
+  daysSinceReferenceNewMoon = yearAsDays + monthAsDays + day - 694039.09;   // number of days since known new moon on 1900-01-01, 694039.09 -> days elapsed since zero
+  moonCycles = daysSinceReferenceNewMoon / 29.53;                           // 29.53 -> long-term average moon cycle duration in days
+  completedMoonCycles = moonCycles;                                         // "casting" to int to get *completed* moon cycles i.e. only integer part
+  moonAge = moonCycles - completedMoonCycles;                               // subtract integer part to leave fractional part which represents the current moon age
+  phase = moonAge * 8 + 0.5;                                                // scale fraction from 0-8 and round by adding 0.5
+  phase = phase & 7;                                                        // 0 and 8 are the same so turn 8 into 0
   return phase;
 }
