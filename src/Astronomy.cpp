@@ -25,14 +25,17 @@ See more at https://thingpulse.com
 #include <time.h>
 #include "Astronomy.h"
 
+/* pi/180 */
+#define RPD 1.74532925199e-2
+
 Astronomy::Astronomy() {
 
 }
 
 /**
-* Convenience method to calculate moonphase by unix time stamp.
-* See calculateMoonPhase(int year, int month, int day) for more details.
-*/
+ * Convenience method to calculate moon phase by unix time stamp. See calculateMoonPhase(int year, int month, int day)
+ * for details.
+ */
 uint8_t Astronomy::calculateMoonPhase(time_t timestamp) {
   struct tm* timeInfo;
   timeInfo = localtime(&timestamp);
@@ -77,4 +80,85 @@ uint8_t Astronomy::calculateMoonPhase(uint16_t year, uint8_t month, uint8_t day)
   phase = moonAge * 8 + 0.5;                                                // scale fraction from 0-8 and round by adding 0.5
   phase = phase & 7;                                                        // 0 and 8 are the same so turn 8 into 0
   return phase;
+}
+
+/**
+ * Convenience method to calculate moon phase and illumination by unix time stamp. See
+ * calculateMoonData(int year, int month, int day) for details.
+ */
+Astronomy::MoonData Astronomy::calculateMoonData(time_t timestamp) {
+  struct tm* timeInfo;
+  timeInfo = localtime(&timestamp);
+  return calculateMoonData(timeInfo->tm_year + 1900, timeInfo->tm_mon + 1, timeInfo->tm_mday);
+}
+/**
+ * Calculates the moon phase and illumination for a given date, accurate to 1 segment.
+ * The result is in the range 0..7 for the phase.
+ * 0 => new moon
+ * 4 => full moon
+ * Illumination ranges from 0.0 (new moon) to 1.0 (full moon).
+ *
+ * Source: Hugh from https://www.voidware.com
+ */
+Astronomy::MoonData Astronomy::calculateMoonData(uint16_t year, uint8_t month, uint8_t day) {
+
+  MoonData moonData;
+
+  // from Gregorian year, month, day, calculate the Julian Day number
+  uint8_t c;
+  uint32_t jd;
+  if (month < 3) {
+    --year;
+    month += 10;
+  } else month -= 2;
+
+  c = year / 100;
+  jd += 30.59 * month;
+  jd += 365.25 * year;
+  jd += day;
+  jd += c / 4 - c;
+
+  // adjust to Julian centuries from noon, the day specified.
+  double t = (jd - 730455.5) / 36525;
+
+  // following calculation from Astronomical Algorithms, Jean Meeus
+  // D, M, MM from (47.2, 47.3, 47.3 page 338)
+
+  // mean elongation of the moon
+  double D = 297.8501921 + t * (445267.1114034 +
+                                t * (-0.0018819 + t * (1.0 / 545868 - t / 113065000)));
+
+  // suns mean anomaly
+  double M = 357.5291092 + t * (35999.0502909 + t * (-0.0001536 + t / 24490000));
+
+  // moons mean anomaly
+  double MM = 134.9633964 +
+              t * (477198.8675055 + t * (0.0087414 + t * (1.0 / 69699 - t / 14712000)));
+
+  // (48.4 p346)
+  double i = 180 - D
+             - 6.289 * sin(MM * RPD)
+             + 2.100 * sin(M * RPD)
+             - 1.274 * sin((2 * D - MM) * RPD)
+             - 0.658 * sin(2 * D * RPD)
+             - 0.214 * sin(2 * MM * RPD)
+             - 0.110 * sin(D * RPD);
+
+  if (i < 0) i = -i;
+  if (i >= 360) i -= floor(i / 360) * 360;
+
+  // (48.1 p 345)
+  // this is the proportion illuminated calculated from `i`, the phase angle
+  double k = (1 + cos(i * RPD)) / 2;
+
+  // but for the `phase` don't use the phase angle
+  // instead just consider the 0-360 cycle to get equal parts per phase
+  uint8_t ki = i / 22.5;
+  if (++ki == 16) ki = 0;
+  ki = (ki / 2 + 4) & 7;
+
+  moonData.phase = ki;
+  moonData.illumination = k;
+
+  return moonData;
 }
