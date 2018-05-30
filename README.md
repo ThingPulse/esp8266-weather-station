@@ -29,7 +29,7 @@ Make sure you use a version of the Arduino IDE which is supported by the ESP8266
 * ESP8266 Weather Station
 * JSON Streaming Parser by Daniel Eichhorn
 * ESP8266 Oled Driver for SSD1306 display by Daniel Eichhorn. **Make sure that you use Version 3.0.0 or bigger!**
-* Go to [https://www.wunderground.com/weather/api/](https://www.wunderground.com/weather/api/)
+* Go to [https://openweathermap.org/appid](https://openweathermap.org/appid)
 , create an account and get an API Key
 * In the Arduino IDE go to File > Examples > ESP8266 Weather Station
 * Enter  the Wunderground API Key
