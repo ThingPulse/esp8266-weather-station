@@ -24,7 +24,8 @@ See more at https://thingpulse.com
 */
 
 #pragma once
-#include "Arduino.h"
+#include <Arduino.h>
+#include <time.h>
 
 
 class Astronomy {

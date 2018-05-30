@@ -22,7 +22,7 @@ SOFTWARE.
 
 See more at https://thingpulse.com
 */
-#include <time.h>
+
 #include "Astronomy.h"
 
 /* pi/180 */
