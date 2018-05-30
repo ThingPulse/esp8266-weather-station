@@ -24,7 +24,7 @@ See more at https://thingpulse.com
 */
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
+#include <ESPWiFi.h>
 #include <time.h>
 #include <Astronomy.h>
 
