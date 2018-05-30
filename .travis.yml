@@ -9,6 +9,7 @@ cache:
         - "~/.platformio"
 
 env:
+    - PLATFORMIO_CI_SRC=examples/AstronomyDemo
     - PLATFORMIO_CI_SRC=examples/PlaneSpotterDemo
     - PLATFORMIO_CI_SRC=examples/WeatherStationDemo
     - PLATFORMIO_CI_SRC=examples/WeatherStationDemoExtended
@@ -21,7 +22,6 @@ env:
     - PLATFORMIO_CI_SRC=examples/WundergroundHourlyDemo
     - PLATFORMIO_CI_SRC=examples/OpenWeatherMapCurrentDemo
     - PLATFORMIO_CI_SRC=examples/OpenWeatherMapForecastDemo
-    - PLATFORMIO_CI_SRC=examples/AstronomyDemo
 
 install:
     - pip install -U platformio
