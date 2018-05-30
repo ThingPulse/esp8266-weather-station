@@ -24,7 +24,7 @@ See more at https://thingpulse.com
 */
 
 #pragma once
-
+#include <Arduino.h>
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 

@@ -25,6 +25,7 @@ See more at https://thingpulse.com
 
 #pragma once
 //#define NIGHTICONS
+#include <Arduino.h>
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>
 
