@@ -26,7 +26,7 @@ See more at https://thingpulse.com
 #include <Arduino.h>
 #include <ESPWiFi.h>
 #include <time.h>
-#include <Astronomy.h>
+#include "Astronomy.h"
 
 /**
  * WiFi Settings
