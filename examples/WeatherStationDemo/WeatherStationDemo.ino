@@ -44,8 +44,6 @@ See more at https://thingpulse.com
 /***************************
  * Begin Settings
  **************************/
-// Please read http://blog.squix.org/weatherstation-getting-code-adapting-it
-// for setup instructions
 
 // WIFI
 const char* WIFI_SSID = "yourssid";
@@ -70,7 +68,7 @@ const int SDC_PIN = 4; //D4;
 
 // OpenWeatherMap Settings
 // Sign up here to get an API key:
-// https://home.openweathermap.org/users/sign_up
+// https://docs.thingpulse.com/how-tos/openweathermap-key/
 const boolean IS_METRIC = true;
 String OPEN_WEATHER_MAP_APP_ID = "XXX";
 String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
