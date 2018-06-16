@@ -78,4 +78,4 @@ The ESP8266 OLED Library changed a lot with the latest release of version 3.0.0.
 
 | Announcement  | Module  | Removal  |
 |---------------|---------|----------|
-| 2018-06-13    | all **Wunderground** related code  | June 2019  |
+| 2018-06-13    | all **Wunderground** related code, see [our blog](https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/) for details  | June 2019  |
