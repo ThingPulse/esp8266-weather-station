@@ -22,6 +22,7 @@ env:
     - PLATFORMIO_CI_SRC=examples/OpenWeatherMapCurrentDemo
     - PLATFORMIO_CI_SRC=examples/OpenWeatherMapForecastDemo
     - PLATFORMIO_CI_SRC=examples/AstronomyDemo
+    - PLATFORMIO_CI_SRC=examples/SunMoonCalcDemo
     - PLATFORMIO_CI_SRC=examples/AerisForecastsDemo
     - PLATFORMIO_CI_SRC=examples/AerisObservationDemo
     - PLATFORMIO_CI_SRC=examples/AerisSunMoonDemo
