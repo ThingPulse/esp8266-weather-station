@@ -33,7 +33,7 @@ SOFTWARE.
 OpenWeatherMapCurrent client;
 
 String OPEN_WEATHER_MAP_APP_ID = "XXX";
-String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
+String OPEN_WEATHER_MAP_LOCATION_ID = "2657896";
 /*
 Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
 English - en, Persian (Farsi) - fa, Finnish - fi, French - fr, Galician - gl,
@@ -90,7 +90,7 @@ void setup() {
   OpenWeatherMapCurrentData data;
   client.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
   client.setMetric(IS_METRIC);
-  client.updateCurrent(&data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION);
+  client.updateCurrent(&data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_ID);
 
   Serial.println("------------------------------------");
 

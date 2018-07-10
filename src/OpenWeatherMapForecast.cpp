@@ -30,10 +30,10 @@ OpenWeatherMapForecast::OpenWeatherMapForecast() {
 
 }
 
-uint8_t OpenWeatherMapForecast::updateForecasts(OpenWeatherMapForecastData *data, String appId, String location, uint8_t maxForecasts) {
+uint8_t OpenWeatherMapForecast::updateForecasts(OpenWeatherMapForecastData *data, String appId, String locationId, uint8_t maxForecasts) {
   String units = metric ? "metric" : "imperial";
   this->maxForecasts = maxForecasts;
-  return doUpdate(data, "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&appid=" + appId + "&units=" + units + "&lang=" + language);
+  return doUpdate(data, "http://api.openweathermap.org/data/2.5/forecast?id=" + locationId + "&appid=" + appId + "&units=" + units + "&lang=" + language);
 }
 
 uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, String url) {

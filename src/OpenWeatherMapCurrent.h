@@ -82,7 +82,7 @@ class OpenWeatherMapCurrent: public JsonListener {
 
   public:
     OpenWeatherMapCurrent();
-    void updateCurrent(OpenWeatherMapCurrentData *data, String appId, String location);
+    void updateCurrent(OpenWeatherMapCurrentData *data, String appId, String locationId);
 
     void setMetric(boolean metric) {this->metric = metric;}
     boolean isMetric() { return metric; }
