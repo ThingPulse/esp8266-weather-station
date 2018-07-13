@@ -19,6 +19,11 @@ By buying this and [other kits](https://thingpulse.com/shop/) from us you are fu
 | master  | [![Build Status](https://travis-ci.org/ThingPulse/esp8266-weather-station.svg?branch=master)](https://travis-ci.org/ThingPulse/esp8266-weather-station)  |
 | development  | [![Build Status](https://travis-ci.org/ThingPulse/esp8266-weather-station.svg?branch=development)](https://travis-ci.org/ThingPulse/esp8266-weather-station)  |
 
+## Service level promise
+
+<table><tr><td><img src="https://thingpulse.com/assets/ThingPulse-open-source-prime.png" width="150">
+</td><td>This is a ThingPulse <em>prime</em> project. See our <a href="https://thingpulse.com/about/open-source-commitment/">open-source commitment declaration</a> for what this means.</td></tr></table>
+
 ## Install and configure Arduino IDE
 
 Make sure you use a version of the Arduino IDE which is supported by the ESP8266 platform. Follow the [tutorial on our documentation platform](https://docs.thingpulse.com/how-tos/Arduino-IDE-for-ESP8266/).
