@@ -86,7 +86,6 @@ String OPEN_WEATHER_MAP_LANGUAGE = "de";
 const uint8_t MAX_FORECASTS = 4;
 
 #define SECS_PER_FRAME 7
-int headerOffset = 0;
 
 // Adjust according to your language
 const String WDAY_NAMES[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
@@ -135,7 +134,14 @@ void setReadyForWeatherUpdate();
 FrameCallback frames[] = { drawDateTime, drawCurrentWeather, drawForecast };
 int numberOfFrames = 3;
 
-OverlayCallback overlays[] = { drawHeaderOverlay };
+#define HEADERSIZE 13
+
+int headerOffset = 0;
+OverlayCallback overlays[] = { drawFooterOverlay };
+// To start with the overlay on top, use these instead:
+//int headerOffset = HEADERSIZE;
+//OverlayCallback overlays[] = { drawHeaderOverlay };
+
 int numberOfOverlays = 1;
 
 void setup() {
@@ -143,7 +149,7 @@ void setup() {
   Serial.println();
   Serial.println();
 
-  // initialize dispaly
+  // initialize display
   display.init();
   display.clear();
   display.display();
@@ -215,7 +221,7 @@ void loop() {
     if (headerOffset == 0) {
       overlays[0] = drawHeaderOverlay;
       ui.setOverlays(overlays, numberOfOverlays);
-      headerOffset = 13;
+      headerOffset = HEADERSIZE;
     } else {
       overlays[0] = drawFooterOverlay;
       ui.setOverlays(overlays, numberOfOverlays);
@@ -326,6 +332,7 @@ void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
 
   display->setFont(Meteocons_Plain_21);
   display->drawString(x + 20, y + 12, forecasts[dayIndex].iconMeteoCon);
+
   String temp = String(forecasts[dayIndex].temp, 0) + (IS_METRIC ? "°C" : "°F");
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 20, y + 34, temp);
