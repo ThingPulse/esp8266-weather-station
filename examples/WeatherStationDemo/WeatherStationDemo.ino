@@ -85,6 +85,9 @@ String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
 String OPEN_WEATHER_MAP_LANGUAGE = "de";
 const uint8_t MAX_FORECASTS = 4;
 
+#define SECS_PER_FRAME 7
+int headerOffset = 0;
+
 // Adjust according to your language
 const String WDAY_NAMES[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 const String MONTH_NAMES[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
@@ -92,10 +95,10 @@ const String MONTH_NAMES[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "
 /***************************
  * End Settings
  **************************/
- // Initialize the oled display for address 0x3c
- // sda-pin=14 and sdc-pin=12
- SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
- OLEDDisplayUi   ui( &display );
+// Initialize the oled display for address 0x3c
+// sda-pin=14 and sdc-pin=12
+SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+OLEDDisplayUi   ui( &display );
 
 OpenWeatherMapCurrentData currentWeather;
 OpenWeatherMapCurrent currentWeatherClient;
@@ -123,8 +126,8 @@ void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t
 void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex);
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
+void drawFooterOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
 void setReadyForWeatherUpdate();
-
 
 // Add frames
 // this array keeps function pointers to all frames
@@ -188,6 +191,8 @@ void setup() {
 
   ui.setOverlays(overlays, numberOfOverlays);
 
+  ui.setTimePerFrame(SECS_PER_FRAME * 1000); // Set frame display time
+
   // Inital UI takes care of initalising the display too.
   ui.init();
 
@@ -199,13 +204,23 @@ void setup() {
 
 void loop() {
 
-  if (millis() - timeSinceLastWUpdate > (1000L*UPDATE_INTERVAL_SECS)) {
+  if (millis() - timeSinceLastWUpdate > (1000L * UPDATE_INTERVAL_SECS)) {
     setReadyForWeatherUpdate();
     timeSinceLastWUpdate = millis();
   }
 
   if (readyForWeatherUpdate && ui.getUiState()->frameState == FIXED) {
     updateData(&display);
+    // Flip the screen to prevent burn-in
+    if (headerOffset == 0) {
+      overlays[0] = drawHeaderOverlay;
+      ui.setOverlays(overlays, numberOfOverlays);
+      headerOffset = 13;
+    } else {
+      overlays[0] = drawFooterOverlay;
+      ui.setOverlays(overlays, numberOfOverlays);
+      headerOffset = 0;
+    }
   }
 
   int remainingTimeBudget = ui.update();
@@ -216,8 +231,6 @@ void loop() {
     // time budget.
     delay(remainingTimeBudget);
   }
-
-
 }
 
 void drawProgress(OLEDDisplay *display, int percentage, String label) {
@@ -247,21 +260,23 @@ void updateData(OLEDDisplay *display) {
   delay(1000);
 }
 
-
-
 void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   now = time(nullptr);
   struct tm* timeInfo;
   timeInfo = localtime(&now);
   char buff[16];
 
-
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
   String date = WDAY_NAMES[timeInfo->tm_wday];
 
-  sprintf_P(buff, PSTR("%s, %02d/%02d/%04d"), WDAY_NAMES[timeInfo->tm_wday].c_str(), timeInfo->tm_mday, timeInfo->tm_mon+1, timeInfo->tm_year + 1900);
-  display->drawString(64 + x, 5 + y, String(buff));
+  sprintf_P(buff, PSTR("%s, %02d/%02d/%04d"), WDAY_NAMES[timeInfo->tm_wday].c_str(), timeInfo->tm_mon + 1, timeInfo->tm_mday, timeInfo->tm_year + 1900);
+  if (headerOffset == 0) {
+    // Date above time
+    display->drawString(64 + x, 5 + y, String(buff));
+  } else {
+    display->drawString(64 + x, 36 + y + headerOffset, String(buff));
+  }
   display->setFont(ArialMT_Plain_24);
 
   sprintf_P(buff, PSTR("%02d:%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec);
@@ -270,25 +285,28 @@ void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
 }
 
 void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  // Weather text
   display->setFont(ArialMT_Plain_10);
   display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->drawString(64 + x, 38 + y, currentWeather.description);
+  display->drawString(64 + x, 36 + y + headerOffset, currentWeather.description);
 
+  // Temperature
   display->setFont(ArialMT_Plain_24);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   String temp = String(currentWeather.temp, 1) + (IS_METRIC ? "°C" : "°F");
-  display->drawString(60 + x, 5 + y, temp);
+  display->drawString(60 + x, 5 + y + headerOffset, temp);
 
+  // Icon
   display->setFont(Meteocons_Plain_36);
   display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->drawString(32 + x, 0 + y, currentWeather.iconMeteoCon);
+  display->drawString(32 + x, 0 + y + headerOffset, currentWeather.iconMeteoCon);
 }
 
 
 void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  drawForecastDetails(display, x, y, 0);
-  drawForecastDetails(display, x + 44, y, 1);
-  drawForecastDetails(display, x + 88, y, 2);
+  drawForecastDetails(display, x, y + headerOffset, 0);
+  drawForecastDetails(display, x + 44, y + headerOffset, 1);
+  drawForecastDetails(display, x + 88, y + headerOffset, 2);
 }
 
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
@@ -313,6 +331,27 @@ void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
   timeInfo = localtime(&now);
   char buff[14];
   sprintf_P(buff, PSTR("%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min);
+
+  ui.setIndicatorPosition(TOP);
+
+  display->setColor(WHITE);
+  display->setFont(ArialMT_Plain_10);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->drawString(0, 0, String(buff));
+  display->setTextAlignment(TEXT_ALIGN_RIGHT);
+  String temp = String(currentWeather.temp, 1) + (IS_METRIC ? "°C" : "°F");
+  display->drawString(128, 0, temp);
+  display->drawHorizontalLine(0, 12, 128);
+}
+
+void drawFooterOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
+  now = time(nullptr);
+  struct tm* timeInfo;
+  timeInfo = localtime(&now);
+  char buff[14];
+  sprintf_P(buff, PSTR("%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min);
+
+  ui.setIndicatorPosition(BOTTOM);
 
   display->setColor(WHITE);
   display->setFont(ArialMT_Plain_10);
