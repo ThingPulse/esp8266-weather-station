@@ -184,7 +184,7 @@ void setup() {
   ui.setIndicatorDirection(LEFT_RIGHT);
 
   // You can change the transition that is used
-  // SLIDE_LEFT, SLIDE_RIGHT, SLIDE_TOP, SLIDE_DOWN
+  // SLIDE_LEFT, SLIDE_RIGHT, SLIDE_UP, SLIDE_DOWN
   ui.setFrameAnimation(SLIDE_LEFT);
 
   ui.setFrames(frames, numberOfFrames);
@@ -270,7 +270,14 @@ void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
   display->setFont(ArialMT_Plain_10);
   String date = WDAY_NAMES[timeInfo->tm_wday];
 
-  sprintf_P(buff, PSTR("%s, %02d/%02d/%04d"), WDAY_NAMES[timeInfo->tm_wday].c_str(), timeInfo->tm_mon + 1, timeInfo->tm_mday, timeInfo->tm_year + 1900);
+  if (IS_METRIC) {
+    // DD/MM/YYYY
+    sprintf_P(buff, PSTR("%s, %02d/%02d/%04d"), WDAY_NAMES[timeInfo->tm_wday].c_str(), timeInfo->tm_mday, timeInfo->tm_mon + 1, timeInfo->tm_year + 1900);
+  } else {
+    // MM/DD/YYYY
+    sprintf_P(buff, PSTR("%s, %02d/%02d/%04d"), WDAY_NAMES[timeInfo->tm_wday].c_str(), timeInfo->tm_mon + 1, timeInfo->tm_mday, timeInfo->tm_year + 1900);
+  }
+
   if (headerOffset == 0) {
     // Date above time
     display->drawString(64 + x, 5 + y, String(buff));
