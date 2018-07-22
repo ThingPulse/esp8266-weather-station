@@ -32,7 +32,14 @@ SOFTWARE.
 // initiate the client
 OpenWeatherMapForecast client;
 
-String OPEN_WEATHER_MAP_APP_ID = "";
+// See https://docs.thingpulse.com/how-tos/openweathermap-key/
+String OPEN_WEATHER_MAP_APP_ID = "XXX";
+/*
+Go to https://openweathermap.org/find?q= and search for a location. Go through the
+result set and select the entry closest to the actual location you want to display 
+data for. It'll be a URL like https://openweathermap.org/city/2657896. The number
+at the end is what you assign to the constant below.
+ */
 String OPEN_WEATHER_MAP_LOCATION_ID = "2657896";
 /*
 Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
@@ -93,7 +100,7 @@ void setup() {
   client.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
   uint8_t allowedHours[] = {0,12};
   client.setAllowedHours(allowedHours, 2);
-  uint8_t foundForecasts = client.updateForecasts(data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_ID, MAX_FORECASTS);
+  uint8_t foundForecasts = client.updateForecastsById(data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_ID, MAX_FORECASTS);
   Serial.printf("Found %d forecasts in this call\n", foundForecasts);
   Serial.println("------------------------------------");
   time_t time;
