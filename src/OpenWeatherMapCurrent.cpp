@@ -38,7 +38,7 @@ void OpenWeatherMapCurrent::updateCurrentById(OpenWeatherMapCurrentData *data, S
   doUpdate(data, buildUrl(appId, "id=" + locationId));
 }
 
-String OpenWeatherMapForecast::buildUrl(String appId, String locationParameter) {
+String OpenWeatherMapCurrent::buildUrl(String appId, String locationParameter) {
   String units = metric ? "metric" : "imperial";
   return "http://api.openweathermap.org/data/2.5/weather?" + locationParameter + "&appid=" + appId + "&units=" + units + "&lang=" + language;
 }
