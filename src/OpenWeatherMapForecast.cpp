@@ -104,7 +104,7 @@ void OpenWeatherMapForecast::value(String value) {
     if (allowedHoursCount > 0) {
       time_t time = data[currentForecast].observationTime;
       struct tm* timeInfo;
-      timeInfo = localtime(&time);
+      timeInfo = gmtime(&time);
       uint8_t currentHour = timeInfo->tm_hour;
       for (uint8_t i = 0; i < allowedHoursCount; i++) {
         if (currentHour == allowedHours[i]) {
