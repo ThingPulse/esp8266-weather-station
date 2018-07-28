@@ -85,10 +85,6 @@ String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
 String OPEN_WEATHER_MAP_LANGUAGE = "de";
 const uint8_t MAX_FORECASTS = 4;
 
-// Adjust according to your language
-const String WDAY_NAMES[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-const String MONTH_NAMES[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-
 /***************************
  * End Settings
  **************************/
@@ -238,8 +234,6 @@ void updateData(OLEDDisplay *display) {
   drawProgress(display, 50, "Updating forecasts...");
   forecastClient.setMetric(IS_METRIC);
   forecastClient.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
-  uint8_t allowedHours[] = {12};
-  forecastClient.setAllowedHours(allowedHours, sizeof(allowedHours));
   forecastClient.updateForecasts(forecasts, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION, MAX_FORECASTS);
 
   readyForWeatherUpdate = false;
@@ -251,20 +245,17 @@ void updateData(OLEDDisplay *display) {
 
 void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   now = time(nullptr);
-  struct tm* timeInfo;
-  timeInfo = localtime(&now);
   char buff[16];
 
 
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
-  String date = WDAY_NAMES[timeInfo->tm_wday];
 
-  sprintf_P(buff, PSTR("%s, %02d/%02d/%04d"), WDAY_NAMES[timeInfo->tm_wday].c_str(), timeInfo->tm_mday, timeInfo->tm_mon+1, timeInfo->tm_year + 1900);
+  strftime(buff, sizeof(buff), "%a, %D/%M/%Y", localtime(&now));
   display->drawString(64 + x, 5 + y, String(buff));
   display->setFont(ArialMT_Plain_24);
 
-  sprintf_P(buff, PSTR("%02d:%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec);
+  strftime(buff, sizeof(buff), "%H:%M:%S", localtime(&now));
   display->drawString(64 + x, 15 + y, String(buff));
   display->setTextAlignment(TEXT_ALIGN_LEFT);
 }
@@ -292,12 +283,12 @@ void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
 }
 
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
-  time_t observationTimestamp = forecasts[dayIndex].observationTime;
-  struct tm* timeInfo;
-  timeInfo = localtime(&observationTimestamp);
+  time_t observationTimestamp = forecasts[dayIndex].observationTime + (TZ_SEC);
+  char buff[16];
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
-  display->drawString(x + 20, y, WDAY_NAMES[timeInfo->tm_wday]);
+  strftime(buff,sizeof(buff),"%H:%M", localtime(&observationTimestamp));
+  display->drawString(x + 20, y, buff);
 
   display->setFont(Meteocons_Plain_21);
   display->drawString(x + 20, y + 12, forecasts[dayIndex].iconMeteoCon);
@@ -309,10 +300,8 @@ void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
 
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
   now = time(nullptr);
-  struct tm* timeInfo;
-  timeInfo = localtime(&now);
   char buff[14];
-  sprintf_P(buff, PSTR("%02d:%02d"), timeInfo->tm_hour, timeInfo->tm_min);
+  strftime(buff, sizeof(buff), "%H:%M", localtime(&now));
 
   display->setColor(WHITE);
   display->setFont(ArialMT_Plain_10);
