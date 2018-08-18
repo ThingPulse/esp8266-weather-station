@@ -80,6 +80,8 @@ void OpenWeatherMapCurrent::doUpdate(OpenWeatherMapCurrentData *data, String url
         if (isBody) {
           parser.parse(c);
         }
+        // give WiFi and TCP/IP libraries a chance to handle pending events
+        yield();
       }
     }
   }

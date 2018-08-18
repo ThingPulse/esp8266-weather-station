@@ -83,6 +83,8 @@ uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, Strin
         if (isBody) {
           parser.parse(c);
         }
+        // give WiFi and TCP/IP libraries a chance to handle pending events
+        yield();
       }
     }
   }
