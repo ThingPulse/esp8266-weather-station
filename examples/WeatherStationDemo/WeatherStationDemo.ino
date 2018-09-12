@@ -69,9 +69,14 @@ const int SDC_PIN = 4; //D4;
 // OpenWeatherMap Settings
 // Sign up here to get an API key:
 // https://docs.thingpulse.com/how-tos/openweathermap-key/
-const boolean IS_METRIC = true;
 String OPEN_WEATHER_MAP_APP_ID = "XXX";
-String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
+/*
+Go to https://openweathermap.org/find?q= and search for a location. Go through the
+result set and select the entry closest to the actual location you want to display 
+data for. It'll be a URL like https://openweathermap.org/city/2657896. The number
+at the end is what you assign to the constant below.
+ */
+String OPEN_WEATHER_MAP_LOCATION_ID = "2657896";
 
 // Pick a language code from this list:
 // Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
@@ -81,9 +86,10 @@ String OPEN_WEATHER_MAP_LOCATION = "Zurich,CH";
 // Portuguese - pt, Romanian - ro, Russian - ru, Swedish - se, Slovak - sk,
 // Slovenian - sl, Spanish - es, Turkish - tr, Ukrainian - ua, Vietnamese - vi,
 // Chinese Simplified - zh_cn, Chinese Traditional - zh_tw.
-
 String OPEN_WEATHER_MAP_LANGUAGE = "de";
 const uint8_t MAX_FORECASTS = 4;
+
+const boolean IS_METRIC = true;
 
 // Adjust according to your language
 const String WDAY_NAMES[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
@@ -234,13 +240,13 @@ void updateData(OLEDDisplay *display) {
   drawProgress(display, 30, "Updating weather...");
   currentWeatherClient.setMetric(IS_METRIC);
   currentWeatherClient.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
-  currentWeatherClient.updateCurrent(&currentWeather, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION);
+  currentWeatherClient.updateCurrentById(&currentWeather, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_ID);
   drawProgress(display, 50, "Updating forecasts...");
   forecastClient.setMetric(IS_METRIC);
   forecastClient.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
   uint8_t allowedHours[] = {12};
   forecastClient.setAllowedHours(allowedHours, sizeof(allowedHours));
-  forecastClient.updateForecasts(forecasts, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION, MAX_FORECASTS);
+  forecastClient.updateForecastsById(forecasts, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_ID, MAX_FORECASTS);
 
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");
