@@ -40,6 +40,11 @@ uint8_t OpenWeatherMapForecast::updateForecastsById(OpenWeatherMapForecastData *
   return doUpdate(data, buildUrl(appId, "id=" + locationId));
 }
 
+uint8_t OpenWeatherMapForecast::updateForecastsByCoord(OpenWeatherMapForecastData *data, String appId, float latitude, float longitude, uint8_t maxForecasts) {
+  this->maxForecasts = maxForecasts;
+  return doUpdate(data, buildUrl(appId, "lat=" + String(latitude) + "&lon=" + String(longitude)));
+}
+
 String OpenWeatherMapForecast::buildUrl(String appId, String locationParameter) {
   String units = metric ? "metric" : "imperial";
   return "http://api.openweathermap.org/data/2.5/forecast?" + locationParameter + "&appid=" + appId + "&units=" + units + "&lang=" + language;
