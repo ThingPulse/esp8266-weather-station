@@ -144,6 +144,8 @@ void setup() {
 
   // "name": "Zurich", String cityName;
   Serial.printf("cityName: %s\n", data.cityName.c_str());
+  // "id": "2657896", String cityId;
+  Serial.printf("cityId: %s\n", data.cityId.c_str());
   Serial.println();
   Serial.println("---------------------------------------------------/\n");
 

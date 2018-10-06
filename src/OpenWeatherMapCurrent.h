@@ -67,6 +67,8 @@ typedef struct OpenWeatherMapCurrentData {
   uint32_t sunset;
   // "name": "Zurich",
   String cityName;
+  // "id": "2657896",
+  String cityId;
 } OpenWeatherMapCurrentData;
 
 class OpenWeatherMapCurrent: public JsonListener {

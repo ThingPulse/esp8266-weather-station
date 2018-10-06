@@ -1,17 +1,17 @@
 /**The MIT License (MIT)
- 
+
  Copyright (c) 2018 by ThingPulse Ltd., https://thingpulse.com
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in all
  copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -130,63 +130,68 @@ void OpenWeatherMapCurrent::value(String value) {
       this->data->iconMeteoCon = getMeteoconIcon(value);
     }
 
-  }
+  } else {
 
-  // "temp": 290.56, float temp;
-  if (currentKey == "temp") {
-    this->data->temp = value.toFloat();
-  }
-  // "pressure": 1013, uint16_t pressure;
-  if (currentKey == "pressure") {
-    this->data->pressure = value.toInt();
-  }
-  // "humidity": 87, uint8_t humidity;
-  if (currentKey == "humidity") {
-    this->data->humidity = value.toInt();
-  }
-  // "temp_min": 289.15, float tempMin;
-  if (currentKey == "temp_min") {
-    this->data->tempMin = value.toFloat();
-  }
-  // "temp_max": 292.15 float tempMax;
-  if (currentKey == "temp_max") {
-    this->data->tempMax = value.toFloat();
-  }
-  // visibility: 10000, uint16_t visibility;
-  if (currentKey == "visibility") {
-    this->data->visibility = value.toInt();
-  }
-  // "wind": {"speed": 1.5}, float windSpeed;
-  if (currentKey == "speed") {
-    this->data->windSpeed = value.toFloat();
-  }
-  // "wind": {deg: 226.505}, float windDeg;
-  if (currentKey == "deg") {
-    this->data->windDeg = value.toFloat();
-  }
-  // "clouds": {"all": 90}, uint8_t clouds;
-  if (currentKey == "all") {
-    this->data->clouds = value.toInt();
-  }
-  // "dt": 1527015000, uint64_t observationTime;
-  if (currentKey == "dt") {
-    this->data->observationTime = value.toInt();
-  }
-  // "country": "CH", String country;
-  if (currentKey == "country") {
-    this->data->country = value;
-  }
-  // "sunrise": 1526960448, uint32_t sunrise;
-  if (currentKey == "sunrise") {
-    this->data->sunrise = value.toInt();
-  }
-  // "sunset": 1527015901 uint32_t sunset;
-  if (currentKey == "sunset") {
-    this->data->sunset = value.toInt();
-  }
-  // "name": "Zurich", String cityName;
-  if (currentKey == "name") {
-    this->data->cityName = value;
+    // "temp": 290.56, float temp;
+    if (currentKey == "temp") {
+      this->data->temp = value.toFloat();
+    }
+    // "pressure": 1013, uint16_t pressure;
+    if (currentKey == "pressure") {
+      this->data->pressure = value.toInt();
+    }
+    // "humidity": 87, uint8_t humidity;
+    if (currentKey == "humidity") {
+      this->data->humidity = value.toInt();
+    }
+    // "temp_min": 289.15, float tempMin;
+    if (currentKey == "temp_min") {
+      this->data->tempMin = value.toFloat();
+    }
+    // "temp_max": 292.15 float tempMax;
+    if (currentKey == "temp_max") {
+      this->data->tempMax = value.toFloat();
+    }
+    // visibility: 10000, uint16_t visibility;
+    if (currentKey == "visibility") {
+      this->data->visibility = value.toInt();
+    }
+    // "wind": {"speed": 1.5}, float windSpeed;
+    if (currentKey == "speed") {
+      this->data->windSpeed = value.toFloat();
+    }
+    // "wind": {deg: 226.505}, float windDeg;
+    if (currentKey == "deg") {
+      this->data->windDeg = value.toFloat();
+    }
+    // "clouds": {"all": 90}, uint8_t clouds;
+    if (currentKey == "all") {
+      this->data->clouds = value.toInt();
+    }
+    // "dt": 1527015000, uint64_t observationTime;
+    if (currentKey == "dt") {
+      this->data->observationTime = value.toInt();
+    }
+    // "country": "CH", String country;
+    if (currentKey == "country") {
+      this->data->country = value;
+    }
+    // "sunrise": 1526960448, uint32_t sunrise;
+    if (currentKey == "sunrise") {
+      this->data->sunrise = value.toInt();
+    }
+    // "sunset": 1527015901 uint32_t sunset;
+    if (currentKey == "sunset") {
+      this->data->sunset = value.toInt();
+    }
+    // "name": "Zurich", String cityName;
+    if (currentKey == "name") {
+      this->data->cityName = value;
+    }
+    // "id": "2657896", String cityId;
+    if (currentKey == "id") {
+      this->data->cityId = value;
+    }
   }
 }
 
