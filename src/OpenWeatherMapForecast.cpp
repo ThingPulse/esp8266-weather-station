@@ -68,7 +68,7 @@ uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, Strin
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->connected()) {
+    while(client->connected() || client->available()) {
       while((size = client->available()) > 0) {
 		if ((millis() - lost_do) > lostTest) {
 			Serial.println ("lost in client with a timeout");
