@@ -41,7 +41,6 @@ void WorldClockClient::updateTime() {
   parser.setListener(this);
   WiFiClient client;
 
-  // http://api.thingspeak.com/channels/CHANNEL_ID/feeds.json?results=2&api_key=API_KEY
   const char host[] = "oleddisplay.squix.ch";
   String url = "/rest/time";
 
