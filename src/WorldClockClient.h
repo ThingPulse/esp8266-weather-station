@@ -33,8 +33,8 @@ See more at http://blog.squix.ch
 
 class WorldClockClient: public JsonListener {
   private:
-    long millisOfDayAtUpdate = 0;
-    long localMillisAtUpdate;
+    unsigned long millisOfDayAtUpdate = 0;
+    unsigned long localMillisAtUpdate;
     boolean isHeader = true;
     String currentKey = "";
     String myLanguage;

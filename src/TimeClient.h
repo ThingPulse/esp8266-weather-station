@@ -33,7 +33,7 @@ class TimeClient {
   private:
     float myUtcOffset = 0;
     long localEpoc = 0;
-    long localMillisAtUpdate;
+    unsigned long localMillisAtUpdate;
 
     const char* ntpServerName = "time.nist.gov";
     unsigned int localPort = 2390;
