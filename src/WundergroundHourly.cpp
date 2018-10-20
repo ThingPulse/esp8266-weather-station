@@ -72,7 +72,7 @@ void WundergroundHourly::doUpdate(WGHourly *hourlies, String url) {
   if(httpCode > 0) {
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->connected()) {
+    while(client->available() || client->connected()) {
       while((size = client->available()) > 0) {
         c = client->read();
         if (c == '{' || c == '[') {

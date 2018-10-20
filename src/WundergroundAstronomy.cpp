@@ -68,7 +68,7 @@ void WundergroundAstronomy::doUpdate(WGAstronomy *astronomy, String url) {
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->connected()) {
+    while(client->available() || client->connected()) {
       while((size = client->available()) > 0) {
         c = client->read();
         if (c == '{' || c == '[') {

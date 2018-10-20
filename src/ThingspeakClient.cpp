@@ -45,7 +45,7 @@ void ThingspeakClient::getLastChannelItem(String channelId, String readApiKey) {
 
   int size = 0;
   client.setNoDelay(false);
-  while(client.connected()) {
+  while(client.available() || client.connected()) {
     while((size = client.available()) > 0) {
       c = client.read();
       if (c == '{' || c == '[') {

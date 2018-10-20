@@ -82,7 +82,7 @@ void WundergroundAlerts::doUpdate(WGAlert *alerts, uint8_t maxAlerts, String url
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->connected()) {
+    while(client->available() || client->connected()) {
       while((size = client->available()) > 0) {
         c = client->read();
         if (c == '{' || c == '[') {

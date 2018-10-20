@@ -162,7 +162,7 @@ void WundergroundClient::doUpdate(String url) {
         parser.parse(c);
       }
     }
-  } while(client.connected());
+  } while(client.available() || client.connected());
 }
 
 void WundergroundClient::whitespace(char c) {

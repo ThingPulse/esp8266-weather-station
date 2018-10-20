@@ -58,7 +58,7 @@ void AerisForecasts::doUpdate(AerisForecastData *forecasts, String url, uint8_t 
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->connected()) {
+    while(client->available() || client->connected()) {
       while((size = client->available()) > 0) {
 		if ((millis() - lost_do) > lostTest) {
 			Serial.println ("lost in client with a timeout");

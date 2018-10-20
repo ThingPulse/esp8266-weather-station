@@ -56,7 +56,7 @@ void AerisObservations::doUpdate(AerisObservationsData *observations, String url
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->connected()) {
+    while(client->available() || client->connected()) {
       while((size = client->available()) > 0) {
 		if ((millis() - lost_do) > lostTest) {
 			Serial.println ("lost in client with a timeout");
