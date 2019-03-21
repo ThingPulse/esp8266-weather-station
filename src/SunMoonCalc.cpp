@@ -180,6 +180,7 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
   } else {
     // Update Sun's maximum elevation
     setUTDate(sun.transitJd);
+    delete[] out;
     out = doCalc(getSunPosition());
     sun.transitElevation = out[5];
   }
@@ -191,6 +192,7 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
 
   const PositionalData moonPosition = getMoonPosition();
   double moonLat = moonPosition.latitude, moonLon = moonPosition.longitude;
+  delete[] out;
   out = doCalc(moonPosition);
 
   moon.azimuth = out[0];
@@ -216,6 +218,7 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
     // Update Moon's maximum elevation
     setUTDate(moon.transitJd);
     getSunPosition();
+    delete[] out;
     out = doCalc(getMoonPosition());
     moon.transitElevation = out[5];
   }
@@ -223,11 +226,13 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
   this->sanomaly = sa;
   this->slongitude = sl;
   this->moonAge = ma;
-
+  
+  delete[] out;
   out = getMoonDiskOrientationAngles(lst, sunRA, sunDec, radians(moonLon),radians(moonLat), moonRA, moonDec);
   moon.axisPositionAngle = out[2];
   moon.brightLimbAngle = out[3];
   moon.paralacticAngle = out[4];
+  delete[] out;
   moon.age = ma;
   moon.phase = calculateMoonPhase(moon.age);
 
@@ -372,7 +377,7 @@ SunMoonCalc::PositionalData SunMoonCalc::getMoonPosition() {
  * - lst
  */
 double *SunMoonCalc::doCalc(PositionalData position) {
-  auto arr = new double[10];
+  double* arr = new double[10];
 
   // Ecliptic to equatorial coordinates
   double t2 = this->t / 100.0;
@@ -584,6 +589,7 @@ double SunMoonCalc::obtainAccurateRiseSetTransit(double riseSetJd, const int ind
     }
     step = fabs(riseSetJd - out[index]);
     riseSetJd = out[index];
+    delete[] out;
   }
   if (step > 1.0 / SECONDS_PER_DAY) return -1; // did not converge => without rise/set/transit in this date
   return riseSetJd;
@@ -600,8 +606,8 @@ double SunMoonCalc::obtainAccurateRiseSetTransit(double riseSetJd, const int ind
 double *SunMoonCalc::getMoonDiskOrientationAngles(double lst, double sunRA, double sunDec, double moonLon,
                                                   double moonLat, double moonRA, double moonDec) {
 
-  auto arr = new double[5];
-
+  double* arr = new double[5];
+  
   // Moon's argument of latitude
   double F = radians(93.2720993 + 483202.0175273 * this->t - 0.0034029 * this->t * this->t -
                        this->t * this->t * this->t / 3526000.0 + this->t * this->t * this->t * this->t / 863310000.0);
