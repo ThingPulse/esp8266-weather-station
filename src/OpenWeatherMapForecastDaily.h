@@ -78,9 +78,9 @@ class OpenWeatherMapForecastDaily: public JsonListener {
     int8_t currentForecast = -1; 
     boolean metric = true;
     String language = "en";
-    uint8_t *allowedHours;
-    uint8_t allowedHoursCount = 0;
-    boolean isCurrentForecastAllowed = true;
+    //uint8_t *allowedHours;
+    //uint8_t allowedHoursCount = 0;
+    //boolean isCurrentForecastAllowed = true;
 
     uint8_t doUpdate(OpenWeatherMapForecastDailyData *data, String url);
     String buildUrl(String appId, String locationParameter);
@@ -94,10 +94,10 @@ class OpenWeatherMapForecastDaily: public JsonListener {
     boolean isMetric() { return this->metric; }
     void setLanguage(String language) { this->language = language; }
     String getLanguage() { return this->language; }
-    void setAllowedHours(uint8_t *allowedHours, uint8_t allowedHoursCount) {
+    /*void setAllowedHours(uint8_t *allowedHours, uint8_t allowedHoursCount) {
       this->allowedHours = allowedHours;
       this->allowedHoursCount = allowedHoursCount;
-    }
+    }*/
 
 
     String getMeteoconIcon(String icon);
