@@ -5,6 +5,7 @@
 .project
 RemoteSystemsTempFiles
 
+.pio
 .pioenvs
 .piolibdeps
 .vscode
