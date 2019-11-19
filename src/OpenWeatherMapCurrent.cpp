@@ -188,29 +188,35 @@ void OpenWeatherMapCurrent::value(String value) {
   if (currentKey == "name") {
     this->data->cityName = value;
   }
-  // Calculate feels-like temperature
-  //Calculate "Feels-Like" Temp
+  // Calculate "Feels-Like" Temp
   float vTemperature = this->data->temp;
   float vWindSpeed = this->data->windSpeed;
   float vRelativeHumidity = this->data->humidity;
   float vFeelsLike = 0.0;
-  //Try Wind Chill First
-  if (vTemperature <= 50 && vWindSpeed >= 3) {
+  // If Metric convert to Imperial for calculation
+  if (metric) {
+    vTemperature = (vTemperature * 9.0/5.0) + 32.0;
+    vWindSpeed = vWindSpeed * 2.237;
+  }
+  // Try Wind Chill First
+  if (vTemperature <= 50.0 && vWindSpeed >= 3.0) {
     vFeelsLike = 35.74 + (0.6215*vTemperature) - 35.75*(pow(vWindSpeed,0.16)) + ((0.4275*vTemperature)*(pow(vWindSpeed,0.16)));
   } else {
     vFeelsLike = vTemperature;
   }
-  //Use Heat Index if Needed
-  if (vFeelsLike == vTemperature && vTemperature >= 80) {
+  // Use Heat Index if Needed
+  if (vFeelsLike == vTemperature && vTemperature >= 80.0) {
     vFeelsLike = 0.5 * (vTemperature + 61.0 + ((vTemperature-68.0)*1.2) + (vRelativeHumidity*0.094));
-    if (vRelativeHumidity < 13 && vTemperature >= 80 && vTemperature <= 112) {
-      vFeelsLike = vFeelsLike - ((13-vRelativeHumidity)/4)*(sqrt((17-(fabs(vTemperature-95.)))/17));
-      if (vRelativeHumidity > 85 && vTemperature >= 80 && vTemperature <= 87) {
-        vFeelsLike = vFeelsLike + ((vRelativeHumidity-85)/10) * ((87-vTemperature)/5);
-        
+    if (vRelativeHumidity < 13.0 && vTemperature >= 80.0 && vTemperature <= 112.0) {
+      vFeelsLike = vFeelsLike - ((13.0-vRelativeHumidity)/4.0)*(sqrt((17-(fabs(vTemperature-95.0)))/17.0));
+      if (vRelativeHumidity > 85.0 && vTemperature >= 80.0 && vTemperature <= 87.0) {
+        vFeelsLike = vFeelsLike + ((vRelativeHumidity-85.0)/10.0) * ((87.0-vTemperature)/5.0);
       }
-      
     }
+  }
+  // If Metric, convert back to Metric
+  if (metric) {
+    vFeelsLike = (vFeelsLike - 32.0) * 5.0/9.0;
   }
   this->data->feelsLikeTemp = vFeelsLike;
 }
