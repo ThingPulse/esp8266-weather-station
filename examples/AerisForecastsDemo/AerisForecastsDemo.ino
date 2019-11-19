@@ -278,7 +278,7 @@ void setup() {
     // String iconMeteoCon; // Q
     print("iconMeteoCon", forecasts[i].iconMeteoCon);
     // boolean isDay; // true
-    print("isDay", forecasts[i].isDay);
+    print("isDay", forecasts[i].isDay ? "true" : "false");
     // uint64_t sunrise; // 1526701425
     print("sunrise", forecasts[i].sunrise);
     // String sunriseISO; // "2018-05-19T05:43:45+02:00"
