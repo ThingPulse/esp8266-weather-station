@@ -772,9 +772,11 @@ SunMoonCalc::Result SunMoonCalc::translateToHumanReadable(SunMoonCalc::Result re
   result.sun.distance = result.sun.distance * AU;
   result.sun.azimuth = degrees(result.sun.azimuth);
   result.sun.elevation = degrees(result.sun.elevation);
+  result.sun.transitElevation = degrees(result.sun.transitElevation);
   result.moon.distance = result.moon.distance * AU;
   result.moon.azimuth = degrees(result.moon.azimuth);
   result.moon.elevation = degrees(result.moon.elevation);
+  result.moon.transitElevation = degrees(result.moon.transitElevation);
   result.moon.rise = fromJulian(result.moon.riseJd);
   result.moon.transit = fromJulian(result.moon.transitJd);
   result.moon.set = fromJulian(result.moon.setJd);
