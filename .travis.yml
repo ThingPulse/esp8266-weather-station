@@ -9,27 +9,20 @@ cache:
         - "~/.platformio"
 
 env:
-    - PLATFORMIO_CI_SRC=examples/PlaneSpotterDemo
-    - PLATFORMIO_CI_SRC=examples/WeatherStationDemo
-    - PLATFORMIO_CI_SRC=examples/WeatherStationDemoExtended
-    - PLATFORMIO_CI_SRC=examples/WeatherStationDemoExtendedDST
-    - PLATFORMIO_CI_SRC=examples/WorldClockDemo
-    - PLATFORMIO_CI_SRC=examples/WundergroundAlertsDemo
-    - PLATFORMIO_CI_SRC=examples/WundergroundAstronomyDemo
-    - PLATFORMIO_CI_SRC=examples/WundergroundConditionsDemo
-    - PLATFORMIO_CI_SRC=examples/WundergroundForecastDemo
-    - PLATFORMIO_CI_SRC=examples/WundergroundHourlyDemo
-    - PLATFORMIO_CI_SRC=examples/OpenWeatherMapCurrentDemo
-    - PLATFORMIO_CI_SRC=examples/OpenWeatherMapForecastDemo
-    - PLATFORMIO_CI_SRC=examples/AstronomyDemo
-    - PLATFORMIO_CI_SRC=examples/SunMoonCalcDemo
     - PLATFORMIO_CI_SRC=examples/AerisForecastsDemo
     - PLATFORMIO_CI_SRC=examples/AerisObservationDemo
     - PLATFORMIO_CI_SRC=examples/AerisSunMoonDemo
+    - PLATFORMIO_CI_SRC=examples/AstronomyDemo
+    - PLATFORMIO_CI_SRC=examples/OpenWeatherMapCurrentDemo
+    - PLATFORMIO_CI_SRC=examples/OpenWeatherMapForecastDemo
+    - PLATFORMIO_CI_SRC=examples/PlaneSpotterDemo
+    - PLATFORMIO_CI_SRC=examples/SunMoonCalcDemo
+    - PLATFORMIO_CI_SRC=examples/WeatherStationDemo
+    - PLATFORMIO_CI_SRC=examples/WorldClockDemo
 
 install:
     - pip install -U platformio
-    - platformio lib -g install "JsonStreamingParser" "ESP8266_SSD1306@4.0.0" "WifiManager@0.14" "simpleDSTadjust" "Adafruit Unified Sensor" "DHT sensor library"
+    - platformio lib -g install "JsonStreamingParser" "ESP8266_SSD1306" "WifiManager@0.14" "simpleDSTadjust" "Adafruit Unified Sensor" "DHT sensor library"
     - platformio lib update
 
 script:

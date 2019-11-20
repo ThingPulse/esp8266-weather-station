@@ -23,6 +23,8 @@ SOFTWARE.
 See more at https://thingpulse.com
 */
 
+#include <Arduino.h>
+
 #include <ESPWiFi.h>
 #include <ESPHTTPClient.h>
 #include <JsonListener.h>
