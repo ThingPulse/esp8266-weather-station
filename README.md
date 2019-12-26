@@ -30,7 +30,7 @@ Make sure you use a version of the Arduino IDE which is supported by the ESP8266
 
 ## Install libraries in Arduino IDE
 
-* Install the following libraries with your Arduino Library Manager in `Sketch` > `Include Library` > `Manage Libraries...`
+Install the following libraries with your Arduino Library Manager in `Sketch` > `Include Library` > `Manage Libraries...`
 * ESP8266 Weather Station
 * JSON Streaming Parser by Daniel Eichhorn
 * ESP8266 OLED Driver for SSD1306 display by Daniel Eichhorn. **Use Version 3.0.0 or higher!**
