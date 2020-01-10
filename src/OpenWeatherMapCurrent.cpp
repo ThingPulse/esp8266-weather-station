@@ -188,7 +188,7 @@ void OpenWeatherMapCurrent::value(String value) {
   if (currentKey == "name") {
     this->data->cityName = value;
   }
-  // Calculate "Feels-Like" Temp
+  // Calculate "Feels-Like" Temp, credit: https://gist.github.com/jfcarr/e68593c92c878257550d
   float vTemperature = this->data->temp;
   float vWindSpeed = this->data->windSpeed;
   float vRelativeHumidity = this->data->humidity;
