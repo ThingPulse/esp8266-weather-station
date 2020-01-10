@@ -57,7 +57,6 @@ If you are using the PlatformIO environment for building
 * **NTP Client**: a NTP based time class written by Fabrice Weinberg
 * **OpenWeatherMap Client**: A REST client for the OpenWeatherMap.com service, providing weather information
 * **Aeris Client**: Client for the service provided by aerisweather.com. Fully functional initial version. After the Wunderground incident (see [upgrade notes](#upgrade-notes)) we first targeted Aeris before we settled with OpenWeatherMap. This code is unmaintained but will remain part of this library for the time being.
-* **Wunderground Client - DEPRECATED**: fetches current weather and forecast from wunderground.com. Please note: Wunderground stopped their free tier service and previous demos are now using the OpenWeatherMap client.
 * **Thingspeak Client**: fetches data from Thingspeak which you might have collected with another sensor node and posted there.
 * **Astronomy**: algorithms to calculate current lunar phase and illumination.
 * **SunMoonCalc**: a calculator for sun and moon properties for a given date & time and location. This implementation is port of a [Java class by T. Alonso Albi](http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position) from OAN (Spain).
@@ -69,6 +68,8 @@ So if you write data fetchers which might be of interest to others please contac
 We will gladly list it here as third party library...
 
 ## Upgrade Notes
+
+**Version 2, January 2020, removes WU support, see below**
 
 **Replace Wunderground with OpenWeatherMap as weather data provider**
 
@@ -84,4 +85,4 @@ The ESP8266 OLED Library changed a lot with the latest release of version 3.0.0.
 
 | Announcement  | Module  | Removal  |
 |---------------|---------|----------|
-| 2018-06-13    | all **Wunderground** related code, see [our blog](https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/) for details  | June 2019  |
+| 2018-06-13    | all **Wunderground** related code, see [our blog](https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/) for details  | January 2020, version 2.0.0  |

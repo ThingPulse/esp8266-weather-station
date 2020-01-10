@@ -7,13 +7,13 @@
     "url": "https://github.com/ThingPulse/esp8266-weather-station"
   },
   "authors": {
-    "name": "Daniel Eichhorn",
-    "url": "https://blog.squix.org"
+    "name": "Daniel Eichhorn, ThingPulse",
+    "url": "https://thingpulse.com"
   },
   "frameworks": "arduino",
   "platforms": [
     "espressif8266",
     "espressif32"
   ],
-  "version": "1.6.6"
+  "version": "2.0.0"
 }
