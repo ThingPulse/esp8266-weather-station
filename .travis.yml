@@ -22,7 +22,7 @@ env:
 
 install:
     - pip install -U platformio
-    - platformio lib -g install "JsonStreamingParser" "ESP8266_SSD1306" "WifiManager@0.14" "simpleDSTadjust" "Adafruit Unified Sensor" "DHT sensor library"
+    - platformio lib -g install "JsonStreamingParser" "ESP8266_SSD1306" "WifiManager@>=0.15.0-beta" "simpleDSTadjust" "Adafruit Unified Sensor" "DHT sensor library"
     - platformio lib update
 
 script:
