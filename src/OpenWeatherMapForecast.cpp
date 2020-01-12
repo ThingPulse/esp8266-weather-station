@@ -59,7 +59,6 @@ uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, Strin
   http.begin(url);
   bool isBody = false;
   char c;
-  int size;
   Serial.print("[HTTP] GET...\n");
   // start connection and send HTTP header
   int httpCode = http.GET();
@@ -68,16 +67,15 @@ uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, Strin
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->connected() || client->available()) {
-      while((size = client->available()) > 0) {
-		if ((millis() - lost_do) > lostTest) {
-			Serial.println ("lost in client with a timeout");
-			client->stop();
-			ESP.restart();
-	    }
+    while (client->connected() || client->available()) {
+      while (client->available()) {
+        if ((millis() - lost_do) > lostTest) {
+          Serial.println("lost in client with a timeout");
+          client->stop();
+          ESP.restart();
+        }
         c = client->read();
         if (c == '{' || c == '[') {
-
           isBody = true;
         }
         if (isBody) {
@@ -86,6 +84,7 @@ uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, Strin
         // give WiFi and TCP/IP libraries a chance to handle pending events
         yield();
       }
+      client->stop();
     }
   }
   this->data = nullptr;

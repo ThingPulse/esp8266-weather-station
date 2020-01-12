@@ -48,7 +48,6 @@ void AerisSunMoon::doUpdate(AerisSunMoonData *sunMoonData, String url) {
   http.begin(url);
   bool isBody = false;
   char c;
-  int size;
   Serial.print("[HTTP] GET...\n");
   // start connection and send HTTP header
   int httpCode = http.GET();
@@ -57,13 +56,13 @@ void AerisSunMoon::doUpdate(AerisSunMoonData *sunMoonData, String url) {
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->available() || client->connected()) {
-      while((size = client->available()) > 0) {
-		if ((millis() - lost_do) > lostTest) {
-			Serial.println ("lost in client with a timeout");
-			client->stop();
-			ESP.restart();
-	    }
+    while (client->available() || client->connected()) {
+      while (client->available()) {
+        if ((millis() - lost_do) > lostTest) {
+          Serial.println("lost in client with a timeout");
+          client->stop();
+          ESP.restart();
+        }
         c = client->read();
         if (c == '{' || c == '[') {
 
@@ -73,6 +72,7 @@ void AerisSunMoon::doUpdate(AerisSunMoonData *sunMoonData, String url) {
           parser.parse(c);
         }
       }
+      client->stop();
     }
   }
   this->sunMoonData = nullptr;

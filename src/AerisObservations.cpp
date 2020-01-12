@@ -56,13 +56,13 @@ void AerisObservations::doUpdate(AerisObservationsData *observations, String url
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->available() || client->connected()) {
-      while((size = client->available()) > 0) {
-		if ((millis() - lost_do) > lostTest) {
-			Serial.println ("lost in client with a timeout");
-			client->stop();
-			ESP.restart();
-	    }
+    while (client->available() || client->connected()) {
+      while (client->available()) {
+        if ((millis() - lost_do) > lostTest) {
+          Serial.println("lost in client with a timeout");
+          client->stop();
+          ESP.restart();
+        }
         c = client->read();
         if (c == '{' || c == '[') {
 
@@ -72,6 +72,7 @@ void AerisObservations::doUpdate(AerisObservationsData *observations, String url
           parser.parse(c);
         }
       }
+      client->stop();
     }
   }
   this->observations = nullptr;

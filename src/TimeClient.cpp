@@ -53,17 +53,15 @@ void TimeClient::updateTime() {
   }
 
   String line;
-
-  int size = 0;
   client.setNoDelay(false);
-  while(client.available() || client.connected()) {
-    while((size = client.available()) > 0) {
+  while (client.available() || client.connected()) {
+    while (client.available()) {
       line = client.readStringUntil('\n');
       line.toUpperCase();
       // example:
       // date: Thu, 19 Nov 2015 20:25:40 GMT
       if (line.startsWith("DATE: ")) {
-        Serial.println(line.substring(23, 25) + ":" + line.substring(26, 28) + ":" +line.substring(29, 31));
+        Serial.println(line.substring(23, 25) + ":" + line.substring(26, 28) + ":" + line.substring(29, 31));
         int parsedHours = line.substring(23, 25).toInt();
         int parsedMinutes = line.substring(26, 28).toInt();
         int parsedSeconds = line.substring(29, 31).toInt();
@@ -74,8 +72,8 @@ void TimeClient::updateTime() {
         localMillisAtUpdate = millis();
       }
     }
+    client.stop();
   }
-
 }
 
 String TimeClient::getHours() {

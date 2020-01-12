@@ -49,7 +49,6 @@ void AerisForecasts::doUpdate(AerisForecastData *forecasts, String url, uint8_t 
   http.begin(url);
   bool isBody = false;
   char c;
-  int size;
   Serial.print("[HTTP] GET...\n");
   // start connection and send HTTP header
   int httpCode = http.GET();
@@ -58,13 +57,13 @@ void AerisForecasts::doUpdate(AerisForecastData *forecasts, String url, uint8_t 
 
     WiFiClient * client = http.getStreamPtr();
 
-    while(client->available() || client->connected()) {
-      while((size = client->available()) > 0) {
-		if ((millis() - lost_do) > lostTest) {
-			Serial.println ("lost in client with a timeout");
-			client->stop();
-			ESP.restart();
-	    }
+    while (client->available() || client->connected()) {
+      while (client->available()) {
+        if ((millis() - lost_do) > lostTest) {
+          Serial.println("lost in client with a timeout");
+          client->stop();
+          ESP.restart();
+        }
         c = client->read();
         if (c == '{' || c == '[') {
 
@@ -74,6 +73,7 @@ void AerisForecasts::doUpdate(AerisForecastData *forecasts, String url, uint8_t 
           parser.parse(c);
         }
       }
+      client->stop();
     }
   }
   this->forecasts = nullptr;

@@ -90,11 +90,9 @@ void WorldClockClient::updateTime() {
   int pos = 0;
   boolean isBody = false;
   char c;
-
-  int size = 0;
   client.setNoDelay(false);
-  while(client.available() || client.connected()) {
-    while((size = client.available()) > 0) {
+  while (client.available() || client.connected()) {
+    while (client.available()) {
       c = client.read();
       if (c == '{' || c == '[') {
         isBody = true;
@@ -103,6 +101,7 @@ void WorldClockClient::updateTime() {
         parser.parse(c);
       }
     }
+    client.stop();
   }
 }
 
