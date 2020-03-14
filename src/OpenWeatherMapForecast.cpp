@@ -69,11 +69,6 @@ uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, Strin
 
     while (client->connected() || client->available()) {
       while (client->available()) {
-        if ((millis() - lost_do) > lostTest) {
-          Serial.println("lost in client with a timeout");
-          client->stop();
-          ESP.restart();
-        }
         c = client->read();
         if (c == '{' || c == '[') {
           isBody = true;
@@ -83,9 +78,16 @@ uint8_t OpenWeatherMapForecast::doUpdate(OpenWeatherMapForecastData *data, Strin
         }
         // give WiFi and TCP/IP libraries a chance to handle pending events
         yield();
+        lost_do = millis();
       }
-      client->stop();
+      if(client->connected())yield();
+      if ((millis() - lost_do) > lostTest) {
+        Serial.println("lost in client with a timeout");
+        client->stop();
+        ESP.restart();
+      }
     }
+    client->stop();
   }
   this->data = nullptr;
   return currentForecast;
