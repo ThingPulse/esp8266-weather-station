@@ -12,7 +12,7 @@ void ThingspeakClient::getLastChannelItem(String channelId, String readApiKey) {
 
   // http://api.thingspeak.com/channels/CHANNEL_ID/feeds.json?results=2&api_key=API_KEY
   const char host[] = "api.thingspeak.com";
-  String url = "/channels/" + channelId +"/feeds.json?results=1&api_key=" + readApiKey;
+  String path = "/channels/" + channelId +"/feeds.json?results=1&api_key=" + readApiKey;
 
   const int httpPort = 80;
   if (!client.connect(host, httpPort)) {
@@ -20,12 +20,11 @@ void ThingspeakClient::getLastChannelItem(String channelId, String readApiKey) {
     return;
   }
 
-
-  Serial.print("Requesting URL: ");
-  Serial.println(url);
+  Serial.print("Requesting path: ");
+  Serial.println(path);
 
   // This will send the request to the server
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+  client.print(String("GET ") + path + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "Connection: close\r\n\r\n");
 
@@ -44,8 +43,8 @@ void ThingspeakClient::getLastChannelItem(String channelId, String readApiKey) {
   char c;
 
   client.setNoDelay(false);
-  while (client.available() || client.connected()) {
-    while (client.available()) {
+  while (client.connected() || client.available()) {
+    if (client.available()) {
       c = client.read();
       if (c == '{' || c == '[') {
         isBody = true;
@@ -54,8 +53,10 @@ void ThingspeakClient::getLastChannelItem(String channelId, String readApiKey) {
         parser.parse(c);
       }
     }
-    client.stop();
+    // give WiFi and TCP/IP libraries a chance to handle pending events
+    yield();
   }
+  client.stop();
 }
 
 void ThingspeakClient::whitespace(char c) {
