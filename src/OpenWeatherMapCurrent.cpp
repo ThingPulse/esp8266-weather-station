@@ -23,7 +23,6 @@
 
 #include <ESPWiFi.h>
 #include <WiFiClient.h>
-#include <ESPHTTPClient.h>
 #include "OpenWeatherMapCurrent.h"
 
 OpenWeatherMapCurrent::OpenWeatherMapCurrent() {
@@ -31,58 +30,57 @@ OpenWeatherMapCurrent::OpenWeatherMapCurrent() {
 }
 
 void OpenWeatherMapCurrent::updateCurrent(OpenWeatherMapCurrentData *data, String appId, String location) {
-  doUpdate(data, buildUrl(appId, "q=" + location));
+  doUpdate(data, buildPath(appId, "q=" + location));
 }
 
 void OpenWeatherMapCurrent::updateCurrentById(OpenWeatherMapCurrentData *data, String appId, String locationId) {
-  doUpdate(data, buildUrl(appId, "id=" + locationId));
+  doUpdate(data, buildPath(appId, "id=" + locationId));
 }
 
-String OpenWeatherMapCurrent::buildUrl(String appId, String locationParameter) {
+String OpenWeatherMapCurrent::buildPath(String appId, String locationParameter) {
   String units = metric ? "metric" : "imperial";
-  return "http://api.openweathermap.org/data/2.5/weather?" + locationParameter + "&appid=" + appId + "&units=" + units + "&lang=" + language;
+  return "/data/2.5/weather?" + locationParameter + "&appid=" + appId + "&units=" + units + "&lang=" + language;
 }
 
-void OpenWeatherMapCurrent::doUpdate(OpenWeatherMapCurrentData *data, String url) {
+void OpenWeatherMapCurrent::doUpdate(OpenWeatherMapCurrentData *data, String path) {
   unsigned long lostTest = 10000UL;
   unsigned long lost_do = millis();
   this->weatherItemCounter = 0;
   this->data = data;
   JsonStreamingParser parser;
   parser.setListener(this);
-  Serial.printf("Getting url: %s\n", url.c_str());
-  HTTPClient http;
+  Serial.printf("[HTTP] Requesting resource at http://%s:%u%s\n", host.c_str(), port, path.c_str());
 
-  http.begin(url);
-  bool isBody = false;
-  char c;
-  Serial.print("[HTTP] GET...\n");
-  // start connection and send HTTP header
-  int httpCode = http.GET();
-  Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-  if(httpCode > 0) {
+  WiFiClient client;
+  if(client.connect(host, port)) {
+    bool isBody = false;
+    char c;
+    Serial.println("[HTTP] connected, now GETting data");
+    client.print("GET " + path + " HTTP/1.1\r\n"
+                 "Host: " + host + "\r\n"
+                 "Connection: close\r\n\r\n");
 
-    WiFiClient * client = http.getStreamPtr();
-
-    while (client->connected() || client->available()) {
-      while (client->available()) {
+    while (client.connected() || client.available()) {
+      if (client.available()) {
         if ((millis() - lost_do) > lostTest) {
-          Serial.println("lost in client with a timeout");
-          client->stop();
+          Serial.println("[HTTP] lost in client with a timeout");
+          client.stop();
           ESP.restart();
         }
-        c = client->read();
+        c = client.read();
         if (c == '{' || c == '[') {
           isBody = true;
         }
         if (isBody) {
           parser.parse(c);
         }
-        // give WiFi and TCP/IP libraries a chance to handle pending events
-        yield();
       }
-      client->stop();
+      // give WiFi and TCP/IP libraries a chance to handle pending events
+      yield();
     }
+    client.stop();
+  } else {
+    Serial.println("[HTTP] failed to connect to host");
   }
   this->data = nullptr;
 }

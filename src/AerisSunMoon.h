@@ -52,6 +52,8 @@ typedef struct AerisSunMoonData {
 
 class AerisSunMoon: public JsonListener {
   private:
+    const String host = "api.aerisapi.com";
+    const uint8_t port = 80;
     boolean isMetric = true;
     String currentKey;
     String currentParent;

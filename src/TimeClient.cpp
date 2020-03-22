@@ -54,8 +54,8 @@ void TimeClient::updateTime() {
 
   String line;
   client.setNoDelay(false);
-  while (client.available() || client.connected()) {
-    while (client.available()) {
+  while (client.connected() || client.available()) {
+    if (client.available()) {
       line = client.readStringUntil('\n');
       line.toUpperCase();
       // example:
@@ -72,8 +72,10 @@ void TimeClient::updateTime() {
         localMillisAtUpdate = millis();
       }
     }
-    client.stop();
+    // give WiFi and TCP/IP libraries a chance to handle pending events
+    yield();
   }
+  client.stop();
 }
 
 String TimeClient::getHours() {

@@ -23,7 +23,6 @@
 
 #include <ESPWiFi.h>
 #include <WiFiClient.h>
-#include <ESPHTTPClient.h>
 #include "AerisForecasts.h"
 
 AerisForecasts::AerisForecasts() {
@@ -31,10 +30,10 @@ AerisForecasts::AerisForecasts() {
 }
 
 void AerisForecasts::updateForecasts(AerisForecastData *forecasts, String clientId, String clientSecret, String location, uint8_t maxForecasts) {
-  doUpdate(forecasts, "http://api.aerisapi.com/forecasts/closest?p=" + location + "&client_id=" + clientId + "&client_secret=" + clientSecret, maxForecasts);
+  doUpdate(forecasts, "/forecasts/closest?p=" + location + "&client_id=" + clientId + "&client_secret=" + clientSecret, maxForecasts);
 }
 
-void AerisForecasts::doUpdate(AerisForecastData *forecasts, String url, uint8_t maxForecasts) {
+void AerisForecasts::doUpdate(AerisForecastData *forecasts, String path, uint8_t maxForecasts) {
   this->maxForecasts = maxForecasts;
   this->currentForecast = 0;
   unsigned long lostTest = 10000UL;
@@ -43,38 +42,38 @@ void AerisForecasts::doUpdate(AerisForecastData *forecasts, String url, uint8_t 
   this->forecasts = forecasts;
   JsonStreamingParser parser;
   parser.setListener(this);
-  Serial.printf("Getting url: %s\n", url.c_str());
-  HTTPClient http;
+  Serial.printf("[HTTP] Requesting resource at http://%s:%u%s\n", host.c_str(), port, path.c_str());
 
-  http.begin(url);
-  bool isBody = false;
-  char c;
-  Serial.print("[HTTP] GET...\n");
-  // start connection and send HTTP header
-  int httpCode = http.GET();
-  Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-  if(httpCode > 0) {
+  WiFiClient client;
+  if(client.connect(host, port)) {
+    bool isBody = false;
+    char c;
+    Serial.println("[HTTP] connected, now GETting data");
+    client.print("GET " + path + " HTTP/1.1\r\n"
+                 "Host: " + host + "\r\n"
+                 "Connection: close\r\n\r\n");
 
-    WiFiClient * client = http.getStreamPtr();
-
-    while (client->available() || client->connected()) {
-      while (client->available()) {
+    while (client.connected() || client.available()) {
+      if (client.available()) {
         if ((millis() - lost_do) > lostTest) {
-          Serial.println("lost in client with a timeout");
-          client->stop();
+          Serial.println("[HTTP] lost in client with a timeout");
+          client.stop();
           ESP.restart();
         }
-        c = client->read();
+        c = client.read();
         if (c == '{' || c == '[') {
-
           isBody = true;
         }
         if (isBody) {
           parser.parse(c);
         }
       }
-      client->stop();
+      // give WiFi and TCP/IP libraries a chance to handle pending events
+      yield();
     }
+    client.stop();
+  } else {
+    Serial.println("[HTTP] failed to connect to host");
   }
   this->forecasts = nullptr;
 }
