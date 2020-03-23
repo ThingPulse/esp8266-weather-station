@@ -82,7 +82,7 @@ class OpenWeatherMapForecast: public JsonListener {
     uint8_t currentForecast;
     boolean metric = true;
     String language = "en";
-    uint8_t *allowedHours;
+    const uint8_t *allowedHours;
     uint8_t allowedHoursCount = 0;
     boolean isCurrentForecastAllowed = true;
 
@@ -98,7 +98,7 @@ class OpenWeatherMapForecast: public JsonListener {
     boolean isMetric() { return this->metric; }
     void setLanguage(String language) { this->language = language; }
     String getLanguage() { return this->language; }
-    void setAllowedHours(uint8_t *allowedHours, uint8_t allowedHoursCount) {
+    void setAllowedHours(const uint8_t *allowedHours, uint8_t allowedHoursCount) {
       this->allowedHours = allowedHours;
       this->allowedHoursCount = allowedHoursCount;
     }
