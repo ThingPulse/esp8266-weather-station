@@ -134,6 +134,10 @@ void OpenWeatherMapForecast::value(String value) {
     // initialize potentially empty values:
     data[currentForecast].rain = 0;;
   }
+  //   "feels_like": 16.99, float feelsLike;
+  if (currentKey == "feels_like") {
+    data[currentForecast].feelsLike = value.toFloat();
+  }
   //   "temp_min":16.89, float tempMin;
   if (currentKey == "temp_min") {
     data[currentForecast].tempMin = value.toFloat();

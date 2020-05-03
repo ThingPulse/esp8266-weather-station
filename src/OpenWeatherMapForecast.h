@@ -32,6 +32,8 @@ typedef struct OpenWeatherMapForecastData {
   // "main":{
   //   "temp":17.35,
   float temp;
+  //   "feels_like": 16.99,
+  float feelsLike;
   //   "temp_min":16.89,
   float tempMin;
   //   "temp_max":17.35,

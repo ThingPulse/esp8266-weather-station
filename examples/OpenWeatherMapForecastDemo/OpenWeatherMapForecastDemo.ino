@@ -112,6 +112,8 @@ void setup() {
     // "main":{
     //   "temp":17.35, float temp;
     Serial.printf("temp: %f\n", data[i].temp);
+    //   "feels_like": 16.99, float feelsLike;
+    Serial.printf("feels-like temp: %f\n", data[i].feelsLike);
     //   "temp_min":16.89, float tempMin;
     Serial.printf("tempMin: %f\n", data[i].tempMin);
     //   "temp_max":17.35, float tempMax;
