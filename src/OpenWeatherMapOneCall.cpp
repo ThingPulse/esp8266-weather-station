@@ -259,6 +259,9 @@ void OpenWeatherMapOneCall::value(String value)
     if (currentKey == "rain") {
       this->data->daily[dailyItemCounter].rain = value.toFloat();
     }
+    if (currentKey == "snow") {
+      this->data->daily[dailyItemCounter].snow = value.toFloat();
+    }
     if (currentKey == "uvi") {
       this->data->daily[dailyItemCounter].uvi = value.toFloat();
     }

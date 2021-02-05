@@ -145,6 +145,8 @@ typedef struct OpenWeatherMapOneCallDailyData {
   uint8_t clouds;
   // "rain": 5.97
   float rain;
+  // "snow":	0.15
+  float snow;
   // "uvi": 4.5
   float uvi;
 
