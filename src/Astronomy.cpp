@@ -104,7 +104,7 @@ Astronomy::MoonData Astronomy::calculateMoonData(uint16_t year, uint8_t month, u
 
   // from Gregorian year, month, day, calculate the Julian Day number
   uint8_t c;
-  uint32_t jd;
+  uint32_t jd = 0;
   if (month < 3) {
     --year;
     month += 10;

@@ -30,15 +30,15 @@ typedef struct AerisForecastData {
   uint64_t timestamp; //  1526706000
   String validTime; // "2018-05-19T07:00:00+02:00"
   String dateTimeISO; //"2018-05-19T07:00:00+02:00"
-  sint16_t maxTempC; //20
-  sint16_t maxTempF; //69
-  sint16_t minTempC; //14
-  sint16_t minTempF; // 56
-  sint16_t avgTempC; // 17
-  sint16_t avgTempF; // 62
-  sint16_t tempC; // null
-  sint16_t tempF; // null
-  sint16_t pop; // 20
+  int16_t maxTempC; //20
+  int16_t maxTempF; //69
+  int16_t minTempC; //14
+  int16_t minTempF; // 56
+  int16_t avgTempC; // 17
+  int16_t avgTempF; // 62
+  int16_t tempC; // null
+  int16_t tempF; // null
+  int16_t pop; // 20
   float precipMM; // 3.53
   float precipIN; // 0.14
   float iceaccum; // null
@@ -53,27 +53,27 @@ typedef struct AerisForecastData {
   uint8_t sky; // 99
   uint16_t snowCM; // 0
   uint16_t snowIN; // 0
-  sint16_t feelslikeC; // 14
-  sint16_t feelslikeF; // 56
-  sint16_t minFeelslikeC; // 14
-  sint16_t minFeelslikeF; // 56
-  sint16_t maxFeelslikeC; // 20
-  sint16_t maxFeelslikeF; // 69
-  sint16_t avgFeelslikeC; // 17
-  sint16_t avgFeelslikeF; // 63
-  sint16_t dewpointC; // 11
-  sint16_t dewpointF; // 51
-  sint16_t maxDewpointC; // 13
-  sint16_t maxDewpointF; // 55
-  sint16_t minDewpointC; // 10
-  sint16_t minDewpointF; // 51
-  sint16_t avgDewpointC; // 11
-  sint16_t avgDewpointF; // 52
+  int16_t feelslikeC; // 14
+  int16_t feelslikeF; // 56
+  int16_t minFeelslikeC; // 14
+  int16_t minFeelslikeF; // 56
+  int16_t maxFeelslikeC; // 20
+  int16_t maxFeelslikeF; // 69
+  int16_t avgFeelslikeC; // 17
+  int16_t avgFeelslikeF; // 63
+  int16_t dewpointC; // 11
+  int16_t dewpointF; // 51
+  int16_t maxDewpointC; // 13
+  int16_t maxDewpointF; // 55
+  int16_t minDewpointC; // 10
+  int16_t minDewpointF; // 51
+  int16_t avgDewpointC; // 11
+  int16_t avgDewpointF; // 52
   uint16_t windDirDEG; // 2
   String windDir; // "N"
   uint16_t windDirMaxDEG; // 40
   String windDirMax; // "NE"
-  sint16_t windDirMinDEG; // 39
+  int16_t windDirMinDEG; // 39
   String windDirMin; // "NE"
   uint16_t windGustKTS; // 6
   uint16_t windGustKPH; // 11

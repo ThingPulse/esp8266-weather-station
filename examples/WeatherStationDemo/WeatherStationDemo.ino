@@ -32,7 +32,6 @@ See more at https://thingpulse.com
 // time
 #include <time.h>                       // time() ctime()
 #include <sys/time.h>                   // struct timeval
-#include <coredecls.h>                  // settimeofday_cb()
 
 #include "SSD1306Wire.h"
 #include "OLEDDisplayUi.h"
