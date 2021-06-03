@@ -16,8 +16,8 @@ By buying this and [other kits](https://thingpulse.com/shop/) from us you are fu
 
 | Branch  | Status |
 | ------------- | ------------- |
-| master  | [![Build Status](https://travis-ci.org/ThingPulse/esp8266-weather-station.svg?branch=master)](https://travis-ci.org/ThingPulse/esp8266-weather-station)  |
-| development  | [![Build Status](https://travis-ci.org/ThingPulse/esp8266-weather-station.svg?branch=development)](https://travis-ci.org/ThingPulse/esp8266-weather-station)  |
+| master  | [![PlatformIO CI](https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg)](https://github.com/ThingPulse/esp8266-weather-station/actions)  |
+| development  | [![PlatformIO CI](https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg?branch=development)](https://github.com/ThingPulse/esp8266-weather-station/actions)  |
 
 ## Service level promise
 
