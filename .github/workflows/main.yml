@@ -2,38 +2,46 @@
 
 name: PlatformIO CI
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        example: [examples/AerisForecastsDemo, examples/AerisObservationDemo, examples/AerisSunMoonDemo, examples/AstronomyDemo, examples/OpenWeatherMapCurrentDemo, examples/OpenWeatherMapForecastDemo, examples/PlaneSpotterDemo, examples/SunMoonCalcDemo, examples/WeatherStationDemo, examples/WorldClockDemo]
-
+        example:
+          - examples/AerisForecastsDemo
+          - examples/AerisObservationDemo
+          - examples/AerisSunMoonDemo
+          - examples/AstronomyDemo
+          - examples/OpenWeatherMapCurrentDemo
+          - examples/OpenWeatherMapForecastDemo
+          - examples/PlaneSpotterDemo
+          - examples/SunMoonCalcDemo
+          - examples/WeatherStationDemo
+          - examples/WorldClockDemo
     steps:
-    - uses: actions/checkout@v2
-    - name: Cache pip
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: ${{ runner.os }}-pip-
-    - name: Cache PlatformIO
-      uses: actions/cache@v2
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-    - name: Set up Python
-      uses: actions/setup-python@v2
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade platformio
-    - name: Install library dependencies
-      run: pio lib -g install "JsonStreamingParser" "thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays@^4.2.0" "WifiManager@>=0.15.0-beta" "simpleDSTadjust" "Adafruit Unified Sensor" "DHT sensor library"
-    - name: Run PlatformIO
-      run: pio ci --lib="." --project-option="lib_deps=JsonStreamingParser" --board=nodemcuv2 --board=d1_mini
-      env:
-        PLATFORMIO_CI_SRC: ${{ matrix.example }}
+      - uses: actions/checkout@v2
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v2
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Set up Python
+        uses: actions/setup-python@v2
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+      - name: Install library dependencies
+        run: pio lib -g install "JsonStreamingParser" "thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays@^4.2.0" "WifiManager@>=0.15.0-beta"
+      - name: Run PlatformIO
+        run: pio ci --lib="." --project-option="lib_deps=JsonStreamingParser" --board=nodemcuv2 --board=d1_mini
+        env:
+          PLATFORMIO_CI_SRC: ${{ matrix.example }}
