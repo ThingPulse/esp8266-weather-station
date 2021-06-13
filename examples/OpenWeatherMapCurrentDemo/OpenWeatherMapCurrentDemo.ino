@@ -23,7 +23,11 @@ SOFTWARE.
 
 #include <Arduino.h>
 
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
+#else
+#include <WiFi.h>
+#endif
 #include <JsonListener.h>
 #include <time.h>
 #include "OpenWeatherMapCurrent.h"
@@ -56,7 +60,11 @@ boolean IS_METRIC = true;
 /**
  * WiFi Settings
  */
+#if defined(ESP8266)
 const char* ESP_HOST_NAME = "esp-" + ESP.getFlashChipId();
+#else
+const char* ESP_HOST_NAME = "esp-" + ESP.getEfuseMac();
+#endif
 const char* WIFI_SSID     = "yourssid";
 const char* WIFI_PASSWORD = "yourpassw0rd";
 

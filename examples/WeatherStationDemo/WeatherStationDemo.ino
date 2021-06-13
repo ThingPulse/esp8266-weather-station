@@ -25,14 +25,18 @@ See more at https://thingpulse.com
 
 #include <Arduino.h>
 
-#include <ESPWiFi.h>
+#if defined(ESP8266)
+#include <ESP8266WiFi.h>
+#include <coredecls.h>                  // settimeofday_cb()
+#else
+#include <WiFi.h>
+#endif
 #include <ESPHTTPClient.h>
 #include <JsonListener.h>
 
 // time
 #include <time.h>                       // time() ctime()
 #include <sys/time.h>                   // struct timeval
-#include <coredecls.h>                  // settimeofday_cb()
 
 #include "SSD1306Wire.h"
 #include "OLEDDisplayUi.h"

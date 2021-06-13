@@ -25,8 +25,12 @@ See more at https://thingpulse.com
 
 #include <Arduino.h>
 
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#else
+#include <WiFi.h>
+#endif
+#include <ESPHTTPClient.h>
 #include <Ticker.h>
 #include <JsonListener.h>
 #include <SSD1306Wire.h>
@@ -50,16 +54,10 @@ const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
 
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
-const int SDA_PIN = D3;
-const int SDC_PIN = D4;
+const int SDA_PIN = SDA;
+const int SCL_PIN = SCL;
 
-// TimeClient settings
-
-
-// Initialize the oled display for address 0x3c
-// sda-pin=14 and sdc-pin=12
-
-SSD1306Wire  display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+SSD1306Wire  display(I2C_DISPLAY_ADDRESS, SDA_PIN, SCL_PIN);
 OLEDDisplayUi ui     ( &display );
 
 /***************************

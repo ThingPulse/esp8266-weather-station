@@ -30,10 +30,10 @@
 typedef struct AerisObservationsData {
     uint64_t timestamp;
     String dateTimeISO;
-    sint16_t tempC;
-    sint16_t tempF;
-    sint16_t dewpointC;
-    sint16_t dewpointF;
+    int16_t tempC;
+    int16_t tempF;
+    int16_t dewpointC;
+    int16_t dewpointF;
     uint8_t humidity;
     uint16_t pressureMB;
     float pressureIN;
@@ -60,12 +60,12 @@ typedef struct AerisObservationsData {
     String cloudsCoded;
     String icon;
     String iconMeteoCon;
-    sint16_t heatindexC;
-    sint16_t heatindexF;
-    sint16_t windchillC;
-    sint16_t windchillF;
-    sint16_t feelslikeC;
-    sint16_t feelslikeF;
+    int16_t heatindexC;
+    int16_t heatindexF;
+    int16_t windchillC;
+    int16_t windchillF;
+    int16_t feelslikeC;
+    int16_t feelslikeF;
     boolean isDay;
     uint64_t sunrise;
     String sunriseISO;

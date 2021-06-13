@@ -23,7 +23,11 @@ SOFTWARE.
 
 #include <Arduino.h>
 
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
+#else
+#include <WiFi.h>
+#endif
 #include <JsonListener.h>
 #include "AerisForecasts.h"
 
@@ -40,7 +44,11 @@ String AERIS_LOCATION = "Zurich,CH";
 /**
  * WiFi Settings
  */
+#if defined(ESP8266)
 const char* ESP_HOST_NAME = "esp-" + ESP.getFlashChipId();
+#else
+const char* ESP_HOST_NAME = "esp-" + ESP.getEfuseMac();
+#endif
 const char* WIFI_SSID     = "yourssid";
 const char* WIFI_PASSWORD = "yourpassw0rd";
 
@@ -63,7 +71,7 @@ void print(String name, uint16_t value) {
   Serial.printf("%s: %d\n", name.c_str(), value);
 }
 
-void print(String name, sint16_t value) {
+void print(String name, int16_t value) {
   Serial.printf("%s: %d\n", name.c_str(), value);
 }
 

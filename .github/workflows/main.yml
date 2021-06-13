@@ -16,8 +16,7 @@ jobs:
           - examples/AstronomyDemo
           - examples/OpenWeatherMapCurrentDemo
           - examples/OpenWeatherMapForecastDemo
-          # doesn't work on ESP32 due to WiFi Manager dependency
-          - examples/PlaneSpotterDemo
+          # - examples/PlaneSpotterDemo doesn't work on ESP32 due to WiFi Manager dependency
           - examples/SunMoonCalcDemo
           - examples/WeatherStationDemo
           - examples/WorldClockDemo
@@ -43,6 +42,6 @@ jobs:
       - name: Install library dependencies
         run: pio lib -g install "JsonStreamingParser" "thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays@^4.2.0" "WifiManager@>=0.15.0-beta"
       - name: Run PlatformIO
-        run: pio ci --lib="." --project-option="lib_deps=JsonStreamingParser" --board=nodemcuv2 --board=d1_mini
+        run: pio ci --lib="." --project-option="lib_deps=JsonStreamingParser" --board=nodemcuv2 --board=d1_mini --board=esp-wrover-kit
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}
