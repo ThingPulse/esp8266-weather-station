@@ -458,6 +458,5 @@ String MetOfficeClient::getWeatherIconName(String weatherType) {
   if (weatherType == "28") return "d_thshwr"; // Thunder shower (night)
   if (weatherType == "29") return "d_thshwr"; // Thunder shower (night)
   if (weatherType == "30") return "thunder";  // Thunder
-  int weatherTypeAsInt = weatherType.toInt();
-  if (weatherTypeAsInt > 30) return "no_data";// Something unexpected has happened!
+  return "no_data" ;// Something unexpected has happened!
 }
