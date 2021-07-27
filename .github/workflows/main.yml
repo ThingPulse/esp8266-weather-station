@@ -2,7 +2,7 @@
 
 name: PlatformIO CI
 
-on: [ push ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -16,6 +16,7 @@ jobs:
           - examples/AstronomyDemo
           - examples/OpenWeatherMapCurrentDemo
           - examples/OpenWeatherMapForecastDemo
+          # doesn't work on ESP32 due to WiFi Manager dependency
           - examples/PlaneSpotterDemo
           - examples/SunMoonCalcDemo
           - examples/WeatherStationDemo
