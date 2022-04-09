@@ -5,27 +5,27 @@
 
 <br>
 
-### Time Client
+## Time Client
 
 A simple class that uses the header <br>
 date and time to set the clock.
 
 <br>
 
-### NTP Client
+## NTP Client
 
 A **NTP** based time class written by `Fabrice Weinberg`.
 
 <br>
 
-### OpenWeatherMap Client
+## OpenWeatherMap Client
 
 A **REST** client for the `OpenWeatherMap.com` <br>
 service, providing weather information.
 
 <br>
 
-### Aeris Client
+## Aeris Client
 
 A client for the service provided by `aerisweather.com`.
 
@@ -39,20 +39,20 @@ After the [Wunderground Incident][Changelog] we first targeted <br>
 
 <br>
 
-### Thingspeak Client
+## Thingspeak Client
 
 Fetches data from **Thingspeak** which you might have <br>
 collected with another sensor node and posted there.
 
 <br>
 
-### Astronomy
+## Astronomy
 
 Algorithms to calculate current lunar phase and illumination.
 
 <br>
 
-### SunMoonCalc
+## SunMoonCalc
 
 A calculator for sun / moon properties <br>
 for a given date, time and location.
