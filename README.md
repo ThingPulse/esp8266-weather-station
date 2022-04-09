@@ -1,10 +1,26 @@
-# ThingPulse ESP8266 Weather Station
 
+<div align = 'center'>
 
 [![Logo]][Website]
 
+#### A ESP8266 Weather Station
 
-This code works best with the NodeMCU V2 ESP8266 module and an 0.96" OLED display.
+</div>
+
+
+**Development**   [![Badge Master]][Actions] <br>
+**Master**    [![Badge Master]][Actions]
+
+---
+
+
+---
+
+
+
+
+
+This code works best with the **NodeMCU V2 ESP8266** module and an `0.96"` **OLED** display.
 To get you up and running in no time we created a kit which contains all the necessary parts:
 [Kit]
 
@@ -12,12 +28,6 @@ By buying this and [other kits][Shop] from us you are funding maintenance and  d
 
 [![Kit Preview]][Kit]
 
-### Build Status
-
-| Branch  | Status |
-| ------------- | ------------- |
-| master  | [![Badge Master]][Actions] |
-| development  | [![Badge Development]][Actions] |
 
 ## Service level promise
 
