@@ -15,7 +15,7 @@
 
 <div align = 'center'>
 
-**⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  **⸢ [Changelog] ⸥**  
+**⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  **⸢ [Design] ⸥**  **⸢ [Changelog] ⸥**  
 
 </div>
 
@@ -43,12 +43,6 @@ By buying this and [other kits][Shop] from us you are funding maintenance and  d
 
 
 
-## Why Weather Station as a library?
-
-I realized that more and more the Weather Station was becoming a general framework for displaying data over WiFi to one of these pretty displays. But everyone would have different ways or sources for data and having the important part of the library would rather be the classes which fetch the data then the main class.
-So if you write data fetchers which might be of interest to others please contact me to integrate them here or offer your code as extension library yourself and call it something like esp8266-weather-station-<yourservice>.
-We will gladly list it here as third party library...
-
 
 ## Deprecation
 
@@ -59,30 +53,31 @@ We will gladly list it here as third party library...
 <!----------------------------------------------------------------------------->
 
 [Badge Development]: https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg?branch=development
-[Badge Master]: https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg
+[Badge Master]:      https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg
 
 [Changelog]: Documentation/Changelog.md
-[Install]: Documentation/Install.md
-[Modules]: Documentation/Modules.md
+[Install]:   Documentation/Install.md
+[Modules]:   Documentation/Modules.md
+[Design]:    Documentation/Design.md
 
 [Upgrade]: https://github.com/ThingPulse/esp8266-oled-ssd1306/blob/master/UPGRADE-3.0.md
 [Actions]: https://github.com/ThingPulse/esp8266-weather-station/actions
-[Logo]: https://thingpulse.com/assets/ThingPulse-w300.svg
+[Logo]:    https://thingpulse.com/assets/ThingPulse-w300.svg
 
 [Tutorial]: https://docs.thingpulse.com/how-tos/Arduino-IDE-for-ESP8266/
-[API Key]: https://docs.thingpulse.com/how-tos/openweathermap-key/
+[API Key]:  https://docs.thingpulse.com/how-tos/openweathermap-key/
 
 [Commitment]: https://thingpulse.com/about/open-source-commitment/
-[Website]: https://thingpulse.com
-[Shop]: https://thingpulse.com/shop/
+[Website]:    https://thingpulse.com
+[Shop]:       https://thingpulse.com/shop/
 
 [Kit Preview]: resources/ThingPulse-ESP8266-Weather-Station.jpeg
 [Kit]: https://thingpulse.com/product/esp8266-iot-electronics-starter-kit-weatherstation-planespotter-worldclock/
 
 [Example]: examples/WeatherStationDemo/WeatherStationDemo.ino
 
-[OpenWeatherMap]: https://openweathermap.desk.com/customer/portal/emails/new
-[No Free]: https://thingpulse.com/weather-underground-no-longer-providing-free-api-keys/
-[Alonso]: http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position
 [Wunderground Code]: https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/
+[OpenWeatherMap]:    https://openweathermap.desk.com/customer/portal/emails/new
+[No Free]:           https://thingpulse.com/weather-underground-no-longer-providing-free-api-keys/
+[Alonso]:            http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position
 
