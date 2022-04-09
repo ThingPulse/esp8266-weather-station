@@ -15,7 +15,7 @@
 
 <div align = 'center'>
 
-**⸢ [Install] ⸥**  
+**⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  
 
 </div>
 
@@ -41,14 +41,7 @@ By buying this and [other kits][Shop] from us you are funding maintenance and  d
 
 
 
-## Available Modules
-* **Time Client**: simple class which uses the header date and time to set the clock
-* **NTP Client**: a NTP based time class written by Fabrice Weinberg
-* **OpenWeatherMap Client**: A REST client for the OpenWeatherMap.com service, providing weather information
-* **Aeris Client**: Client for the service provided by aerisweather.com. Fully functional initial version. After the Wunderground incident (see [upgrade notes](#upgrade-notes)) we first targeted Aeris before we settled with OpenWeatherMap. This code is unmaintained but will remain part of this library for the time being.
-* **Thingspeak Client**: fetches data from Thingspeak which you might have collected with another sensor node and posted there.
-* **Astronomy**: algorithms to calculate current lunar phase and illumination.
-* **SunMoonCalc**: a calculator for sun and moon properties for a given date & time and location. This implementation is port of a [Java class by T. Alonso Albi][Alonso] from OAN (Spain).
+
 
 ## Why Weather Station as a library?
 
@@ -82,6 +75,7 @@ The ESP8266 OLED Library changed a lot with the latest release of version 3.0.0.
 [Badge Master]: https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg
 
 [Install]: Documentation/Install.md
+[Modules]: Documentation/Modules.md
 
 [Upgrade]: https://github.com/ThingPulse/esp8266-oled-ssd1306/blob/master/UPGRADE-3.0.md
 [Actions]: https://github.com/ThingPulse/esp8266-weather-station/actions
