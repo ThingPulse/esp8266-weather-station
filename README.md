@@ -56,8 +56,25 @@ this kit which contains all the parts you will need.
     
 <br>
 
-<table><tr><td><img src="https://thingpulse.com/assets/ThingPulse-open-source-prime.png" width="150">
-</td><td>This is a ThingPulse <em>prime</em> project. See our [open-source commitment declaration][Commitment] for what this means.</td></tr></table>
+<table>
+ <tr>
+  <td>
+
+![Prime]
+
+  </td>
+  <td>
+    <div align = 'center'>
+        
+This is a **ThingPulse Prime Project**.
+
+See our open-source **[Commitment]**<br>
+declaration for what this means.
+
+   </div>
+  </td>
+ </tr>
+</table>
 
 <br>
 <br>
@@ -87,6 +104,7 @@ this kit which contains all the parts you will need.
 
 [Upgrade]: https://github.com/ThingPulse/esp8266-oled-ssd1306/blob/master/UPGRADE-3.0.md
 [Actions]: https://github.com/ThingPulse/esp8266-weather-station/actions
+[Prime]:   https://thingpulse.com/assets/ThingPulse-open-source-prime.png
 [Logo]:    https://thingpulse.com/assets/ThingPulse-w300.svg
 
 [Tutorial]: https://docs.thingpulse.com/how-tos/Arduino-IDE-for-ESP8266/
