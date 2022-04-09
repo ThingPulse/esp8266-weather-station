@@ -1,10 +1,12 @@
 
 # Changelog
 
+<br>
+
 ## Version 2
 
 **When:** `January 2020` <br>
-**What:** `Removes Wunderground Support`
+**What:**     `Removes Wunderground Support`
 
 <br>
 
@@ -12,6 +14,7 @@
 
 *Weather Data Provider Replacement*
 
+<br>
 
 **Wunderground**, the weather information provider <br>
 we used so far, [stopped their free tier][No Free] without notice <br>
@@ -35,8 +38,11 @@ If you are missing attributes in the response docs <br>
 then please contact the **[OpenWeatherMap]** team.
 
 <br>
+<br>
 
 ### OLED Library Upgrade
+
+<br>
 
 The **ESP8266 OLED Library** changed <br>
 a lot with the latest release of `v3.0.0` .
