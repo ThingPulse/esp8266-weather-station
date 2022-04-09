@@ -8,7 +8,7 @@
 </div>
 
 
-**Development**   [![Badge Master]][Actions] <br>
+**Development**     [![Badge Master]][Actions] <br>
 **Master**    [![Badge Master]][Actions]
 
 ---
@@ -21,16 +21,20 @@
 
 ---
 
+<br>
+
 <div align = 'center'>
 
 ## **[Ｋｉｔ][Kit]**
 
 </div>
 
+<br>
+
 <img 
     src = resources/ThingPulse-ESP8266-Weather-Station.jpeg
     align = right 
-    width = 220 
+    width = 240 
 />
 
 This library works best with the **NodeMCU V2 ESP8266** <br>
@@ -39,6 +43,7 @@ module in combination with an `0.96"` **OLED** display.
 To get you up and running in no time, we created <br>
 this kit which contains all the parts you will need.
 
+<br>
 <br>
 
 ---
