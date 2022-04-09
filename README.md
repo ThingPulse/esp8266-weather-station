@@ -118,7 +118,6 @@ declaration for what this means.
 [Modules]:   Documentation/Modules.md
 [Design]:    Documentation/Design.md
 
-[Upgrade]: https://github.com/ThingPulse/esp8266-oled-ssd1306/blob/master/UPGRADE-3.0.md
 [Actions]: https://github.com/ThingPulse/esp8266-weather-station/actions
 [Logo]:    https://thingpulse.com/assets/ThingPulse-w300.svg
 
@@ -134,7 +133,5 @@ declaration for what this means.
 [Example]: examples/WeatherStationDemo/WeatherStationDemo.ino
 
 [Wunderground Code]: https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/
-[OpenWeatherMap]:    https://openweathermap.desk.com/customer/portal/emails/new
-[No Free]:           https://thingpulse.com/weather-underground-no-longer-providing-free-api-keys/
 [Alonso]:            http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position
 
