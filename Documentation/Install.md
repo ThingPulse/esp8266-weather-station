@@ -1,26 +1,87 @@
-## Install and configure Arduino IDE
 
-Make sure you use a version of the Arduino IDE which is supported by the ESP8266 platform. Follow the [tutorial on our documentation platform][Tutorial].
+# Installation
 
-## Install libraries in Arduino IDE
+## Arduino IDE
 
-Install the following libraries with your Arduino Library Manager in `Sketch` > `Include Library` > `Manage Libraries...`
-* ESP8266 Weather Station
-* JSON Streaming Parser by Daniel Eichhorn
-* ESP8266 OLED Driver for SSD1306 display by Daniel Eichhorn. **Use Version 3.0.0 or higher!**
+### Setup
 
-## Prepare the software
-* [Create an API Key][API Key] for OpenWeatherMap
-* In the Arduino IDE go to `File` > `Examples` > `ESP8266 Weather Station` > `Weather Station Demo`
-* Enter the OpenWeatherMap API Key
-* Enter your WiFi credentials
-* Adjust the location according to OpenWeatherMap API, e.g. Zurich, CH
-* Adjust UTC offset
+Make sure you use a version of the **Arduino IDE** <br>
+which is supported by the **ESP8266** platform.
 
-## Setup for PlatformIO
+Please follow the **[Tutorial]** on our website.
 
-If you are using the PlatformIO environment for building
+<br>
 
-* choose one of the available IDE integration or the Atom based IDE
-* install libraries 561, 562 and 563 with "platformio lib install"
-* adapt the [WeatherStationDemo.ino][Example] file to your needs (see details above)
+### Libraries
+
+Please install the following libraries:
+
+- `ESP8266 Weather Station`
+- `JSON Streaming Parser by Daniel Eichhorn`
+- `ESP8266 OLED Driver for SSD1306 display by Daniel Eichhorn`
+
+    *Please use `v3.0.0+`*
+
+##### How To
+
+<kbd>**Sketch**</kbd> <br>
+ › <kbd>**Include Library**</kbd> <br>
+ › <kbd>**Manage Libraries**</kbd>
+
+<br>
+
+### Preparation
+
+1. *[Create An API Key][API Key]* for **OpenWeatherMap**.
+
+2. Open the demo.
+
+    <kbd>**File**</kbd> <br>
+     › <kbd>**Examples**</kbd> <br>
+     › <kbd>**ESP8266 Weather Station**</kbd> <br>
+     › <kbd>**Weather Station Demo**</kbd>
+
+3. Insert the **OpenWeatherMap API Key**.
+
+4. Insert your **WiFi Credentials**.
+
+5. Adjust the location according to **OpenWeatherMap**.
+
+    ↳ `Zurich, CH`
+    
+6. Adjust the **UTC** offset.
+
+
+<br>
+
+---
+
+<br>
+
+## PlatformIO
+
+### Setup
+
+1. Choose one of the available IDE integration or the Atom based IDE.
+
+2. Install libraries:
+    - `561`
+    - `562`
+    - `563`
+    
+    With:
+    
+    ```sh
+    platformio lib install
+    ```
+    
+3. Adapt the [`WeatherStationDemo.ino`][Example] file to your<br>
+   needs as show in the **Arduino** preparations.
+
+
+<!----------------------------------------------------------------------------->
+
+[Tutorial]: https://docs.thingpulse.com/how-tos/Arduino-IDE-for-ESP8266/
+[API Key]:  https://docs.thingpulse.com/how-tos/openweathermap-key/
+[Example]:  examples/WeatherStationDemo/WeatherStationDemo.ino
+

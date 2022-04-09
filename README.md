@@ -120,17 +120,11 @@ declaration for what this means.
 [Actions]: https://github.com/ThingPulse/esp8266-weather-station/actions
 [Logo]:    https://thingpulse.com/assets/ThingPulse-w300.svg
 
-[Tutorial]: https://docs.thingpulse.com/how-tos/Arduino-IDE-for-ESP8266/
-[API Key]:  https://docs.thingpulse.com/how-tos/openweathermap-key/
-
 [Commitment]: https://thingpulse.com/about/open-source-commitment/
 [Website]:    https://thingpulse.com
 [Shop]:       https://thingpulse.com/shop/
 
 [Kit]: https://thingpulse.com/product/esp8266-iot-electronics-starter-kit-weatherstation-planespotter-worldclock/
 
-[Example]: examples/WeatherStationDemo/WeatherStationDemo.ino
-
 [Wunderground Code]: https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/
-[Alonso]:            http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position
 
