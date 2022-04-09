@@ -7,9 +7,12 @@
 
 </div>
 
+<br>
 
 **Development**     [![Badge Master]][Actions] <br>
 **Master**    [![Badge Master]][Actions]
+
+<br>
 
 ---
 
@@ -21,6 +24,7 @@
 
 ---
 
+<br>
 <br>
 
 <div align = center>
