@@ -13,6 +13,11 @@
 
 ---
 
+<div align = 'center'>
+
+**⸢ [Install] ⸥**  
+
+</div>
 
 ---
 
@@ -34,32 +39,6 @@ By buying this and [other kits][Shop] from us you are funding maintenance and  d
 <table><tr><td><img src="https://thingpulse.com/assets/ThingPulse-open-source-prime.png" width="150">
 </td><td>This is a ThingPulse <em>prime</em> project. See our [open-source commitment declaration][Commitment] for what this means.</td></tr></table>
 
-## Install and configure Arduino IDE
-
-Make sure you use a version of the Arduino IDE which is supported by the ESP8266 platform. Follow the [tutorial on our documentation platform][Tutorial].
-
-## Install libraries in Arduino IDE
-
-Install the following libraries with your Arduino Library Manager in `Sketch` > `Include Library` > `Manage Libraries...`
-* ESP8266 Weather Station
-* JSON Streaming Parser by Daniel Eichhorn
-* ESP8266 OLED Driver for SSD1306 display by Daniel Eichhorn. **Use Version 3.0.0 or higher!**
-
-## Prepare the software
-* [Create an API Key][API Key] for OpenWeatherMap
-* In the Arduino IDE go to `File` > `Examples` > `ESP8266 Weather Station` > `Weather Station Demo`
-* Enter the OpenWeatherMap API Key
-* Enter your WiFi credentials
-* Adjust the location according to OpenWeatherMap API, e.g. Zurich, CH
-* Adjust UTC offset
-
-## Setup for PlatformIO
-
-If you are using the PlatformIO environment for building
-
-* choose one of the available IDE integration or the Atom based IDE
-* install libraries 561, 562 and 563 with "platformio lib install"
-* adapt the [WeatherStationDemo.ino][Example] file to your needs (see details above)
 
 
 ## Available Modules
@@ -95,12 +74,14 @@ The ESP8266 OLED Library changed a lot with the latest release of version 3.0.0.
 
 | Announcement  | Module  | Removal  |
 |---------------|---------|----------|
-| 2018-06-13    | all **Wunderground** related code, see [our blog](https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/) for details  | January 2020, version 2.0.0  |
+| 2018-06-13    | all **Wunderground** related code, see [our blog][Bye Wunderground] for details  | January 2020, version 2.0.0  |
 
 <!----------------------------------------------------------------------------->
 
 [Badge Development]: https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg?branch=development
 [Badge Master]: https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg
+
+[Install]: Documentation/Install.md
 
 [Upgrade]: https://github.com/ThingPulse/esp8266-oled-ssd1306/blob/master/UPGRADE-3.0.md
 [Actions]: https://github.com/ThingPulse/esp8266-weather-station/actions
@@ -121,4 +102,5 @@ The ESP8266 OLED Library changed a lot with the latest release of version 3.0.0.
 [OpenWeatherMap]: https://openweathermap.desk.com/customer/portal/emails/new
 [No Free]: https://thingpulse.com/weather-underground-no-longer-providing-free-api-keys/
 [Alonso]: http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position
+[Bye Wunderground]: https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/
 
