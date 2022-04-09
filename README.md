@@ -15,7 +15,7 @@
 
 <div align = 'center'>
 
-**⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  
+**⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  **⸢ [Changelog] ⸥**  
 
 </div>
 
@@ -50,11 +50,11 @@ So if you write data fetchers which might be of interest to others please contac
 We will gladly list it here as third party library...
 
 
-## Deprecation notes
+## Deprecation
 
-| Announcement  | Module  | Removal  |
-|---------------|---------|----------|
-| 2018-06-13    | all **Wunderground** related code, see [our blog][Bye Wunderground] for details  | January 2020, version 2.0.0  |
+|   Announcement   |          Module         |          Removal         |
+|:----------------:|:-----------------------:|:-------------------------|
+| `2018 / 06 / 13` | **[Wunderground Code]** | `January 2020` `v2.0.0`  |
 
 <!----------------------------------------------------------------------------->
 
@@ -84,5 +84,5 @@ We will gladly list it here as third party library...
 [OpenWeatherMap]: https://openweathermap.desk.com/customer/portal/emails/new
 [No Free]: https://thingpulse.com/weather-underground-no-longer-providing-free-api-keys/
 [Alonso]: http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position
-[Bye Wunderground]: https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/
+[Wunderground Code]: https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/
 
