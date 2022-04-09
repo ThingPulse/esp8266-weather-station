@@ -1,5 +1,5 @@
 
-<div align = 'center'>
+<div align = center>
 
 [![Logo]][Website]
 
@@ -13,7 +13,7 @@
 
 ---
 
-<div align = 'center'>
+<div align = center>
 
 **⸢ [Shop] ⸥**  **⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  **⸢ [Design] ⸥**  **⸢ [Changelog] ⸥**  
 
@@ -23,7 +23,7 @@
 
 <br>
 
-<div align = 'center'>
+<div align = center>
 
 ## **[Ｋｉｔ][Kit]**
 
@@ -48,7 +48,7 @@ this kit which contains all the parts you will need.
 <br>
 <br>
 
-<div align = 'center'>
+<div align = center>
 
 ## **Ｓｅｒｖｉｃｅ Ｌｅｖｅｌ Ｐｒｏｍｉｓｅ**
 
@@ -56,21 +56,24 @@ this kit which contains all the parts you will need.
     
 <br>
 
-<table>
+<table align = center>
  <tr>
   <td>
-
-![Prime]
-
+   <img 
+       src = https://thingpulse.com/assets/ThingPulse-open-source-prime.png 
+       height = 140
+   />
   </td>
   <td>
-    <div align = 'center'>
+    <div align = center>
+        
+<br>
         
 This is a **ThingPulse Prime Project**.
-
+        
 See our open-source **[Commitment]**<br>
 declaration for what this means.
-
+        
    </div>
   </td>
  </tr>
@@ -80,7 +83,7 @@ declaration for what this means.
 <br>
 <br>
 
-<div align = 'center'>
+<div align = center>
 
 ## **Ｄｅｐｒｅｃａｔｉｏｎ**
 
@@ -104,7 +107,6 @@ declaration for what this means.
 
 [Upgrade]: https://github.com/ThingPulse/esp8266-oled-ssd1306/blob/master/UPGRADE-3.0.md
 [Actions]: https://github.com/ThingPulse/esp8266-weather-station/actions
-[Prime]:   https://thingpulse.com/assets/ThingPulse-open-source-prime.png
 [Logo]:    https://thingpulse.com/assets/ThingPulse-w300.svg
 
 [Tutorial]: https://docs.thingpulse.com/how-tos/Arduino-IDE-for-ESP8266/
