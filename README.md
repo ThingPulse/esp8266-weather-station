@@ -15,24 +15,33 @@
 
 <div align = 'center'>
 
-**⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  **⸢ [Design] ⸥**  **⸢ [Changelog] ⸥**  
+**⸢ [Shop] ⸥**  **⸢ [Install] ⸥**  **⸢ [Modules] ⸥**  **⸢ [Design] ⸥**  **⸢ [Changelog] ⸥**  
 
 </div>
 
 ---
 
+<div align = 'center'>
 
+## **[Ｋｉｔ][Kit]**
 
+</div>
 
+<img 
+    src = resources/ThingPulse-ESP8266-Weather-Station.jpeg
+    align = right 
+    width = 220 
+/>
 
-This code works best with the **NodeMCU V2 ESP8266** module and an `0.96"` **OLED** display.
-To get you up and running in no time we created a kit which contains all the necessary parts:
-[Kit]
+This library works best with the **NodeMCU V2 ESP8266** <br>
+module in combination with an `0.96"` **OLED** display.
 
-By buying this and [other kits][Shop] from us you are funding maintenance and  development of this library. Thank you!
+To get you up and running in no time, we created <br>
+this kit which contains all the parts you will need.
 
-[![Kit Preview]][Kit]
+<br>
 
+---
 
 ## Service level promise
 
@@ -71,7 +80,6 @@ By buying this and [other kits][Shop] from us you are funding maintenance and  d
 [Website]:    https://thingpulse.com
 [Shop]:       https://thingpulse.com/shop/
 
-[Kit Preview]: resources/ThingPulse-ESP8266-Weather-Station.jpeg
 [Kit]: https://thingpulse.com/product/esp8266-iot-electronics-starter-kit-weatherstation-planespotter-worldclock/
 
 [Example]: examples/WeatherStationDemo/WeatherStationDemo.ino
