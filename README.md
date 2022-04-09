@@ -45,24 +45,35 @@ this kit which contains all the parts you will need.
 
 <br>
 <br>
+<br>
+<br>
 
----
+<div align = 'center'>
 
-## Service level promise
+## **Ｓｅｒｖｉｃｅ Ｌｅｖｅｌ Ｐｒｏｍｉｓｅ**
+
+</div>
+    
+<br>
 
 <table><tr><td><img src="https://thingpulse.com/assets/ThingPulse-open-source-prime.png" width="150">
 </td><td>This is a ThingPulse <em>prime</em> project. See our [open-source commitment declaration][Commitment] for what this means.</td></tr></table>
 
+<br>
+<br>
+<br>
 
+<div align = 'center'>
 
+## **Ｄｅｐｒｅｃａｔｉｏｎ**
 
-
-
-## Deprecation
-
+<br>
+    
 |   Announcement   |          Module         |          Removal         |
 |:----------------:|:-----------------------:|:-------------------------|
 | `2018 / 06 / 13` | **[Wunderground Code]** | `January 2020` `v2.0.0`  |
+    
+</div>
 
 <!----------------------------------------------------------------------------->
 
