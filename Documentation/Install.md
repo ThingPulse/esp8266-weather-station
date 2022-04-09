@@ -1,6 +1,8 @@
 
 # Installation
 
+<br>
+
 ## Arduino IDE
 
 ### Setup
