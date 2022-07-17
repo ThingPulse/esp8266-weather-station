@@ -60,7 +60,7 @@ public:
         double illumination;
         double axisPositionAngle;
         double brightLimbAngle;
-        double paralacticAngle;
+        double parallacticAngle;
         MoonPhase phase;
     } Moon;
 

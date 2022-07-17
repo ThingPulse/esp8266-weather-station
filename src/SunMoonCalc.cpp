@@ -231,7 +231,7 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
   out = getMoonDiskOrientationAngles(lst, sunRA, sunDec, radians(moonLon),radians(moonLat), moonRA, moonDec);
   moon.axisPositionAngle = out[2];
   moon.brightLimbAngle = out[3];
-  moon.paralacticAngle = out[4];
+  moon.parallacticAngle = out[4];
   delete[] out;
   moon.age = ma;
   moon.phase = calculateMoonPhase(moon.age);
