@@ -57,19 +57,22 @@ void printResult(SunMoonCalc::Result result) {
   Serial.println("\tRise: " + formatTime(result.sun.rise));
   Serial.println("\tNoon: " + formatTime(result.sun.transit));
   Serial.println("\tSet: " + formatTime(result.sun.set));
-  Serial.println("\tAzimuth: " + String(result.sun.azimuth) + "°");
-  Serial.println("\tElevation: " + String(result.sun.elevation) + "°");
-  Serial.println("\tDistance: " + String(result.sun.distance) + "km");
+  Serial.printf("\tAzimuth: %f°\n", result.sun.azimuth);
+  Serial.printf("\tElevation: %f°\n", result.sun.elevation);
+  Serial.printf("\tDistance: %fkm\n", result.sun.distance);
   Serial.println("Moon");
   Serial.println("\tRise: " + formatTime(result.moon.rise));
   Serial.println("\tNoon: " + formatTime(result.moon.transit));
   Serial.println("\tSet: " + formatTime(result.moon.set));
-  Serial.println("\tAzimuth: " + String(result.moon.azimuth) + "°");
-  Serial.println("\tElevation: " + String(result.moon.elevation) + "°");
-  Serial.println("\tDistance: " + String(result.moon.distance) + "km");
-  Serial.println("\tAge: " + String(result.moon.age) + " days");
-  Serial.println("\tIllumination: " + String(result.moon.illumination * 100) + "%");
+  Serial.printf("\tAzimuth: %f°\n", result.moon.azimuth);
+  Serial.printf("\tElevation: %f°\n", result.moon.elevation);
+  Serial.printf("\tDistance: %fkm", result.moon.distance);
+  Serial.printf("\tAge: %f days\n", result.moon.age);
+  Serial.printf("\tIllumination: %f%\n", result.moon.illumination * 100);
   Serial.println("\tPhase: " + result.moon.phase.name);
+  Serial.printf("\tBright limb angle: %frad\n", result.moon.brightLimbAngle);
+  Serial.printf("\tPosition angle of axis: %frad\n", result.moon.axisPositionAngle);
+  Serial.printf("\tParallactic angle: %frad\n", result.moon.parallacticAngle);
 }
 
 String padWithZeroBelowTen(int d) {
@@ -109,7 +112,7 @@ void setup() {
   Serial.println(String(ctime(&tnow)));
   
   // 'now' has to be UTC, lat/lng in degrees not raadians
-  SunMoonCalc smCalc = SunMoonCalc(tnow, 52.520008, 13.404954);
+  SunMoonCalc smCalc = SunMoonCalc(tnow, 47.366, 8.533);
   const SunMoonCalc::Result result = smCalc.calculateSunAndMoonData();
 
   // for reference you may want to compare results (remember: they're in UTC!) to https://www.timeanddate.com/moon/
