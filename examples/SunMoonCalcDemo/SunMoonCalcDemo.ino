@@ -22,7 +22,11 @@ SOFTWARE.
 */
 
 #include <Arduino.h>
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
+#else
+#include <WiFi.h>
+#endif
 #include <ESPHTTPClient.h>
 #include <time.h>
 #include "SunMoonCalc.h"

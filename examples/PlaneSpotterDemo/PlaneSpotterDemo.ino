@@ -23,12 +23,18 @@ SOFTWARE.
 See more at https://thingpulse.com
 */
 #include <Arduino.h>
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#else
+#include <WiFi.h>
+#include <ESPmDNS.h>
+#include <WiFiUdp.h>
+#endif
 #include <ESPHTTPClient.h>
 #include <Ticker.h>
 #include <JsonListener.h>
 #include <ArduinoOTA.h>
-#include <ESP8266mDNS.h>
 
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
