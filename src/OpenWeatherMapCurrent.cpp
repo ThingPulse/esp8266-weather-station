@@ -137,6 +137,10 @@ void OpenWeatherMapCurrent::value(String value) {
   if (currentKey == "temp") {
     this->data->temp = value.toFloat();
   }
+  // "feelsLike": 290.87, float feelsLike;
+  if (currentKey == "feelsLike") {
+    this->data->feelsLike = value.toFloat();
+  }
   // "pressure": 1013, uint16_t pressure;
   if (currentKey == "pressure") {
     this->data->pressure = value.toInt();
