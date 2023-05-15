@@ -41,6 +41,8 @@ typedef struct OpenWeatherMapCurrentData {
   String iconMeteoCon;
   // "temp": 290.56,
   float temp;
+  // feels_like	290.87
+  float feelsLike;
   // "pressure": 1013,
   uint16_t pressure;
   // "humidity": 87,
