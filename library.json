@@ -1,5 +1,5 @@
 {
-  "name": "WeatherStation",
+  "name": "ESP8266 Weather Station",
   "keywords": "embedded, display, oled",
   "description": "A WiFi connected information display",
   "repository": {
@@ -15,5 +15,5 @@
     "espressif8266",
     "espressif32"
   ],
-  "version": "2.1.0"
+  "version": "2.2.0"
 }
