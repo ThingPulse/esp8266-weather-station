@@ -1,7 +1,7 @@
 # ThingPulse ESP8266 Weather Station
 
-
-[![ThingPulse logo](https://thingpulse.com/assets/ThingPulse-w300.svg)](https://thingpulse.com)
+[![PlatformIO Registry](https://badges.registry.platformio.org/packages/thingpulse/library/ESP8266%20Weather%20Station.svg)](https://registry.platformio.org/libraries/thingpulse/ESP8266%20Weather%20Station)
+[![PlatformIO CI](https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg)](https://github.com/ThingPulse/esp8266-weather-station/actions)
 
 
 This code works best with the NodeMCU V2 ESP8266 module and an 0.96" OLED display.
@@ -11,13 +11,6 @@ To get you up and running in no time we created a kit which contains all the nec
 By buying this and [other kits](https://thingpulse.com/shop/) from us you are funding maintenance and  development of this library. Thank you!
 
 [![ThingPulse ESP8266 WeatherStation Classic Kit](resources/ThingPulse-ESP8266-Weather-Station.jpeg)](https://thingpulse.com/product/esp8266-iot-electronics-starter-kit-weatherstation-planespotter-worldclock/)
-
-### Build Status
-
-| Branch  | Status |
-| ------------- | ------------- |
-| master  | [![PlatformIO CI](https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg)](https://github.com/ThingPulse/esp8266-weather-station/actions)  |
-| development  | [![PlatformIO CI](https://github.com/ThingPulse/esp8266-weather-station/actions/workflows/main.yml/badge.svg?branch=development)](https://github.com/ThingPulse/esp8266-weather-station/actions)  |
 
 ## Service level promise
 
