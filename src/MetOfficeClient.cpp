@@ -92,7 +92,6 @@ void MetOfficeClient::doUpdate(String url) {
     }
   }
 
-  int pos = 0;
   boolean isBody = false;
   char c;
 

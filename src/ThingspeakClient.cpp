@@ -38,7 +38,6 @@ void ThingspeakClient::getLastChannelItem(String channelId, String readApiKey) {
     }
   }
 
-  int pos = 0;
   boolean isBody = false;
   char c;
 
