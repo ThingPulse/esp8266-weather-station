@@ -111,7 +111,7 @@ Astronomy::MoonData Astronomy::calculateMoonData(uint16_t year, uint8_t month, u
   } else month -= 2;
 
   c = year / 100;
-  jd += 30.59 * month;
+  jd = 30.59 * month;
   jd += 365.25 * year;
   jd += day;
   jd += c / 4 - c;
