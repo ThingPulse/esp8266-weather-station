@@ -39,12 +39,13 @@ OpenWeatherMapCurrent client;
 // See https://docs.thingpulse.com/how-tos/openweathermap-key/
 String OPEN_WEATHER_MAP_APP_ID = "XXX";
 /*
-Go to https://openweathermap.org/find?q= and search for a location. Go through the
-result set and select the entry closest to the actual location you want to display 
-data for. It'll be a URL like https://openweathermap.org/city/2657896. The number
-at the end is what you assign to the constant below.
+Use the OWM GeoCoder API to find lat/lon for your city: https://openweathermap.org/api/geocoding-api
+Or use any other geocoding service.
+Or go to https://openweathermap.org, search for your city and monitor the calls in the browser dev console :)
  */
-String OPEN_WEATHER_MAP_LOCATION_ID = "2657896";
+// Example: Zurich, Switzerland
+float OPEN_WEATHER_MAP_LOCATION_LAT = 47.3667;
+float OPEN_WEATHER_MAP_LOCATION_LON = 8.55;
 /*
 Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
 English - en, Persian (Farsi) - fa, Finnish - fi, French - fr, Galician - gl,
@@ -105,7 +106,7 @@ void setup() {
   OpenWeatherMapCurrentData data;
   client.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
   client.setMetric(IS_METRIC);
-  client.updateCurrentById(&data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_ID);
+  client.updateCurrent(&data, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_LAT, OPEN_WEATHER_MAP_LOCATION_LON);
 
   Serial.println("------------------------------------");
 

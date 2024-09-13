@@ -93,7 +93,10 @@ class OpenWeatherMapForecast: public JsonListener {
 
   public:
     OpenWeatherMapForecast();
+    // deprecated as per https://openweathermap.org/current#builtin
     uint8_t updateForecasts(OpenWeatherMapForecastData *data, String appId, String location, uint8_t maxForecasts);
+    uint8_t updateForecasts(OpenWeatherMapForecastData *data, String appId, float lat, float lon, uint8_t maxForecasts);
+    // deprecated as per https://openweathermap.org/current#builtin
     uint8_t updateForecastsById(OpenWeatherMapForecastData *data, String appId, String locationId, uint8_t maxForecasts);
 
     void setMetric(boolean metric) { this->metric = metric; }
