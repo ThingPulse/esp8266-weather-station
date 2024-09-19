@@ -87,7 +87,10 @@ class OpenWeatherMapCurrent: public JsonListener {
 
   public:
     OpenWeatherMapCurrent();
+    // deprecated as per https://openweathermap.org/current#builtin
     void updateCurrent(OpenWeatherMapCurrentData *data, String appId, String location);
+    void updateCurrent(OpenWeatherMapCurrentData *data, String appId, float lat, float lon);
+    // deprecated as per https://openweathermap.org/current#builtin
     void updateCurrentById(OpenWeatherMapCurrentData *data, String appId, String locationId);
 
     void setMetric(boolean metric) {this->metric = metric;}
