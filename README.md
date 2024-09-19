@@ -78,4 +78,5 @@ The ESP8266 OLED Library changed a lot with the latest release of version 3.0.0.
 
 | Announcement  | Module  | Removal  |
 |---------------|---------|----------|
+| 2024-09-19    | OWM requests by city name and city ID, see [their documentation](https://openweathermap.org/current#builtin)  |   |
 | 2018-06-13    | all **Wunderground** related code, see [our blog](https://thingpulse.com/hello-openweathermap-bye-bye-wunderground/) for details  | January 2020, version 2.0.0  |

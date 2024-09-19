@@ -19,4 +19,4 @@ jobs:
       - name: Publish
         # requires the PLATFORMIO_AUTH_TOKEN env variable: https://docs.platformio.org/en/latest/envvars.html#envvar-PLATFORMIO_AUTH_TOKEN
         # currently msr's account
-        run: pio pkg publish --owner thingpulse
+        run: pio pkg publish --owner thingpulse --no-interactive
