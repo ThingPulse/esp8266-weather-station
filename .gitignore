@@ -11,3 +11,4 @@ RemoteSystemsTempFiles
 .vscode
 .clang_complete
 .gcc-flags.json
+*.bin

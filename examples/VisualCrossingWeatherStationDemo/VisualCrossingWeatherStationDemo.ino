@@ -41,8 +41,7 @@ See more at https://thingpulse.com
 #include "SSD1306Wire.h"
 #include "OLEDDisplayUi.h"
 #include "Wire.h"
-#include "OpenWeatherMapCurrent.h"
-#include "OpenWeatherMapForecast.h"
+#include "VisualCrossing.h"
 #include "WeatherStationFonts.h"
 #include "WeatherStationImages.h"
 
@@ -74,28 +73,22 @@ const int SDC_PIN = 4; //D4;
 #endif
 
 
-// OpenWeatherMap Settings
+// VisualCrossing Settings
 // Sign up here to get an API key:
-// https://docs.thingpulse.com/how-tos/openweathermap-key/
-String OPEN_WEATHER_MAP_APP_ID = "XXX";
-/*
-Use the OWM GeoCoder API to find lat/lon for your city: https://openweathermap.org/api/geocoding-api
-Or use any other geocoding service.
-Or go to https://openweathermap.org, search for your city and monitor the calls in the browser dev console :)
- */
-// Example: Zurich, Switzerland
-float OPEN_WEATHER_MAP_LOCATION_LAT = 47.3667;
-float OPEN_WEATHER_MAP_LOCATION_LON = 8.55;
+// https://www.visualcrossing.com/sign-up
+String VISUAL_CROSSING_KEY = "XXX";
+
+// Enter a plaintext location.
+// Go to https://www.visualcrossing.com/weather-data to test
+String VISUAL_CROSSING_LOCATION = "Zurich,Switzerland";
 
 // Pick a language code from this list:
-// Arabic - ar, Bulgarian - bg, Catalan - ca, Czech - cz, German - de, Greek - el,
-// English - en, Persian (Farsi) - fa, Finnish - fi, French - fr, Galician - gl,
-// Croatian - hr, Hungarian - hu, Italian - it, Japanese - ja, Korean - kr,
-// Latvian - la, Lithuanian - lt, Macedonian - mk, Dutch - nl, Polish - pl,
-// Portuguese - pt, Romanian - ro, Russian - ru, Swedish - se, Slovak - sk,
-// Slovenian - sl, Spanish - es, Turkish - tr, Ukrainian - ua, Vietnamese - vi,
-// Chinese Simplified - zh_cn, Chinese Traditional - zh_tw.
-String OPEN_WEATHER_MAP_LANGUAGE = "de";
+// ar (Arabic), bg (Bulgiarian), cs (Czech), da (Danish), de (German),el (Greek Modern),
+// en (English), es (Spanish), fa (Farsi), fi (Finnish), fr (French), he (Hebrew),
+// hu, (Hungarian), it (Italian), ja (Japanese), ko (Korean), nl (Dutch), pl (Polish),
+// pt (Portuguese), ru (Russian), sk (Slovakian), sr (Serbian), sv (Swedish),
+// tr (Turkish), uk (Ukranian), vi (Vietnamese) and zh (Chinese). 
+String VISUAL_CROSSING_LANGUAGE = "de";
 const uint8_t MAX_FORECASTS = 4;
 
 const boolean IS_METRIC = true;
@@ -115,11 +108,9 @@ const String MONTH_NAMES[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "
 SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
 OLEDDisplayUi   ui( &display );
 
-OpenWeatherMapCurrentData currentWeather;
-OpenWeatherMapCurrent currentWeatherClient;
-
-OpenWeatherMapForecastData forecasts[MAX_FORECASTS];
-OpenWeatherMapForecast forecastClient;
+VisualCrossingData currentWeather;
+VisualCrossingData forecasts[MAX_FORECASTS];
+VisualCrossing forecastClient;
 
 time_t now;
 
@@ -244,15 +235,10 @@ void drawProgress(OLEDDisplay *display, int percentage, String label) {
 void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
   drawProgress(display, 30, "Updating weather...");
-  currentWeatherClient.setMetric(IS_METRIC);
-  currentWeatherClient.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
-  currentWeatherClient.updateCurrent(&currentWeather, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_LAT, OPEN_WEATHER_MAP_LOCATION_LON);
   drawProgress(display, 50, "Updating forecasts...");
   forecastClient.setMetric(IS_METRIC);
-  forecastClient.setLanguage(OPEN_WEATHER_MAP_LANGUAGE);
-  uint8_t allowedHours[] = {12};
-  forecastClient.setAllowedHours(allowedHours, sizeof(allowedHours));
-  forecastClient.updateForecasts(forecasts, OPEN_WEATHER_MAP_APP_ID, OPEN_WEATHER_MAP_LOCATION_LAT, OPEN_WEATHER_MAP_LOCATION_LON, MAX_FORECASTS);
+  forecastClient.setLanguage(VISUAL_CROSSING_LANGUAGE);
+  forecastClient.updateForecasts(forecasts, currentWeather, VISUAL_CROSSING_KEY, VISUAL_CROSSING_LOCATION, MAX_FORECASTS);
 
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");
@@ -289,7 +275,7 @@ void drawDateTime(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
 void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setFont(ArialMT_Plain_10);
   display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->drawString(64 + x, 38 + y, currentWeather.description);
+  display->drawString(64 + x, 38 + y, currentWeather.conditions);
 
   display->setFont(ArialMT_Plain_24);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
@@ -302,9 +288,21 @@ void drawCurrentWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t
 }
 
 void drawForecast(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  drawForecastDetails(display, x, y, 0);
-  drawForecastDetails(display, x + 44, y, 1);
-  drawForecastDetails(display, x + 88, y, 2);
+  time_t observationTimestamp = forecasts[0].observationTime;
+  struct tm* obsTimeInfo;
+  obsTimeInfo = localtime(&observationTimestamp);
+  now = time(nullptr);
+  struct tm* curTimeInfo;
+  curTimeInfo = localtime(&now);
+  uint8_t  start;
+  
+  // After 1800, stop showing todays forecast
+  if (curTimeInfo->tm_mday == obsTimeInfo->tm_mday && curTimeInfo->tm_hour > 18) start = 1;
+  else start = 0;
+  
+  drawForecastDetails(display, x, y, start);
+  drawForecastDetails(display, x + 44, y, start+1);
+  drawForecastDetails(display, x + 88, y, start+2);
 }
 
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
@@ -317,7 +315,7 @@ void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex) {
 
   display->setFont(Meteocons_Plain_21);
   display->drawString(x + 20, y + 12, forecasts[dayIndex].iconMeteoCon);
-  String temp = String(forecasts[dayIndex].temp, 0) + (IS_METRIC ? "°C" : "°F");
+  String temp = String(forecasts[dayIndex].tempMax, 0) + (IS_METRIC ? "°C" : "°F");
   display->setFont(ArialMT_Plain_10);
   display->drawString(x + 20, y + 34, temp);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
